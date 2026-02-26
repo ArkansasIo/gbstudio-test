@@ -975,10 +975,19 @@ ipcMain.handle("open-external", async (_event, url) => {
 
 ipcMain.handle("open-directory-picker", async () => {
   const selection = await dialog.showOpenDialogSync({
-    properties: ["openDirectory"],
+    properties: ["openDirectory", "openFile"],
   });
   if (selection && selection[0]) {
-    return Path.normalize(`${selection[0]}/`);
+    let selectedPath = selection[0];
+    try {
+      const selectedPathStats = await stat(selectedPath);
+      if (selectedPathStats.isFile()) {
+        selectedPath = Path.dirname(selectedPath);
+      }
+    } catch {
+      // If the selected path cannot be stat'ed, fall back to the original path.
+    }
+    return Path.normalize(`${selectedPath}/`);
   }
   return undefined;
 });

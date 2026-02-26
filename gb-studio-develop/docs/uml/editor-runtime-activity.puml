@@ -1,0 +1,23 @@
+@startuml
+title Editor Runtime - Activity
+
+start
+:Launch application;
+:Initialize windows and settings;
+if (Open existing project?) then (yes)
+  :Open project picker;
+  :Validate selected file;
+  :Load project resources;
+else (no)
+  :Create project from template;
+  :Initialize default assets;
+endif
+:Edit scenes/assets/scripts;
+:Save project;
+if (Build requested?) then (yes)
+  :Run compile/export pipeline;
+  :Write artifacts;
+endif
+stop
+
+@enduml

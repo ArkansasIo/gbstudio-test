@@ -1,0 +1,19 @@
+@startuml
+title Project Open - Sequence
+
+actor User
+participant "Renderer UI" as UI
+participant "Main Process" as Main
+participant "File System" as FS
+
+User -> UI : Click "Open Project"
+UI -> Main : IPC openProjectPicker
+Main -> FS : showOpenDialog + stat
+FS --> Main : selected path
+Main -> Main : validate extension + permissions
+Main -> FS : load project data/resources
+FS --> Main : project payload
+Main --> UI : project loaded + state update
+UI --> User : editor ready
+
+@enduml

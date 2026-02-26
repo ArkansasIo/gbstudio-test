@@ -27,8 +27,8 @@ import { FormField, FormRow } from "ui/form/layout/FormLayout";
 import { TextField } from "ui/form/TextField";
 import { DotsIcon, LoadingIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
-import contributors from "contributors.json";
-import contributorsExternal from "contributors-external.json";
+import rawContributors from "contributors.json";
+import rawContributorsExternal from "contributors-external.json";
 import inbuiltPatrons from "patrons.json";
 import gbs2Preview from "assets/templatePreview/gbs2.png";
 import gbhtmlPreview from "assets/templatePreview/gbhtml.png";
@@ -56,6 +56,12 @@ type TemplateInfo = {
   preview: string;
   videoPreview: boolean;
   description: string;
+};
+
+type Contributor = {
+  login: string;
+  html_url?: string;
+  group?: "gold" | "silver";
 };
 
 const splashTabs = ["new", "recent"] as const;
@@ -88,15 +94,29 @@ const toSplashTab = (tab: string): SplashTabSection => {
   return "new";
 };
 
-const goldContributors = contributors.filter((user) => user.group === "gold");
-const silverContributors = [...contributorsExternal]
-  // eslint-disable-next-line camelcase
+const contributors: Contributor[] = Array.isArray(rawContributors)
+  ? (rawContributors as Contributor[])
+  : [];
+const contributorsExternal: Contributor[] = Array.isArray(rawContributorsExternal)
+  ? (rawContributorsExternal as Contributor[])
+  : [];
+
+const goldContributors = contributors
+  .filter((user) => user.group === "gold")
+  .map((contributor) => ({
+    ...contributor,
+    // eslint-disable-next-line camelcase
+    html_url: contributor.html_url ?? "",
+  }));
+const silverContributors = [
+  ...contributorsExternal,
+  ...contributors.filter((user) => user.group === "silver"),
+]
   .map((contributor) => ({
     ...contributor,
     // eslint-disable-next-line camelcase
     html_url: contributor.html_url ?? "",
   }))
-  .concat(contributors.filter((user) => user.group === "silver"))
   .sort((a, b) => {
     const loginA = a.login.toLowerCase();
     const loginB = b.login.toLowerCase();
@@ -407,31 +427,31 @@ const Splash = () => {
           <Credits onClose={() => setOpenCredits(false)}>
             <CreditsTitle>GB Studio</CreditsTitle>
             <CreditsSubHeading>{l10n("SPLASH_CONTRIBUTORS")}</CreditsSubHeading>
-            {goldContributors.map((contributor) => (
-              <CreditsPerson
-                key={contributor.login}
-                onClick={
-                  contributor.html_url
-                    ? () => API.app.openExternal(contributor.html_url)
-                    : undefined
-                }
-              >
-                {contributor.login}
-              </CreditsPerson>
-            ))}
-            <CreditsGrid>
-              {silverContributors.map((contributor) => (
+            {goldContributors.map((contributor) => {
+              // eslint-disable-next-line camelcase
+              const url = contributor.html_url;
+              return (
                 <CreditsPerson
                   key={contributor.login}
-                  onClick={
-                    contributor.html_url
-                      ? () => API.app.openExternal(contributor.html_url)
-                      : undefined
-                  }
+                  onClick={url ? () => API.app.openExternal(url) : undefined}
                 >
                   {contributor.login}
                 </CreditsPerson>
-              ))}
+              );
+            })}
+            <CreditsGrid>
+              {silverContributors.map((contributor) => {
+                // eslint-disable-next-line camelcase
+                const url = contributor.html_url;
+                return (
+                  <CreditsPerson
+                    key={contributor.login}
+                    onClick={url ? () => API.app.openExternal(url) : undefined}
+                  >
+                    {contributor.login}
+                  </CreditsPerson>
+                );
+              })}
             </CreditsGrid>
             <CreditsSubHeading>Patrons</CreditsSubHeading>
             <CreditsGrid>

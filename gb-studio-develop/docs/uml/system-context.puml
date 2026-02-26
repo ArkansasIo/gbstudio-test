@@ -1,0 +1,16 @@
+@startuml
+title GB Studio - System Context
+
+actor "Creator" as User
+rectangle "GB Studio App" as App
+database "Project Files" as Project
+rectangle "Build Toolchain" as Toolchain
+rectangle "External Editors" as Editors
+
+User --> App : Create/Open/Edit Project
+App --> Project : Read/Write Assets + Project Data
+App --> Toolchain : Compile/Export
+App --> Editors : Open files with configured tools
+Toolchain --> Project : Output Build Artifacts
+
+@enduml

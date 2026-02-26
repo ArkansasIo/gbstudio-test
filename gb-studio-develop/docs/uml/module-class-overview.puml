@@ -1,0 +1,35 @@
+@startuml
+title Module Class Overview
+
+class MainProcess {
+  +ipcMain handlers
+  +window lifecycle
+  +project orchestration
+}
+
+class RendererAPI {
+  +dialog.*
+  +project.*
+  +settings.*
+}
+
+class ProjectLoader {
+  +loadProjectData()
+  +loadProjectResources()
+}
+
+class BuildPipeline {
+  +buildProject()
+  +export targets
+}
+
+class AssetGuard {
+  +guardAssetWithinProject()
+}
+
+RendererAPI --> MainProcess : IPC invoke
+MainProcess --> ProjectLoader : load/validate
+MainProcess --> BuildPipeline : compile/export
+MainProcess --> AssetGuard : path checks
+
+@enduml
