@@ -21,6 +21,8 @@ import {
 } from "./rpgMakerEditorSystems";
 import {
   blueprintNodeCatalog,
+  linkedRPGFeatureCapabilities,
+  linkedRPGFeatureNames,
   unrealToolbar,
   unrealTopMenus,
 } from "./rpgGameMakerConfig";
@@ -622,6 +624,20 @@ export const RPGGameMakerUILayout: React.FC = () => {
                 Music Packs: {audioLibraryPacks.music.join(", ")}
               </div>
               <div style={listRowStyle}>SFX Packs: {audioLibraryPacks.sfx.join(", ")}</div>
+              <div style={{ marginTop: 10, fontWeight: 700 }}>Linked RPG Features</div>
+              {linkedRPGFeatureNames.map((featureName) => (
+                <div key={featureName} style={listRowStyle}>
+                  {featureName}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                Linked Feature Capabilities
+              </div>
+              {linkedRPGFeatureCapabilities.slice(0, 20).map((capability) => (
+                <div key={capability} style={listRowStyle}>
+                  {capability}
+                </div>
+              ))}
             </div>
           </div>
 

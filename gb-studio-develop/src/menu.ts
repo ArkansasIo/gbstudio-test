@@ -125,6 +125,7 @@ interface BuildMenuProps {
 
 const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
   const pluginThemes = themeManager.getPluginThemes();
+  const systemThemes = themeManager.getSystemThemes();
   const pluginLangs = l10nManager.getPluginL10Ns();
   const systemLangs = l10nManager.getSystemL10Ns();
 
@@ -396,30 +397,23 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
               },
             },
             { type: "separator" },
-            {
-              id: "themeLight",
-              label: l10n("MENU_THEME_LIGHT"),
-              type: "checkbox",
-              checked: settings.get(THEME_SETTING_KEY) === "light",
-              click() {
-                notifyListeners("updateTheme", "light");
-              },
-            },
-            {
-              id: "themeDark",
-              label: l10n("MENU_THEME_DARK"),
-              type: "checkbox",
-              checked: settings.get(THEME_SETTING_KEY) === "dark",
-              click() {
-                notifyListeners("updateTheme", "dark");
-              },
-            },
+            ...systemThemes.map(
+              (theme): MenuItemConstructorOptions => ({
+                id: `theme-system-${theme.id}`,
+                label: theme.name,
+                type: "checkbox",
+                checked: settings.get(THEME_SETTING_KEY) === theme.id,
+                click() {
+                  notifyListeners("updateTheme", theme.id);
+                },
+              }),
+            ),
             ...(pluginThemes.length > 0
               ? ([{ type: "separator" }] as MenuItemConstructorOptions[])
               : []),
             ...pluginThemes.map(
               (theme): MenuItemConstructorOptions => ({
-                id: `theme-${theme.id}`,
+                id: `theme-plugin-${theme.id}`,
                 label: theme.name,
                 type: "checkbox",
                 checked: settings.get(THEME_SETTING_KEY) === theme.id,

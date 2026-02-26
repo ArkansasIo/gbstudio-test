@@ -1,6 +1,15 @@
 import { getGlobalPluginsPath } from "lib/pluginManager/globalPlugins";
 import darkTheme from "ui/theme/darkTheme";
 import darkThemeWin from "ui/theme/darkThemeWin";
+import {
+  amberTerminalTheme,
+  crimsonForgeTheme,
+  emeraldNightTheme,
+  frostLightTheme,
+  midnightBlueTheme,
+  retroMintTheme,
+  solarizedSandTheme,
+} from "ui/theme/extraThemes";
 import lightTheme from "ui/theme/lightTheme";
 import lightThemeWin from "ui/theme/lightThemeWin";
 import { ThemeInterface } from "ui/theme/ThemeInterface";
@@ -12,17 +21,28 @@ import { merge, cloneDeep } from "lodash";
 
 const globAsync = promisify(glob);
 
-const themeIds = ["dark", "light"] as const;
-type ThemeId = (typeof themeIds)[number];
-
-const themes: Record<ThemeId, ThemeInterface> = {
+const themes: Record<string, ThemeInterface> = {
   light: lightTheme,
   dark: darkTheme,
+  midnightBlue: midnightBlueTheme,
+  emeraldNight: emeraldNightTheme,
+  crimsonForge: crimsonForgeTheme,
+  amberTerminal: amberTerminalTheme,
+  frostLight: frostLightTheme,
+  solarizedSand: solarizedSandTheme,
+  retroMint: retroMintTheme,
 };
 
-const windowsThemes: Record<ThemeId, ThemeInterface> = {
+const windowsThemes: Record<string, ThemeInterface> = {
   light: lightThemeWin,
   dark: darkThemeWin,
+  midnightBlue: midnightBlueTheme,
+  emeraldNight: emeraldNightTheme,
+  crimsonForge: crimsonForgeTheme,
+  amberTerminal: amberTerminalTheme,
+  frostLight: frostLightTheme,
+  solarizedSand: solarizedSandTheme,
+  retroMint: retroMintTheme,
 };
 
 const loadThemePlugin = async (
@@ -41,7 +61,7 @@ const loadThemePlugin = async (
 };
 
 export class ThemeManager {
-  systemThemes: Record<ThemeId, ThemeInterface>;
+  systemThemes: Record<string, ThemeInterface>;
   pluginThemes: Record<string, ThemeInterface>;
 
   constructor(platform: string) {
@@ -91,10 +111,8 @@ export class ThemeManager {
       return pluginTheme;
     }
 
-    // If light/dark set manually
-    if (themeId === "light") {
-      return this.systemThemes[themeId];
-    } else if (themeId === "dark") {
+    // Use selected built-in system theme if set manually
+    if (this.systemThemes[themeId]) {
       return this.systemThemes[themeId];
     }
 
@@ -112,5 +130,13 @@ export class ThemeManager {
         name: theme.name,
       };
     });
+  }
+
+  getSystemThemes() {
+    return Object.entries(this.systemThemes).map(([id, theme]) => ({
+      id,
+      name: theme.name,
+      type: theme.type,
+    }));
   }
 }

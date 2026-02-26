@@ -1,3 +1,5 @@
+import { RPG_FEATURE_DEFINITIONS } from "app/rpg/features";
+
 export type MenuDefinition = {
   label: string;
   items: string[];
@@ -289,3 +291,12 @@ export const blueprintGraph = {
     { from: "n2", to: "n5" },
   ] as BlueprintEdge[],
 };
+
+export const linkedRPGFeatureNames = RPG_FEATURE_DEFINITIONS.map(
+  (feature) => feature.name,
+);
+
+export const linkedRPGFeatureCapabilities = RPG_FEATURE_DEFINITIONS.flatMap(
+  (feature) =>
+    feature.capabilities.map((capability) => `${feature.name}: ${capability}`),
+);
