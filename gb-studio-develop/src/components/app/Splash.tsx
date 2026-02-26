@@ -1,12 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Path from "path";
-import FocusLock from "react-focus-lock";
 import { FlexGrow } from "ui/spacing/Spacing";
 import {
   SplashAppTitle,
   SplashContent,
   SplashCreateButton,
-  SplashEasterEggButton,
   SplashForm,
   SplashInfoMessage,
   SplashLoading,
@@ -27,9 +25,6 @@ import { FormField, FormRow } from "ui/form/layout/FormLayout";
 import { TextField } from "ui/form/TextField";
 import { DotsIcon, LoadingIcon } from "ui/icons/Icons";
 import { Button } from "ui/buttons/Button";
-import rawContributors from "contributors.json";
-import rawContributorsExternal from "contributors-external.json";
-import inbuiltPatrons from "patrons.json";
 import gbs2Preview from "assets/templatePreview/gbs2.png";
 import gbhtmlPreview from "assets/templatePreview/gbhtml.png";
 import blankPreview from "assets/templatePreview/blank.png";
@@ -38,14 +33,6 @@ import l10n from "shared/lib/lang/l10n";
 import API from "renderer/lib/api";
 import { ERR_PROJECT_EXISTS } from "consts";
 import type { RecentProjectData } from "renderer/lib/api/setup";
-import type { Patrons } from "scripts/fetchPatrons";
-import {
-  Credits,
-  CreditsPerson,
-  CreditsGrid,
-  CreditsSubHeading,
-  CreditsTitle,
-} from "ui/splash/credits/Credits";
 import type { TemplatePlugin } from "lib/templates/templateManager";
 
 declare const DOCS_URL: string;
@@ -56,12 +43,6 @@ type TemplateInfo = {
   preview: string;
   videoPreview: boolean;
   description: string;
-};
-
-type Contributor = {
-  login: string;
-  html_url?: string;
-  group?: "gold" | "silver";
 };
 
 const splashTabs = ["new", "recent"] as const;
@@ -94,42 +75,10 @@ const toSplashTab = (tab: string): SplashTabSection => {
   return "new";
 };
 
-const contributors: Contributor[] = Array.isArray(rawContributors)
-  ? (rawContributors as Contributor[])
-  : [];
-const contributorsExternal: Contributor[] = Array.isArray(rawContributorsExternal)
-  ? (rawContributorsExternal as Contributor[])
-  : [];
-
-const goldContributors = contributors
-  .filter((user) => user.group === "gold")
-  .map((contributor) => ({
-    ...contributor,
-    // eslint-disable-next-line camelcase
-    html_url: contributor.html_url ?? "",
-  }));
-const silverContributors = [
-  ...contributorsExternal,
-  ...contributors.filter((user) => user.group === "silver"),
-]
-  .map((contributor) => ({
-    ...contributor,
-    // eslint-disable-next-line camelcase
-    html_url: contributor.html_url ?? "",
-  }))
-  .sort((a, b) => {
-    const loginA = a.login.toLowerCase();
-    const loginB = b.login.toLowerCase();
-    if (loginA < loginB) return -1;
-    if (loginA > loginB) return 1;
-    return 0;
-  });
-
 const Splash = () => {
   const [loading, setLoading] = useState(true);
   const [templateId, setTemplateId] = useState("gbs2");
   const [section, setSection] = useState<SplashTabSection>();
-  const [openCredits, setOpenCredits] = useState(false);
   const [recentProjects, setRecentProjects] = useState<RecentProjectData[]>([]);
   const [templatePlugins, setTemplatePlugins] = useState<TemplatePlugin[]>([]);
   const [name, setName] = useState<string>(l10n("SPLASH_DEFAULT_PROJECT_NAME"));
@@ -138,8 +87,6 @@ const Splash = () => {
   const [pathError, setPathError] = useState("");
   const [creating, setCreating] = useState(false);
   const windowFocus = useWindowFocus();
-
-  const [patrons, setPatrons] = useState<Patrons>(inbuiltPatrons as Patrons);
 
   useEffect(() => {
     async function fetchData() {
@@ -153,10 +100,6 @@ const Splash = () => {
       setLoading(false);
     }
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    API.app.getPatrons().then(setPatrons);
   }, []);
 
   useEffect(() => {
@@ -304,10 +247,6 @@ const Splash = () => {
         <SplashSidebar>
           <SplashLogo>
             <img src={logoFile} alt="Enchantment Game Engine" draggable={false} />
-            <SplashEasterEggButton
-              onClick={() => setOpenCredits(true)}
-              tabIndex={-1}
-            />
           </SplashLogo>
           <SplashAppTitle />
           <SplashTab
@@ -326,9 +265,6 @@ const Splash = () => {
           </SplashTab>
           <SplashTab onClick={() => API.app.openExternal(DOCS_URL)}>
             {l10n("SPLASH_DOCUMENTATION")}
-          </SplashTab>
-          <SplashTab onClick={() => setOpenCredits(true)}>
-            {l10n("SPLASH_CREDITS")}
           </SplashTab>
           <FlexGrow />
           <SplashOpenButton onClick={onOpen}>
@@ -440,63 +376,6 @@ const Splash = () => {
           </SplashScroll>
         )}
       </SplashWindow>
-
-      {openCredits && (
-        <FocusLock>
-          <Credits onClose={() => setOpenCredits(false)}>
-            <CreditsTitle>Enchantment Game Engine</CreditsTitle>
-            <CreditsSubHeading>{l10n("SPLASH_CONTRIBUTORS")}</CreditsSubHeading>
-            {goldContributors.map((contributor) => {
-              // eslint-disable-next-line camelcase
-              const url = contributor.html_url;
-              return (
-                <CreditsPerson
-                  key={contributor.login}
-                  onClick={url ? () => API.app.openExternal(url) : undefined}
-                >
-                  {contributor.login}
-                </CreditsPerson>
-              );
-            })}
-            <CreditsGrid>
-              {silverContributors.map((contributor) => {
-                // eslint-disable-next-line camelcase
-                const url = contributor.html_url;
-                return (
-                  <CreditsPerson
-                    key={contributor.login}
-                    onClick={url ? () => API.app.openExternal(url) : undefined}
-                  >
-                    {contributor.login}
-                  </CreditsPerson>
-                );
-              })}
-            </CreditsGrid>
-            <CreditsSubHeading>Patrons</CreditsSubHeading>
-            <CreditsGrid>
-              {(patrons.goldTier || []).map((patron) => (
-                <CreditsPerson key={patron.id} gold>
-                  {patron.attributes.full_name}
-                </CreditsPerson>
-              ))}
-            </CreditsGrid>
-            <CreditsGrid>
-              {(patrons.silverTier || []).map((patron) => (
-                <CreditsPerson key={patron.id}>
-                  {patron.attributes.full_name}
-                </CreditsPerson>
-              ))}
-            </CreditsGrid>
-            <CreditsGrid>
-              {(patrons.pastPatrons || []).map((patron) => (
-                <CreditsPerson key={patron.id}>
-                  {patron.attributes.full_name}
-                </CreditsPerson>
-              ))}
-            </CreditsGrid>
-          </Credits>
-        </FocusLock>
-      )}
     </ThemeProvider>
   );
 };
