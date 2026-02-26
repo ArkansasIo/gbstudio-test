@@ -162,6 +162,7 @@
     "cross-env": "^7.0.3",
     "css-loader": "^6.0.0",
     "electron": "22.3.27",
+    "electron-forge": "^5.2.4",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-config-react-app": "^7.0.1",
