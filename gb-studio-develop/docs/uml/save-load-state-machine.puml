@@ -1,0 +1,21 @@
+@startuml
+title Save/Load State Machine
+
+[*] --> Idle
+
+Idle --> Loading : open project
+Loading --> Ready : load success
+Loading --> Error : load failed
+
+Ready --> Dirty : edit action
+Dirty --> Saving : save trigger
+Saving --> Ready : save success
+Saving --> Error : save failed
+
+Error --> Ready : recover/retry success
+Error --> Idle : close project
+
+Ready --> [*] : close project
+Idle --> [*]
+
+@enduml

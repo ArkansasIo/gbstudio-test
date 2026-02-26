@@ -31,7 +31,7 @@ declare const VERSION: string;
 
 const corePluginRepository: PluginRepositoryEntry = {
   id: "core",
-  name: "GB Studio",
+  name: "Enchantment Game Engine",
   url: OFFICIAL_REPO_URL,
 };
 

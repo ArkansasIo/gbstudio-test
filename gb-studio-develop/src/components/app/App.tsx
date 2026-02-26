@@ -15,12 +15,30 @@ import SoundsPage from "components/pages/SoundsPage";
 import LoadingPane from "ui/loading/LoadingPane";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "store/hooks";
+import AIChatBox from "components/ai/AIChatBox";
 
 const AppWrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    rgba(49, 56, 67, 0.2) 0%,
+    rgba(19, 24, 30, 0.2) 100%
+  );
+
+  &:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 1px solid ${(props) => props.theme.colors.sidebar.border};
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    z-index: 1;
+  }
 `;
 
 const AppContent = styled.div`
@@ -28,6 +46,9 @@ const AppContent = styled.div`
   height: calc(100% - 38px);
   display: flex;
   flex-direction: row;
+  position: relative;
+  z-index: 2;
+  background: ${(props) => props.theme.colors.document.background};
 `;
 
 const App = () => {
@@ -115,6 +136,7 @@ const App = () => {
           {section === "settings" && <SettingsPage />}
           {section === "rpg5e" && <RPG5EPage />}
           {draggingOver && <DropZone />}
+          <AIChatBox />
         </AppContent>
       )}
     </AppWrapper>

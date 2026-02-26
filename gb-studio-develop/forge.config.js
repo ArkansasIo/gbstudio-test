@@ -16,8 +16,8 @@ module.exports = async () => {
       {
         name: "@electron-forge/maker-squirrel",
         config: {
-          name: "gb_studio",
-          exe: "gb-studio.exe",
+          name: "enchantment_game_engine",
+          exe: "enchantment-game-engine.exe",
           loadingGif: "src/assets/app/install.gif",
           setupIcon: "src/assets/app/icon/app_icon.ico",
         },
@@ -45,8 +45,8 @@ module.exports = async () => {
       },
     ],
     packagerConfig: {
-      name: "GB Studio",
-      executableName: "gb-studio",
+      name: "Enchantment Game Engine",
+      executableName: "enchantment-game-engine",
       packageManager: "yarn",
       icon: "src/assets/app/icon/app_icon",
       darwinDarkModeSupport: true,
@@ -57,7 +57,7 @@ module.exports = async () => {
       ],
       afterCopy: ["./src/lib/forge/hooks/after-copy"],
       asar: true,
-      appBundleId: "dev.gbstudio.gbstudio",
+      appBundleId: "dev.enchantment.enchantmentgameengine",
       osxSign: {
         "hardened-runtime": true,
         entitlements: "./entitlements.plist",

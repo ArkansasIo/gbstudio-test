@@ -1,0 +1,31 @@
+@startuml
+title Enchantment Engine Component Overview
+
+package "Editor (Renderer)" {
+  [React UI]
+  [Redux Store]
+  [Editor Middleware]
+}
+
+package "Electron Main" {
+  [IPC Handlers]
+  [File System Service]
+  [Build Service]
+  [Theme/Plugin Service]
+}
+
+package "Toolchain/Runtime" {
+  [GBDK/RGBDS]
+  [Export Packaging]
+}
+
+[React UI] --> [Redux Store]
+[Redux Store] --> [Editor Middleware]
+[Editor Middleware] --> [IPC Handlers] : IPC invoke/send
+[IPC Handlers] --> [File System Service]
+[IPC Handlers] --> [Build Service]
+[IPC Handlers] --> [Theme/Plugin Service]
+[Build Service] --> [GBDK/RGBDS]
+[Build Service] --> [Export Packaging]
+
+@enduml

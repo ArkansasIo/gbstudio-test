@@ -1,28 +1,20 @@
-# GB Studio
+# Enchantment Game Engine
 
-[![Github Actions Status](https://github.com/chrismaltby/gb-studio/actions/workflows/main.yml/badge.svg?branch=develop)](https://github.com/chrismaltby/gb-studio/actions?query=branch%3Adevelop) [![Storybook](https://img.shields.io/badge/Storybook-FF4785?logo=storybook&logoColor=white)](https://chrismaltby.github.io/gb-studio/storybook) [![Code Coverage](https://img.shields.io/badge/Coverage-blue?logo=jest&logoColor=white)](https://chrismaltby.github.io/gb-studio/coverage)
 
-Copyright (c) 2019-2026 Chris Maltby, released under the [MIT license](https://opensource.org/licenses/MIT).
+Enchantment Game Engine is a quick and easy to use retro adventure game creator for Game Boy available for Mac, Linux and Windows.
+For more information see the [Enchantment Game Engine]
 
-Patreon: [gbstudiodev](https://www.patreon.com/gbstudiodev)  
-Twitter: [@maltby](https://www.twitter.com/maltby)  
-Reddit: [/r/gbstudio](https://www.reddit.com/r/gbstudio)  
-Discord: [Join Chat](https://discord.gg/bxerKnc)
+![Enchantment Game Engine]
 
-GB Studio is a quick and easy to use retro adventure game creator for Game Boy available for Mac, Linux and Windows.
-For more information see the [GB Studio](https://www.gbstudio.dev) site
-
-![GB Studio](gbstudio.gif)
-
-GB Studio consists of an [Electron](https://electronjs.org/) game builder application and a C based game engine using [GBDK](http://gbdk.sourceforge.net/).
+Enchantment Game Engine consists of an [Electron](https://electronjs.org/) game builder application and a C based game engine using [GBDK](http://gbdk.sourceforge.net/).
 
 ## Installation
 
-Download a release for your operating system from the [GB Studio Downloads](https://www.gbstudio.dev/download) page.
+Download a release for your operating system from the [Enchantment Game Engine Downloads](https:// page.
 
 Or to run from source, clone this repo then:
 
-- Install [NodeJS](https://nodejs.org/) (required version is given in [.nvmrc](.nvmrc))
+Install [NodeJS](https://nodejs.org/) (required version is given in [.nvmrc](.nvmrc))
 
 ```bash
 > cd gb-studio
@@ -38,14 +30,14 @@ After checking out a new version you may also need to fetch dependencies again t
 > npm run fetch-deps
 ```
 
-GB Studio currently uses Node 21.7.1. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version.
+The Studio currently uses Node 21.7.1. If you have [NVM](https://github.com/nvm-sh/nvm) installed you can use the included `.nvmrc` to switch to the supported Node version.
 
 ``
 ```
 
-## GB Studio CLI
+## Enchantment Game Engine CLI
 
-Install GB Studio from source as above then
+Install Enchantment Game Engine from source as above then
 
 ```bash
 > npm run make:cli
@@ -69,7 +61,7 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
 - **Export Project**
 
   ```bash
-  > $(yarn bin gb-studio-cli) export path/to/project.gbsproj out/
+  > $(yarn bin -studio-cli) export path/to/project.proj out/
   ```
 
   Export GBDK project from gbsproj to out directory
@@ -104,6 +96,8 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
 ## Documentation
 
 [GB Studio Documentation](https://www.gbstudio.dev/docs)
+
+Local project docs index: [docs/README.md](./docs/README.md)
 
 ## Planned RPG Maker-Style Features & Tools
 

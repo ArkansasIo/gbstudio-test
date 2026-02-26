@@ -1,0 +1,20 @@
+@startuml
+title Plugin Theme Lifecycle Sequence
+
+actor User
+participant "Plugins Manager UI" as UI
+participant "Renderer API" as API
+participant "Main ThemeManager" as TM
+database "Global Plugins Path" as GP
+
+User -> UI : Add/Update theme plugin
+UI -> API : request load plugin theme
+API -> TM : loadPluginTheme(path)
+TM -> GP : read theme.json
+GP --> TM : theme payload
+TM -> TM : merge with base theme
+TM --> API : merged theme
+API --> UI : update-theme event
+UI --> User : theme applied
+
+@enduml

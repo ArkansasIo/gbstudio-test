@@ -9,6 +9,11 @@ new FontFace("Public Pixel", `url("${pixelFont}")`).load().then((font) => {
 });
 
 const GlobalStyle = createGlobalStyle`
+  :root {
+    --editor-font: "Bahnschrift", "Segoe UI Variable Display", "Segoe UI",
+      "Trebuchet MS", Arial, sans-serif;
+  }
+
   @font-face {
       font-family: 'Public Pixel';
       src: url('${pixelFont}') format('woff2');
@@ -26,8 +31,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: var(--editor-font);
     font-size: 13px;
     user-select: none;
     caret-color: ${(props) => props.theme.colors.highlight};
@@ -36,8 +40,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   input {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: var(--editor-font);
   }
 
   #App {
@@ -240,9 +243,7 @@ const GlobalStyle = createGlobalStyle`
     background: ${(props) => props.theme.colors.menu.background};
     color: ${(props) => props.theme.colors.text};
     font-size: ${(props) => props.theme.typography.fontSize};
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol";
+    font-family: var(--editor-font);
     padding: 4px 0;
   }
 

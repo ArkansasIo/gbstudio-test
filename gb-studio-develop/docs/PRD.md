@@ -2,7 +2,7 @@
 
 ## Product Summary
 
-GB Studio is a desktop application for building retro adventure games targeting Game Boy-compatible workflows.
+Enchantment Game Engine is a desktop application for building retro adventure games targeting Game Boy-compatible workflows.
 
 ## Goals
 

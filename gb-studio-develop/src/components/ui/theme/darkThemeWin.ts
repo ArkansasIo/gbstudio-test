@@ -5,30 +5,30 @@ const darkThemeWin: ThemeInterface = {
   ...darkTheme,
   colors: {
     ...darkTheme.colors,
-    text: "#e8eaed",
+    text: "#e0e5ec",
     toolbar: {
       ...darkTheme.colors.toolbar,
-      background: "#292a2d",
-      inactiveBackground: "#292a2d",
-      border: "#000000",
+      background: "linear-gradient(to bottom, #2a3038 0%, #1f252d 100%)",
+      inactiveBackground: "#242a33",
+      border: "#141920",
       button: {
         ...darkTheme.colors.toolbar.button,
-        border: "#333333",
+        border: "#434d5b",
       },
     },
     button: {
       ...darkTheme.colors.button,
-      background: "#6a6d6e",
-      border: "#333333",
+      background: "linear-gradient(to bottom, #647080 0%, #495463 100%)",
+      border: "#4a5667",
     },
     menu: {
       ...darkTheme.colors.menu,
-      background: "#292a2d",
-      hoverBackground: "#4b4c4f",
-      boxShadow: "2px 2px 2px rgba(0,0,0,0.3), 0px 0px 1px rgba(128,128,128,1)",
+      background: "#1f252d",
+      hoverBackground: "#2f3945",
+      boxShadow: "0 0 0 1px rgba(76, 89, 106, 0.7), 0 12px 22px rgba(0, 0, 0, 0.5)",
     },
   },
-  borderRadius: 1,
+  borderRadius: 2,
 };
 
 export default darkThemeWin;

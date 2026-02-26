@@ -1,6 +1,6 @@
 {
   "name": "gb-studio",
-  "productName": "GB Studio",
+  "productName": "Enchantment Game Engine",
   "homepage": "https://www.gbstudio.dev",
   "bugs": {
     "url": "https://github.com/chrismaltby/gb-studio/issues"
@@ -40,7 +40,7 @@
     "knip": "knip"
   },
   "keywords": [],
-  "author": "GB Studio",
+  "author": "Enchantment Game Engine",
   "license": "MIT",
   "config": {
     "forge": "./forge.config.js"

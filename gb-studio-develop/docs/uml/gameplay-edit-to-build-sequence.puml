@@ -1,0 +1,25 @@
+@startuml
+title Gameplay Edit to Build Sequence
+
+actor User
+participant "Editor UI" as UI
+participant "Redux Store" as Store
+participant "Main IPC" as IPC
+participant "Build Service" as Build
+participant "Toolchain" as Toolchain
+
+User -> UI : Edit event/asset
+UI -> Store : dispatch(updateAction)
+Store -> UI : state update/render
+
+User -> UI : Run/Export
+UI -> Store : dispatch(buildGame)
+Store -> IPC : invoke(build request)
+IPC -> Build : start build
+Build -> Toolchain : compile/package
+Toolchain --> Build : logs + status
+Build --> IPC : result
+IPC --> Store : build status update
+Store --> UI : show success/failure
+
+@enduml
