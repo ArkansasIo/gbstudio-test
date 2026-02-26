@@ -64,7 +64,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
   const version = readUint32();
 
   if (version < 0 || version > 6) {
-    throw new Error(`UGE version ${version} is not supported by GB Studio`);
+    throw new Error(`UGE version ${version} is not supported by Enchantment Game Engine`);
   }
 
   song.name = readText();
@@ -213,7 +213,7 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
     }
     /*
      If there's a repeated pattern it probably means the song was saved
-     with an old version of GB Studio (3.0.2 or earlier) that didn't save the
+     with an old version of Enchantment Game Engine (3.0.2 or earlier) that didn't save the
      unique pattern ids and instead expected them to always be consecutive.
     */
     if (version === 5 && patterns[patternId]) {
@@ -839,3 +839,4 @@ const subpatternFromNoiseMacro = function (
   subpattern[wrapPoint - 1].jump = wrapPoint;
   return subpattern;
 };
+

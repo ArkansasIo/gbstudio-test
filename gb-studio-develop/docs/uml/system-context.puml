@@ -1,8 +1,8 @@
 @startuml
-title GB Studio - System Context
+title Enchantment Game Engine - System Context
 
 actor "Creator" as User
-rectangle "GB Studio App" as App
+rectangle "Enchantment Game Engine App" as App
 database "Project Files" as Project
 rectangle "Build Toolchain" as Toolchain
 rectangle "External Editors" as Editors
@@ -14,3 +14,4 @@ App --> Editors : Open files with configured tools
 Toolchain --> Project : Output Build Artifacts
 
 @enduml
+

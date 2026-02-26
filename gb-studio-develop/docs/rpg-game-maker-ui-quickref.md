@@ -20,7 +20,7 @@
 - Triggers, actions, variables, conditions
 
 ## Tools for 8/16/32/64-bit Dev
-- 8-bit: RGBDS, BGB, GBTD, GBMB, hUGETracker, GB Studio
+- 8-bit: RGBDS, BGB, GBTD, GBMB, hUGETracker, Enchantment Game Engine
 - 16-bit: WLA-DX, bsnes, SGDK, YY-CHR
 - 32-bit: devkitPro, mGBA, No$GBA, PSY-Q SDK
 - 64-bit: libdragon, Project64, PCSX2, PS2SDK
@@ -30,3 +30,4 @@
 
 ## Mermaid Diagram
 See docs/rpg-game-maker-ui-system.md for a full diagram and details.
+

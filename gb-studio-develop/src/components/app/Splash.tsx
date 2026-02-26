@@ -303,7 +303,7 @@ const Splash = () => {
       <SplashWindow focus={windowFocus}>
         <SplashSidebar>
           <SplashLogo>
-            <img src={logoFile} alt="GB Studio" draggable={false} />
+            <img src={logoFile} alt="Enchantment Game Engine" draggable={false} />
             <SplashEasterEggButton
               onClick={() => setOpenCredits(true)}
               tabIndex={-1}
@@ -425,7 +425,7 @@ const Splash = () => {
       {openCredits && (
         <FocusLock>
           <Credits onClose={() => setOpenCredits(false)}>
-            <CreditsTitle>GB Studio</CreditsTitle>
+            <CreditsTitle>Enchantment Game Engine</CreditsTitle>
             <CreditsSubHeading>{l10n("SPLASH_CONTRIBUTORS")}</CreditsSubHeading>
             {goldContributors.map((contributor) => {
               // eslint-disable-next-line camelcase
@@ -483,3 +483,4 @@ const Splash = () => {
 };
 
 export default Splash;
+

@@ -17,7 +17,7 @@ Or to run from source, clone this repo then:
 Install [NodeJS](https://nodejs.org/) (required version is given in [.nvmrc](.nvmrc))
 
 ```bash
-> cd gb-studio
+> cd enchantment-game-engine
 > corepack enable
 > yarn
 > npm run fetch-deps
@@ -26,7 +26,7 @@ Install [NodeJS](https://nodejs.org/) (required version is given in [.nvmrc](.nv
 
 After checking out a new version you may also need to fetch dependencies again to ensure you have the latest v
 ```bash
-> cd gb-studio
+> cd enchantment-game-engine
 > npm run fetch-deps
 ```
 
@@ -95,7 +95,7 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
 
 ## Documentation
 
-[GB Studio Documentation](https://www.gbstudio.dev/docs)
+[Enchantment Game Engine Documentation](https://www.gbstudio.dev/docs)
 
 Local project docs index: [docs/README.md](./docs/README.md)
 
@@ -166,7 +166,7 @@ Local project docs index: [docs/README.md](./docs/README.md)
 
 ## Note For Translators
 
-If you'd like to help contribute new language localisations to GB Studio you can do so by submitting pull requests adding or updating the JSON files found here https://github.com/chrismaltby/gb-studio/tree/develop/src/lang
+If you'd like to help contribute new language localisations to Enchantment Game Engine you can do so by submitting pull requests adding or updating the JSON files found here https://github.com/chrismaltby/gb-studio/tree/develop/src/lang
 
 If you're looking to update an existing translation with content that is missing, there is a handy script that lists keys found in the English localisation that are not found and copies them to your localisation
 
@@ -175,5 +175,7 @@ npm run missing-translations lang
 # e.g. npm run missing-translations de
 # e.g. npm run missing-translations en-GB
 ````bash
-> cd gb-studio
+> cd enchantment-game-engine
 > nvm use
+
+

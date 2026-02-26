@@ -1,6 +1,6 @@
 # Additional Utilities and Helpers
 
-GB Studio also includes utility functions for painting, text trimming, and script comparison:
+Enchantment Game Engine also includes utility functions for painting, text trimming, and script comparison:
 
 ## Paint Utilities
 - **paint**: Paints a square area on a grid, used for tile and sprite editing.
@@ -21,10 +21,10 @@ GB Studio also includes utility functions for painting, text trimming, and scrip
 	- See `/src/shared/lib/scripts/scriptHelpers.ts`.
 
 ---
-These utilities support advanced editing, validation, and comparison tasks for developers working on GB Studio’s engine and tools.
+These utilities support advanced editing, validation, and comparison tasks for developers working on Enchantment Game Engine’s engine and tools.
 # Script, Actor, Trigger, and Scene Utilities
 
-GB Studio provides advanced functions for manipulating scripts, actors, triggers, and scenes. These are useful for developers extending or debugging the engine:
+Enchantment Game Engine provides advanced functions for manipulating scripts, actors, triggers, and scenes. These are useful for developers extending or debugging the engine:
 
 ## Script Mapping Functions
 
@@ -53,12 +53,12 @@ GB Studio provides advanced functions for manipulating scripts, actors, triggers
 - See `/src/shared/lib/sprites/spriteData.ts` and `/src/shared/lib/helpers/color.ts` for sprite and color functions.
 
 ---
-These utilities are essential for advanced manipulation, migration, and debugging of game logic. Use them to extend GB Studio’s capabilities or automate complex tasks.
+These utilities are essential for advanced manipulation, migration, and debugging of game logic. Use them to extend Enchantment Game Engine’s capabilities or automate complex tasks.
 # Developer Guide
 
 ## Profiling Engine
 
-When GB Studio is run from source an extra checkbox will appear on the Build Page, "Enable BGB Profiling". Turning this setting on will pass aditional profiling flags to the GBDK compiler producing profiling log data when the game is run using the [BGB emulator](https://bgb.bircd.org/)
+When Enchantment Game Engine is run from source an extra checkbox will appear on the Build Page, "Enable BGB Profiling". Turning this setting on will pass aditional profiling flags to the GBDK compiler producing profiling log data when the game is run using the [BGB emulator](https://bgb.bircd.org/)
 
 If you start BGB using a command line using the -watch flag it will reload your game on each successful build:
 
@@ -81,3 +81,4 @@ _UpdateCamera:_PushBank:_StackPush:_MusicUpdate     MIN:      84 AVG:     84.00 
 _FadeUpdate:_PushBank                               MIN:      82 AVG:     82.00 95P:      82 MAX:      82 TOTAL: 0x00000000000000a4 NCALLS: 2
 
 ```
+

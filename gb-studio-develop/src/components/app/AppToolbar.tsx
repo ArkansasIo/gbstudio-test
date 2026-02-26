@@ -212,7 +212,7 @@ const AppToolbar: FC = () => {
   }
 
   useEffect(() => {
-    document.title = `GB Studio - ${appTitle}`;
+    document.title = `Enchantment Game Engine - ${appTitle}`;
   }, [appTitle]);
 
   if (!loaded) {
@@ -310,3 +310,4 @@ const AppToolbar: FC = () => {
 };
 
 export default AppToolbar;
+

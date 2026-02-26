@@ -20,7 +20,7 @@ interface DetectedSprite {
   changes: Partial<SpriteSheetNormalized>;
 }
 
-// Classic detection - GB Studio 1.0 & 2.0 sprite format
+// Classic detection - Enchantment Game Engine 1.0 & 2.0 sprite format
 export const detectClassic = (
   spriteSheet: SpriteSheetNormalized,
 ): DetectedSprite => {

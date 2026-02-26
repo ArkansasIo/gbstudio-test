@@ -80,7 +80,7 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
       const dispatch = store.dispatch.bind(store);
       await API.app.deleteBuildCache();
       dispatch(consoleActions.clearConsole());
-      dispatch(consoleActions.stdOut({ text: "Cleared GB Studio caches" }));
+      dispatch(consoleActions.stdOut({ text: "Cleared Enchantment Game Engine caches" }));
     } else if (actions.ejectEngine.match(action)) {
       API.project.ejectEngine();
     } else if (actions.exportProject.match(action)) {
@@ -123,3 +123,4 @@ const buildGameMiddleware: Middleware<Dispatch, RootState> =
   };
 
 export default buildGameMiddleware;
+
