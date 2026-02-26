@@ -1,270 +1,195 @@
 import React, { useMemo, useState } from "react";
 import {
-  blueprintGraph,
+  audioLibraryPacks,
+  addBlueprintNodeFromCategory,
+  connectSelectedToLatestNode,
+  createInitialEditorState,
+  removeSelectedBlueprintNode,
+  runMenuCommand,
+  runToolbarAction,
+  selectAsset,
+  selectBlueprintNode,
+  selectOutlinerEntry,
+  setToolCategory,
+} from "./rpgMakerEditorSystems";
+import {
   blueprintNodeCatalog,
-  unrealPanels,
   unrealToolbar,
   unrealTopMenus,
 } from "./rpgGameMakerConfig";
 
-const styles = {
-  root: {
-    display: "grid",
-    gridTemplateRows: "30px 40px 1fr 24px",
-    height: "100vh",
-    background: "#111827",
-    color: "#e5e7eb",
-    fontFamily: "Segoe UI, Tahoma, sans-serif",
-  } as React.CSSProperties,
-  menuBar: {
-    display: "flex",
-    alignItems: "center",
-    gap: 14,
-    padding: "0 12px",
-    background: "#1f2937",
-    borderBottom: "1px solid #374151",
-    fontSize: 12,
-    userSelect: "none",
-  } as React.CSSProperties,
-  commandBar: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "6px 10px",
-    background: "#111827",
-    borderBottom: "1px solid #374151",
-  } as React.CSSProperties,
-  group: {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    paddingRight: 10,
-    marginRight: 10,
-    borderRight: "1px solid #374151",
-  } as React.CSSProperties,
-  button: {
-    background: "#374151",
-    color: "#e5e7eb",
-    border: "1px solid #4b5563",
-    borderRadius: 4,
-    padding: "4px 8px",
-    fontSize: 12,
-    cursor: "pointer",
-  } as React.CSSProperties,
-  workspace: {
-    display: "grid",
-    gridTemplateColumns: "260px 1fr 300px",
-    gap: 8,
-    padding: 8,
-    overflow: "hidden",
-  } as React.CSSProperties,
-  column: {
-    display: "grid",
-    gap: 8,
-    overflow: "hidden",
-  } as React.CSSProperties,
-  leftColumn: {
-    gridTemplateRows: "1fr 1fr",
-  } as React.CSSProperties,
-  centerColumn: {
-    gridTemplateRows: "58% 42%",
-  } as React.CSSProperties,
-  rightColumn: {
-    gridTemplateRows: "1fr 1fr",
-  } as React.CSSProperties,
-  panel: {
-    display: "grid",
-    gridTemplateRows: "30px 1fr",
-    background: "#1f2937",
-    border: "1px solid #374151",
-    borderRadius: 6,
-    overflow: "hidden",
-    minHeight: 0,
-  } as React.CSSProperties,
-  panelHeader: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 10px",
-    fontSize: 12,
-    fontWeight: 700,
-    background: "#111827",
-    borderBottom: "1px solid #374151",
-  } as React.CSSProperties,
-  panelBody: {
-    overflow: "auto",
-    padding: 10,
-    fontSize: 12,
-  } as React.CSSProperties,
-  listRow: {
-    padding: "6px 8px",
-    borderBottom: "1px solid #374151",
-  } as React.CSSProperties,
-  viewport: {
-    background:
-      "linear-gradient(180deg, #0f172a 0%, #111827 60%, #0b1220 100%)",
-    border: "1px solid #374151",
-    borderRadius: 6,
-    display: "grid",
-    gridTemplateRows: "30px 1fr",
-    overflow: "hidden",
-    minHeight: 0,
-  } as React.CSSProperties,
-  viewportTabs: {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    padding: "0 10px",
-    fontSize: 12,
-    background: "#0b1220",
-    borderBottom: "1px solid #374151",
-  } as React.CSSProperties,
-  viewportArea: {
-    position: "relative",
-    overflow: "hidden",
-  } as React.CSSProperties,
-  gridOverlay: {
-    position: "absolute",
-    inset: 0,
-    backgroundImage:
-      "linear-gradient(to right, rgba(148,163,184,0.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.12) 1px, transparent 1px)",
-    backgroundSize: "32px 32px",
-  } as React.CSSProperties,
-  blueprintArea: {
-    position: "relative",
-    background: "#0b1220",
-    border: "1px solid #374151",
-    borderRadius: 6,
-    overflow: "hidden",
-    minHeight: 0,
-  } as React.CSSProperties,
-  blueprintCanvas: {
-    position: "relative",
-    width: "100%",
-    height: "100%",
-    minHeight: 200,
-    backgroundImage:
-      "radial-gradient(circle at 1px 1px, rgba(148,163,184,0.25) 1px, transparent 0)",
-    backgroundSize: "24px 24px",
-  } as React.CSSProperties,
-  statusBar: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 10px",
-    fontSize: 11,
-    background: "#1f2937",
-    borderTop: "1px solid #374151",
-  } as React.CSSProperties,
+const panelStyle: React.CSSProperties = {
+  display: "grid",
+  gridTemplateRows: "30px 1fr",
+  background: "#1f2937",
+  border: "1px solid #374151",
+  borderRadius: 6,
+  overflow: "hidden",
+  minHeight: 0,
 };
 
-const BlueprintGraphCanvas = () => {
-  const nodeById = useMemo(() => {
-    const map = new Map<string, (typeof blueprintGraph.nodes)[number]>();
-    blueprintGraph.nodes.forEach((node) => map.set(node.id, node));
-    return map;
-  }, []);
+const panelHeaderStyle: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 6,
+  padding: "0 10px",
+  fontSize: 12,
+  fontWeight: 700,
+  background: "#111827",
+  borderBottom: "1px solid #374151",
+};
 
-  return (
-    <div style={styles.blueprintArea}>
-      <div style={styles.panelHeader}>
-        <span>Level Blueprint: BP_SecretDoorController</span>
-        <span>Schema: 8-bit 2D Gameplay</span>
-      </div>
-      <div style={styles.blueprintCanvas}>
-        <svg
-          width="100%"
-          height="100%"
-          style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
-        >
-          {blueprintGraph.edges.map((edge, index) => {
-            const from = nodeById.get(edge.from);
-            const to = nodeById.get(edge.to);
-            if (!from || !to) {
-              return null;
-            }
-            return (
-              <path
-                key={`${edge.from}-${edge.to}-${index}`}
-                d={`M ${from.x + 170} ${from.y + 25} C ${from.x + 220} ${
-                  from.y + 25
-                }, ${to.x - 70} ${to.y + 25}, ${to.x} ${to.y + 25}`}
-                stroke="#94a3b8"
-                strokeWidth="2"
-                fill="none"
-              />
-            );
-          })}
-        </svg>
+const panelBodyStyle: React.CSSProperties = {
+  overflow: "auto",
+  padding: 10,
+  fontSize: 12,
+};
 
-        {blueprintGraph.nodes.map((node) => (
-          <div
-            key={node.id}
-            style={{
-              position: "absolute",
-              left: node.x,
-              top: node.y,
-              width: 170,
-              borderRadius: 8,
-              border: "1px solid #4b5563",
-              background: node.color,
-              color: "#f8fafc",
-              boxShadow: "0 8px 20px rgba(0,0,0,0.35)",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                padding: "6px 10px",
-                fontWeight: 700,
-                fontSize: 12,
-                borderBottom: "1px solid rgba(255,255,255,0.15)",
-              }}
-            >
-              {node.title}
-            </div>
-            <div style={{ padding: "6px 10px", fontSize: 11 }}>
-              Exec In | Exec Out
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+const buttonStyle: React.CSSProperties = {
+  background: "#374151",
+  color: "#e5e7eb",
+  border: "1px solid #4b5563",
+  borderRadius: 4,
+  padding: "4px 8px",
+  fontSize: 12,
+  cursor: "pointer",
+};
+
+const listRowStyle: React.CSSProperties = {
+  padding: "6px 8px",
+  borderBottom: "1px solid #374151",
+  cursor: "pointer",
 };
 
 export const RPGGameMakerUILayout: React.FC = () => {
-  const [selectedMenu, setSelectedMenu] = useState("File");
-  const [selectedToolCategory, setSelectedToolCategory] = useState("Events");
+  const [state, setState] = useState(createInitialEditorState);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+
+  const nodeById = useMemo(() => {
+    const map = new Map<string, (typeof state.blueprintNodes)[number]>();
+    state.blueprintNodes.forEach((node) => map.set(node.id, node));
+    return map;
+  }, [state.blueprintNodes]);
 
   return (
-    <div style={styles.root}>
-      <div style={styles.menuBar}>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateRows: "30px 40px 1fr 120px 24px",
+        height: "100vh",
+        background: "#111827",
+        color: "#e5e7eb",
+        fontFamily: "Segoe UI, Tahoma, sans-serif",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+          padding: "0 12px",
+          background: "#1f2937",
+          borderBottom: "1px solid #374151",
+          fontSize: 12,
+          userSelect: "none",
+        }}
+      >
         {unrealTopMenus.map((menu) => (
           <div
             key={menu.label}
-            style={{
-              padding: "4px 6px",
-              borderRadius: 4,
-              background:
-                selectedMenu === menu.label ? "rgba(59,130,246,0.25)" : "none",
-              cursor: "pointer",
-            }}
-            onClick={() => setSelectedMenu(menu.label)}
-            title={menu.items.join(" | ")}
+            style={{ position: "relative" }}
+            onMouseEnter={() => setOpenMenu(menu.label)}
+            onMouseLeave={() => setOpenMenu(null)}
           >
-            {menu.label}
+            <div
+              style={{
+                padding: "4px 6px",
+                borderRadius: 4,
+                background:
+                  state.selectedMenu === menu.label
+                    ? "rgba(59,130,246,0.25)"
+                    : "none",
+                cursor: "pointer",
+              }}
+              onClick={() =>
+                setState((prev) => ({
+                  ...prev,
+                  selectedMenu: menu.label,
+                }))
+              }
+            >
+              {menu.label}
+            </div>
+            {openMenu === menu.label && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 24,
+                  left: 0,
+                  minWidth: 210,
+                  background: "#0f172a",
+                  border: "1px solid #334155",
+                  zIndex: 20,
+                }}
+              >
+                {menu.items.map((item) => (
+                  <div
+                    key={`${menu.label}-${item}`}
+                    style={{
+                      ...listRowStyle,
+                      borderBottom: "1px solid #334155",
+                    }}
+                    onClick={() => {
+                      setState((prev) => runMenuCommand(prev, menu.label, item));
+                      setOpenMenu(null);
+                    }}
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
 
-      <div style={styles.commandBar}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "6px 10px",
+          background: "#111827",
+          borderBottom: "1px solid #374151",
+        }}
+      >
         <div style={{ display: "flex", alignItems: "center" }}>
           {unrealToolbar.map((group) => (
-            <div key={group.name} style={styles.group}>
+            <div
+              key={group.name}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                paddingRight: 10,
+                marginRight: 10,
+                borderRight: "1px solid #374151",
+              }}
+            >
               <strong style={{ fontSize: 11 }}>{group.name}</strong>
               {group.actions.map((action) => (
-                <button key={`${group.name}-${action}`} style={styles.button}>
+                <button
+                  key={`${group.name}-${action}`}
+                  style={{
+                    ...buttonStyle,
+                    background:
+                      state.activeTool === action ? "#2563eb" : buttonStyle.background,
+                  }}
+                  onClick={() =>
+                    setState((prev) => runToolbarAction(prev, group.name, action))
+                  }
+                >
                   {action}
                 </button>
               ))}
@@ -272,104 +197,276 @@ export const RPGGameMakerUILayout: React.FC = () => {
           ))}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button style={styles.button}>Target: Game Boy</button>
-          <button style={styles.button}>Build: Development</button>
-          <button style={styles.button}>Play In Editor</button>
+          <button style={buttonStyle}>Target: Game Boy</button>
+          <button style={buttonStyle}>Build: Development</button>
+          <button
+            style={buttonStyle}
+            onClick={() =>
+              setState((prev) => runToolbarAction(prev, "Play", "Play"))
+            }
+          >
+            Play In Editor
+          </button>
         </div>
       </div>
 
-      <div style={styles.workspace}>
-        <div style={{ ...styles.column, ...styles.leftColumn }}>
-          {unrealPanels.slice(0, 2).map((panel) => (
-            <div key={panel.id} style={styles.panel}>
-              <div style={styles.panelHeader}>{panel.title}</div>
-              <div style={styles.panelBody}>
-                {panel.entries.map((entry) => (
-                  <div key={entry} style={styles.listRow}>
-                    {entry}
-                  </div>
-                ))}
-              </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "280px 1fr 320px",
+          gap: 8,
+          padding: 8,
+          overflow: "hidden",
+        }}
+      >
+        <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: 8 }}>
+          <div style={panelStyle}>
+            <div style={panelHeaderStyle}>Content Browser</div>
+            <div style={panelBodyStyle}>
+              {state.assets.map((asset) => (
+                <div
+                  key={asset.id}
+                  style={{
+                    ...listRowStyle,
+                    background:
+                      state.selectedAssetId === asset.id
+                        ? "rgba(37,99,235,0.2)"
+                        : "transparent",
+                  }}
+                  onClick={() => setState((prev) => selectAsset(prev, asset.id))}
+                >
+                  <strong>[{asset.type}]</strong> {asset.name}
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <div style={panelStyle}>
+            <div style={panelHeaderStyle}>World Outliner</div>
+            <div style={panelBodyStyle}>
+              {state.outliner.map((entry) => (
+                <div
+                  key={entry}
+                  style={{
+                    ...listRowStyle,
+                    background:
+                      state.selectedOutlinerId === entry
+                        ? "rgba(37,99,235,0.2)"
+                        : "transparent",
+                  }}
+                  onClick={() => setState((prev) => selectOutlinerEntry(prev, entry))}
+                >
+                  {entry}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div style={{ ...styles.column, ...styles.centerColumn }}>
-          <div style={styles.viewport}>
-            <div style={styles.viewportTabs}>
-              <span>Perspective</span>
-              <span>Top</span>
-              <span>Front</span>
-              <span style={{ marginLeft: "auto" }}>Viewport: 2D Tilemap</span>
+        <div style={{ display: "grid", gridTemplateRows: "58% 42%", gap: 8 }}>
+          <div
+            style={{
+              ...panelStyle,
+              background:
+                "linear-gradient(180deg, #0f172a 0%, #111827 60%, #0b1220 100%)",
+            }}
+          >
+            <div style={panelHeaderStyle}>
+              <span>2D Viewport</span>
+              <span>Active Tool: {state.activeTool}</span>
             </div>
-            <div style={styles.viewportArea}>
-              <div style={styles.gridOverlay} />
-              <div
-                style={{
-                  position: "absolute",
-                  left: 24,
-                  top: 18,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  background: "rgba(17,24,39,0.85)",
-                  border: "1px solid #4b5563",
-                  fontSize: 12,
-                }}
+            <div
+              style={{
+                position: "relative",
+                overflow: "hidden",
+                backgroundImage:
+                  "linear-gradient(to right, rgba(148,163,184,0.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.12) 1px, transparent 1px)",
+                backgroundSize: "32px 32px",
+              }}
+            />
+          </div>
+
+          <div style={panelStyle}>
+            <div style={panelHeaderStyle}>
+              <span>Blueprint Graph</span>
+              <div style={{ display: "flex", gap: 6 }}>
+                <button
+                  style={buttonStyle}
+                  onClick={() => setState((prev) => addBlueprintNodeFromCategory(prev))}
+                >
+                  Add Node
+                </button>
+                <button
+                  style={buttonStyle}
+                  onClick={() => setState((prev) => connectSelectedToLatestNode(prev))}
+                >
+                  Connect
+                </button>
+                <button
+                  style={buttonStyle}
+                  onClick={() => setState((prev) => removeSelectedBlueprintNode(prev))}
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+            <div
+              style={{
+                position: "relative",
+                overflow: "hidden",
+                background: "#0b1220",
+                backgroundImage:
+                  "radial-gradient(circle at 1px 1px, rgba(148,163,184,0.25) 1px, transparent 0)",
+                backgroundSize: "24px 24px",
+              }}
+            >
+              <svg
+                width="100%"
+                height="100%"
+                style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
               >
-                Active Tool: Paint Tile
+                {state.blueprintEdges.map((edge, index) => {
+                  const from = nodeById.get(edge.from);
+                  const to = nodeById.get(edge.to);
+                  if (!from || !to) return null;
+                  return (
+                    <path
+                      key={`${edge.from}-${edge.to}-${index}`}
+                      d={`M ${from.x + 170} ${from.y + 25} C ${from.x + 220} ${
+                        from.y + 25
+                      }, ${to.x - 70} ${to.y + 25}, ${to.x} ${to.y + 25}`}
+                      stroke="#94a3b8"
+                      strokeWidth="2"
+                      fill="none"
+                    />
+                  );
+                })}
+              </svg>
+              {state.blueprintNodes.map((node) => (
+                <div
+                  key={node.id}
+                  style={{
+                    position: "absolute",
+                    left: node.x,
+                    top: node.y,
+                    width: 170,
+                    borderRadius: 8,
+                    border:
+                      state.selectedBlueprintNodeId === node.id
+                        ? "2px solid #60a5fa"
+                        : "1px solid #4b5563",
+                    background: node.color,
+                    color: "#f8fafc",
+                    boxShadow: "0 8px 20px rgba(0,0,0,0.35)",
+                    overflow: "hidden",
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    setState((prev) => selectBlueprintNode(prev, node.id))
+                  }
+                >
+                  <div
+                    style={{
+                      padding: "6px 10px",
+                      fontWeight: 700,
+                      fontSize: 12,
+                      borderBottom: "1px solid rgba(255,255,255,0.15)",
+                    }}
+                  >
+                    {node.title}
+                  </div>
+                  <div style={{ padding: "6px 10px", fontSize: 11 }}>
+                    {node.id} | Exec In/Out
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: 8 }}>
+          <div style={panelStyle}>
+            <div style={panelHeaderStyle}>Details</div>
+            <div style={panelBodyStyle}>
+              <div style={listRowStyle}>Project: {state.projectName}</div>
+              <div style={listRowStyle}>Map: {state.mapName}</div>
+              <div style={listRowStyle}>Layer: {state.layerName}</div>
+              <div style={listRowStyle}>Modified: {state.modified ? "Yes" : "No"}</div>
+              <div style={listRowStyle}>
+                Selection: {state.selectedAssetId || state.selectedOutlinerId || state.selectedBlueprintNodeId || "None"}
               </div>
             </div>
           </div>
-          <BlueprintGraphCanvas />
-        </div>
 
-        <div style={{ ...styles.column, ...styles.rightColumn }}>
-          {unrealPanels.slice(2).map((panel) => (
-            <div key={panel.id} style={styles.panel}>
-              <div style={styles.panelHeader}>{panel.title}</div>
-              <div style={styles.panelBody}>
-                {panel.id === "tools" ? (
-                  <>
-                    <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
-                      {blueprintNodeCatalog.map((group) => (
-                        <button
-                          key={group.category}
-                          style={{
-                            ...styles.button,
-                            background:
-                              selectedToolCategory === group.category
-                                ? "#2563eb"
-                                : "#374151",
-                          }}
-                          onClick={() => setSelectedToolCategory(group.category)}
-                        >
-                          {group.category}
-                        </button>
-                      ))}
-                    </div>
-                    {blueprintNodeCatalog
-                      .find((group) => group.category === selectedToolCategory)
-                      ?.nodes.map((node) => (
-                        <div key={node} style={styles.listRow}>
-                          {node}
-                        </div>
-                      ))}
-                  </>
-                ) : (
-                  panel.entries.map((entry) => (
-                    <div key={entry} style={styles.listRow}>
-                      {entry}
-                    </div>
-                  ))
-                )}
+          <div style={panelStyle}>
+            <div style={panelHeaderStyle}>Tools and Features</div>
+            <div style={panelBodyStyle}>
+              <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+                {blueprintNodeCatalog.map((group) => (
+                  <button
+                    key={group.category}
+                    style={{
+                      ...buttonStyle,
+                      background:
+                        state.selectedToolCategory === group.category
+                          ? "#2563eb"
+                          : "#374151",
+                    }}
+                    onClick={() =>
+                      setState((prev) => setToolCategory(prev, group.category))
+                    }
+                  >
+                    {group.category}
+                  </button>
+                ))}
               </div>
+              {(blueprintNodeCatalog.find(
+                (group) => group.category === state.selectedToolCategory,
+              )?.nodes ?? []
+              ).map((node) => (
+                <div key={node} style={listRowStyle}>
+                  {node}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>Audio Libraries</div>
+              <div style={listRowStyle}>
+                Music Packs: {audioLibraryPacks.music.join(", ")}
+              </div>
+              <div style={listRowStyle}>SFX Packs: {audioLibraryPacks.sfx.join(", ")}</div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
-      <div style={styles.statusBar}>
-        <span>Project: Adventure_08bit | Map: Forest_Entrance | Layer: FG</span>
+      <div
+        style={{
+          borderTop: "1px solid #374151",
+          background: "#0f172a",
+          padding: "8px 10px",
+          overflow: "auto",
+          fontSize: 11,
+          fontFamily: "Consolas, monospace",
+        }}
+      >
+        {state.outputLog.map((line, idx) => (
+          <div key={`log-${idx}`}>{line}</div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 10px",
+          fontSize: 11,
+          background: "#1f2937",
+          borderTop: "1px solid #374151",
+        }}
+      >
+        <span>
+          Project: {state.projectName} | Map: {state.mapName} | Layer: {state.layerName}
+        </span>
         <span>RAM Budget: 68% | ROM Bank: 21/32 | FPS: 60</span>
       </div>
     </div>
