@@ -10,16 +10,19 @@ import { initTheme } from "renderer/lib/theme";
 import { initFullScreenDetector } from "renderer/lib/handleFullScreen";
 import initRendererL10N from "renderer/lib/lang/initRendererL10N";
 import { initMouseTracking } from "renderer/lib/helpers/mouse";
+import BootScreen from "ui/loading/BootScreen";
 import "./initProject";
 import "./appHotkeys";
 
 (async () => {
+  const root = createRoot(document.getElementById("App") as HTMLElement);
+  root.render(<BootScreen message="Loading project workspace..." />);
+
   await initRendererL10N();
   await initTheme();
   await initFullScreenDetector();
   initMouseTracking();
 
-  const root = createRoot(document.getElementById("App") as HTMLElement);
   root.render(
     <React.StrictMode>
       <Provider store={store}>

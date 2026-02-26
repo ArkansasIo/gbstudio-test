@@ -339,6 +339,25 @@ const Splash = () => {
         {loading && !section && (
           <SplashContent>
             <SplashLoading>
+              <img
+                src={logoFile}
+                alt="Enchantment Game Engine"
+                draggable={false}
+                style={{ width: 120, height: 120, objectFit: "contain" }}
+              />
+              <div
+                style={{
+                  marginTop: 8,
+                  fontSize: 18,
+                  fontWeight: 700,
+                  color: "#e2e8f0",
+                }}
+              >
+                Enchantment Game Engine
+              </div>
+              <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 2 }}>
+                Loading splash resources...
+              </div>
               <LoadingIcon />
             </SplashLoading>
           </SplashContent>
