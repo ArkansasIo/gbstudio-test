@@ -8,6 +8,7 @@ import WorldPage from "components/pages/WorldPage";
 import MusicPage from "components/pages/MusicPage";
 import PalettePage from "components/pages/PalettePage";
 import SettingsPage from "components/pages/SettingsPage";
+import RPG5EPage from "components/pages/RPG5EPage";
 import { DropZone } from "ui/upload/DropZone";
 import projectActions from "store/features/project/projectActions";
 import SoundsPage from "components/pages/SoundsPage";
@@ -112,6 +113,7 @@ const App = () => {
           {section === "palettes" && <PalettePage />}
           {section === "dialogue" && <DialoguePage />}
           {section === "settings" && <SettingsPage />}
+          {section === "rpg5e" && <RPG5EPage />}
           {draggingOver && <DropZone />}
         </AppContent>
       )}

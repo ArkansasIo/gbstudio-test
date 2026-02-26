@@ -32,8 +32,7 @@ Or to run from source, clone this repo then:
 > npm start
 ```
 
-After checking out a new version you may also need to fetch dependencies again to ensure you have the latest version of GBVM + GBDK etc.
-
+After checking out a new version you may also need to fetch dependencies again to ensure you have the latest v
 ```bash
 > cd gb-studio
 > npm run fetch-deps
@@ -105,6 +104,71 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
 ## Documentation
 
 [GB Studio Documentation](https://www.gbstudio.dev/docs)
+
+## Planned RPG Maker-Style Features & Tools
+
+### Features & Tools
+- Visual Event Editor (drag-and-drop event scripting)
+- Tilemap Editor with autotiling
+- Character/Enemy Database Editor
+- Item/Inventory System Editor
+- Quest/Journal System Tool
+- Skill/Ability Editor
+- Battle System Designer (turn-based, action, etc.)
+- Cutscene/Dialogue Editor with branching choices
+- Animation Editor for sprites and effects
+- Map Linking/World Map Tool
+- Save/Load System Manager
+- Plugin/Script Manager for custom logic
+- Visual Script Debugger (step through events, watch variables)
+- Customizable HUD/Overlay Editor
+- Enemy AI Behavior Editor (state machines, patrols, aggression)
+- Sound/Music Manager (background music, sound effects, triggers)
+- Achievement/Badge System Tool
+- Resource Gathering/Crafting System Editor
+- Minigame Editor (puzzles, card games, etc.)
+- Import/Export Tool for assets and projects
+- Localization/Translation Manager
+- Modding Support Tools
+
+### Game Engine Logic
+- Turn-based and real-time battle systems
+- Pathfinding for NPCs and monsters
+- Day/Night and weather cycles
+- Party management (switching, formation, etc.)
+- Equipment and stat calculation systems
+- Leveling and experience point logic
+- Quest tracking and completion logic
+- Dialogue branching and variable tracking
+- Random encounter and spawn logic
+- Autosave and checkpoint logic
+- Grid-based and free movement systems
+- Dynamic lighting and shadow logic
+- Multi-layer parallax backgrounds
+- Physics/collision system for action elements
+- Dynamic event spawning/despawning
+- Advanced save data management (multiple slots, cloud sync)
+- In-game scripting API for user extensions
+- Real-time multiplayer logic (if desired)
+- Dynamic difficulty adjustment logic
+
+### System Menus
+- Main Menu (New Game, Continue, Options, Quit)
+- In-game Pause Menu (Inventory, Equipment, Skills, Save, Load, Options, Quit)
+- Character Status Menu
+- Quest/Journal Menu
+- Map/World Map Menu
+- Party Management Menu
+- Shop/Buy/Sell Menu
+- Battle UI (commands, status, turn order)
+- Options/Settings Menu (audio, controls, display, etc.)
+- Bestiary/Monster Compendium
+- Gallery/Unlockables Menu
+- In-game Help/Tutorial Menu
+- Credits/Roll Menu
+- Debug/Cheat Menu (for development/testing)
+- Language Selection Menu
+- Accessibility Options Menu (colorblind modes, text size, etc.)
 
 ## Note For Translators
 

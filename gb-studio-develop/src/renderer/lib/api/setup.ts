@@ -26,6 +26,7 @@ import type { UsageData } from "lib/compiler/romUsage";
 import type { Asset, AssetType } from "shared/lib/helpers/assets";
 import type { Patrons } from "scripts/fetchPatrons";
 import type { LoadProjectResult } from "lib/project/loadProjectData";
+import type { RPG5EData } from "shared/lib/rpg5e/editorData";
 import {
   AvatarResourceAsset,
   BackgroundAsset,
@@ -278,6 +279,15 @@ const APISetup = {
       ),
     addFile: (filename: string): Promise<void> =>
       ipcRenderer.invoke("project:add-file", filename),
+    loadRPG5EData: (): Promise<RPG5EData> =>
+      ipcRenderer.invoke("project:load-rpg5e-data"),
+    saveRPG5EData: (data: RPG5EData): Promise<boolean> =>
+      ipcRenderer.invoke("project:save-rpg5e-data", data),
+    createSpriteAsset: (
+      filename: string,
+      pngDataUrl: string,
+    ): Promise<string | false> =>
+      ipcRenderer.invoke("project:create-sprite-asset", filename, pngDataUrl),
     loadProject: (): Promise<LoadProjectResult> =>
       ipcRenderer.invoke("project:load"),
     saveProject: (data: WriteResourcesPatch): Promise<void> =>

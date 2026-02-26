@@ -9,7 +9,8 @@ export type NavigationSection =
   | "sounds"
   | "palettes"
   | "dialogue"
-  | "settings";
+  | "settings"
+  | "rpg5e";
 
 export interface NavigationState {
   section: NavigationSection;

@@ -67,6 +67,7 @@ import {
 } from "shared/lib/resources/types";
 import { TILE_SIZE } from "consts";
 import { InputGroup, InputGroupAppend } from "ui/form/InputGroup";
+import CharacterCreatorPanel from "./CharacterCreatorPanel";
 
 interface SpriteEditorProps {
   id: string;
@@ -966,6 +967,7 @@ export const SpriteEditor = ({
                   </Button>
                 </FormRow>
               )}
+              <CharacterCreatorPanel />
             </>
           )}
         </FormContainer>

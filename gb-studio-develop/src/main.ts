@@ -13,12 +13,14 @@ import settings from "electron-settings";
 import Path, { relative } from "path";
 import {
   copyFile,
+  ensureDir,
   pathExists,
   readFile,
   remove,
   stat,
   statSync,
   move,
+  writeFile,
 } from "fs-extra";
 import menu, {
   refreshScreenGridMenuItems,
@@ -162,6 +164,26 @@ import { readFileToIndexedImage } from "lib/tiles/readFileToTiles";
 import { tileDataIndexFn } from "shared/lib/tiles/tileData";
 import { isEqual } from "lodash";
 import { writeIndexedImagePNG } from "lib/helpers/writeIndexedImage";
+import stripInvalidFilenameCharacters from "shared/lib/helpers/stripInvalidFilenameCharacters";
+import {
+  coerceRPG5EData,
+  createDefaultRPG5EData,
+  RPG5EData,
+} from "shared/lib/rpg5e/editorData";
+
+// --- RPG Maker-Style Features Integration ---
+import { RPG_FEATURES } from "./app/rpg/features";
+import { RPG_ENGINE_LOGIC } from "./app/rpg/engineLogic";
+import { RPG_SYSTEM_MENUS } from "./app/rpg/systemMenus";
+
+// Register RPG Maker-Style Features (stub)
+export function registerRPGMakerFeatures() {
+  // This function can be expanded to initialize or register all RPG systems
+  // For now, it simply logs the planned features for development visibility
+  console.log("RPG Maker Features:", RPG_FEATURES);
+  console.log("RPG Engine Logic:", RPG_ENGINE_LOGIC);
+  console.log("RPG System Menus:", RPG_SYSTEM_MENUS);
+}
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
@@ -1751,6 +1773,98 @@ ipcMain.handle(
         }
       }
     }
+  },
+);
+
+ipcMain.handle(
+  "project:load-rpg5e-data",
+  async (): Promise<RPG5EData> => {
+    const projectRoot = Path.dirname(projectPath);
+    const rpgDataPath = Path.join(projectRoot, "project", "rpg5e.json");
+    guardAssetWithinProject(rpgDataPath, projectRoot);
+
+    if (!(await pathExists(rpgDataPath))) {
+      return createDefaultRPG5EData();
+    }
+
+    try {
+      const content = await readFile(rpgDataPath, "utf8");
+      return coerceRPG5EData(JSON.parse(content));
+    } catch (e) {
+      console.error(e);
+      return createDefaultRPG5EData();
+    }
+  },
+);
+
+ipcMain.handle(
+  "project:save-rpg5e-data",
+  async (_event, data: RPG5EData): Promise<boolean> => {
+    const projectRoot = Path.dirname(projectPath);
+    const projectDir = Path.join(projectRoot, "project");
+    const rpgDataPath = Path.join(projectDir, "rpg5e.json");
+    guardAssetWithinProject(rpgDataPath, projectRoot);
+
+    try {
+      await ensureDir(projectDir);
+      const safeData = coerceRPG5EData(data);
+      await writeFileWithBackupAsync(
+        rpgDataPath,
+        `${JSON.stringify(safeData, null, 2)}\n`,
+      );
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  },
+);
+
+ipcMain.handle(
+  "project:create-sprite-asset",
+  async (_event, filename: string, pngDataUrl: string): Promise<string | false> => {
+    if (!isString(filename) || !isString(pngDataUrl)) {
+      return false;
+    }
+
+    const projectRoot = Path.dirname(projectPath);
+    const safeStem = stripInvalidFilenameCharacters(filename)
+      .replace(/\.png$/i, "")
+      .trim();
+
+    if (!safeStem) {
+      return false;
+    }
+
+    const prefix = "data:image/png;base64,";
+    if (!pngDataUrl.startsWith(prefix)) {
+      return false;
+    }
+
+    const base64 = pngDataUrl.slice(prefix.length);
+    if (!base64) {
+      return false;
+    }
+
+    const imageData = Buffer.from(base64, "base64");
+    if (imageData.length === 0) {
+      return false;
+    }
+
+    let index = 0;
+    let finalFilename = `${safeStem}.png`;
+    let destination = Path.join(projectRoot, "assets", "sprites", finalFilename);
+
+    while (await pathExists(destination)) {
+      index += 1;
+      finalFilename = `${safeStem}_${index}.png`;
+      destination = Path.join(projectRoot, "assets", "sprites", finalFilename);
+    }
+
+    guardAssetWithinProject(destination, projectRoot);
+    await writeFile(destination, imageData);
+
+    return finalFilename;
   },
 );
 
