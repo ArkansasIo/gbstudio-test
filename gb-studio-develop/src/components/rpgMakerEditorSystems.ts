@@ -109,6 +109,7 @@ const getCategoryNodeColor = (category: string): string => {
   if (category === "Gameplay") return "#2a9d8f";
   if (category === "UI") return "#e76f51";
   if (category === "Audio") return "#264653";
+  if (category === "Native C") return "#7c2d12";
   return "#4b5563";
 };
 
@@ -137,6 +138,12 @@ export const runMenuCommand = (
   }
   if (command === "Build ROM" || command === "Build Web" || command === "Build Pocket") {
     return appendLog(base, `Queued build target: ${command.replace("Build ", "")}`);
+  }
+  if (command === "C Script Editor") {
+    return appendLog(base, "Opened built-in C script editor");
+  }
+  if (command === "Compile C Scripts") {
+    return appendLog(base, "Queued native C script compile (GBDK target)");
   }
   if (command === "Load Layout") {
     return appendLog(base, "Loaded layout preset: Unreal-2D");
@@ -171,6 +178,9 @@ export const runToolbarAction = (
   }
   if (groupName === "Blueprint" && action === "Compile") {
     return appendLog(base, "Blueprint compile completed");
+  }
+  if (groupName === "Blueprint" && action === "Find References") {
+    return appendLog(base, "Reference scan completed for blueprint and C nodes");
   }
   return base;
 };

@@ -80,6 +80,7 @@ export const unrealTopMenus: MenuDefinition[] = [
       "Animation Timeline",
       "Audio Mixer",
       "Data Tables",
+      "C Script Editor",
     ],
   },
   {
@@ -90,6 +91,7 @@ export const unrealTopMenus: MenuDefinition[] = [
       "Open UI Blueprint",
       "Create Blueprint Class",
       "Compile Blueprint",
+      "Compile C Scripts",
       "Blueprint Diff",
     ],
   },
@@ -254,6 +256,15 @@ export const blueprintNodeCatalog: BlueprintNodeDefinition[] = [
   {
     category: "Math/Logic",
     nodes: ["Add Int", "Compare Int", "Random Range", "Clamp", "Equals"],
+  },
+  {
+    category: "Native C",
+    nodes: [
+      "C: script_main",
+      "C: vm_set_const",
+      "C: vm_actor_move_to",
+      "C: vm_call_native",
+    ],
   },
 ];
 
