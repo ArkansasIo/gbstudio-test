@@ -1,0 +1,26 @@
+{
+  "id": "8bit-battle-core",
+  "type": "music",
+  "targetFolder": "assets/music",
+  "format": [".uge", ".mod"],
+  "tracks": [
+    {
+      "file": "bgm_battle_standard.uge",
+      "title": "Battle Standard",
+      "mood": "combat",
+      "loop": true
+    },
+    {
+      "file": "bgm_boss_encounter.uge",
+      "title": "Boss Encounter",
+      "mood": "boss",
+      "loop": true
+    },
+    {
+      "file": "bgm_victory_fanfare.uge",
+      "title": "Victory Fanfare",
+      "mood": "victory",
+      "loop": false
+    }
+  ]
+}

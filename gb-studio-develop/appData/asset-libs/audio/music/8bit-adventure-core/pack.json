@@ -1,0 +1,26 @@
+{
+  "id": "8bit-adventure-core",
+  "type": "music",
+  "targetFolder": "assets/music",
+  "format": [".uge", ".mod"],
+  "tracks": [
+    {
+      "file": "bgm_overworld_day.uge",
+      "title": "Overworld Day",
+      "mood": "exploration",
+      "loop": true
+    },
+    {
+      "file": "bgm_overworld_night.uge",
+      "title": "Overworld Night",
+      "mood": "calm",
+      "loop": true
+    },
+    {
+      "file": "bgm_dungeon_depths.uge",
+      "title": "Dungeon Depths",
+      "mood": "tense",
+      "loop": true
+    }
+  ]
+}

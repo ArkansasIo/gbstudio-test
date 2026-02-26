@@ -1,0 +1,17 @@
+{
+  "name": "gbstudio-audio-library",
+  "version": "1.0.0",
+  "description": "Prebuilt audio and sound effect pack manifests for GB Studio projects",
+  "packs": {
+    "music": [
+      "music/8bit-adventure-core/pack.json",
+      "music/8bit-battle-core/pack.json",
+      "music/8bit-town-core/pack.json"
+    ],
+    "sfx": [
+      "sfx/ui-core/pack.json",
+      "sfx/combat-core/pack.json",
+      "sfx/world-core/pack.json"
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "8bit-town-core",
+  "type": "music",
+  "targetFolder": "assets/music",
+  "format": [".uge", ".mod"],
+  "tracks": [
+    {
+      "file": "bgm_town_market.uge",
+      "title": "Town Market",
+      "mood": "friendly",
+      "loop": true
+    },
+    {
+      "file": "bgm_shop_interior.uge",
+      "title": "Shop Interior",
+      "mood": "cozy",
+      "loop": true
+    },
+    {
+      "file": "bgm_inn_rest.uge",
+      "title": "Inn Rest",
+      "mood": "rest",
+      "loop": true
+    }
+  ]
+}

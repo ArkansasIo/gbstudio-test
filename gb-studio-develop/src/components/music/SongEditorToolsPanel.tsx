@@ -26,6 +26,12 @@ import API from "renderer/lib/api";
 import { useAppDispatch, useAppSelector } from "store/hooks";
 import { SingleValue } from "react-select";
 import { MusicAsset } from "shared/lib/resources/types";
+import {
+  getInstrumentTypeByChannel,
+  getInstrumentListByType,
+} from "./helpers";
+import { playNotePreview } from "./helpers/notePreview";
+import PianoKeyboard88 from "./PianoKeyboard88";
 
 const octaveOffsetOptions: OctaveOffsetOptions[] = [0, 1, 2, 3].map((i) => ({
   value: i,
@@ -53,6 +59,31 @@ const FloatingPanelTools = styled(FloatingPanel)`
   top: 10px;
   left: 64px;
   z-index: 10;
+`;
+
+const FloatingPanelKeyboardToggle = styled(FloatingPanelSwitchView)`
+  left: 120px;
+`;
+
+const PianoKeyboardPanel = styled.div`
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 10;
+  display: grid;
+  grid-template-rows: 24px 1fr;
+  border: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  background: ${(props) => props.theme.colors.sidebar.background};
+`;
+
+const PianoKeyboardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  border-bottom: 1px solid ${(props) => props.theme.colors.sidebar.border};
+  font-size: 11px;
 `;
 
 const getPlayButtonLabel = (play: boolean, playbackFromStart: boolean) => {
@@ -91,6 +122,10 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   );
 
   const [playbackFromStart, setPlaybackFromStart] = useState(false);
+  const [activeKeyboardNote, setActiveKeyboardNote] = useState<number | null>(
+    null,
+  );
+  const [showKeyboard, setShowKeyboard] = useState(true);
 
   const togglePlay = useCallback(() => {
     if (!playerReady) return;
@@ -281,6 +316,29 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
   const themePianoIcon =
     themeContext?.type === "light" ? <PianoIcon /> : <PianoInverseIcon />;
 
+  const previewKeyboardNote = useCallback(
+    (note: number) => {
+      if (!song) return;
+      const instrumentTypeForChannel = getInstrumentTypeByChannel(selectedChannel);
+      if (!instrumentTypeForChannel) return;
+
+      const instrumentIndex = defaultInstruments[selectedChannel] ?? 0;
+      const instruments = getInstrumentListByType(song, instrumentTypeForChannel);
+      const instrument = instruments[instrumentIndex];
+      if (!instrument) return;
+
+      playNotePreview(
+        note,
+        instrumentTypeForChannel,
+        instrument,
+        selectedChannel === 1,
+        song.waves,
+      );
+      setActiveKeyboardNote(note);
+    },
+    [defaultInstruments, selectedChannel, song],
+  );
+
   return (
     <>
       <FloatingPanelSwitchView>
@@ -385,6 +443,36 @@ const SongEditorToolsPanel = ({ selectedSong }: SongEditorToolsPanelProps) => {
           ""
         )}
       </FloatingPanelTools>
+
+      {showKeyboard && (
+        <PianoKeyboardPanel>
+          <PianoKeyboardHeader>
+            <span>Music Keyboard</span>
+            <Button
+              variant="transparent"
+              onClick={() => setShowKeyboard(false)}
+              title="Hide keyboard"
+            >
+              -
+            </Button>
+          </PianoKeyboardHeader>
+          <PianoKeyboard88
+            activeNote={activeKeyboardNote}
+            onPlayNote={previewKeyboardNote}
+          />
+        </PianoKeyboardPanel>
+      )}
+      {!showKeyboard && (
+        <FloatingPanelKeyboardToggle>
+          <Button
+            variant="transparent"
+            onClick={() => setShowKeyboard(true)}
+            title="Show 88-key keyboard"
+          >
+            {themePianoIcon}
+          </Button>
+        </FloatingPanelKeyboardToggle>
+      )}
     </>
   );
 };

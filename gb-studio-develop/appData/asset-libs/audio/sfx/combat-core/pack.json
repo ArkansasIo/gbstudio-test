@@ -1,0 +1,28 @@
+{
+  "id": "combat-core",
+  "type": "sfx",
+  "targetFolder": "assets/sounds",
+  "format": [".wav", ".vgm", ".sav"],
+  "effects": [
+    {
+      "file": "sfx_sword_light.wav",
+      "usage": "light attack"
+    },
+    {
+      "file": "sfx_sword_heavy.wav",
+      "usage": "heavy attack"
+    },
+    {
+      "file": "sfx_hit_receive.wav",
+      "usage": "damage taken"
+    },
+    {
+      "file": "sfx_critical_hit.wav",
+      "usage": "critical strike"
+    },
+    {
+      "file": "sfx_enemy_defeat.wav",
+      "usage": "enemy KO"
+    }
+  ]
+}

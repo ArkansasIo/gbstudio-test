@@ -1,0 +1,28 @@
+{
+  "id": "world-core",
+  "type": "sfx",
+  "targetFolder": "assets/sounds",
+  "format": [".wav", ".vgm", ".sav"],
+  "effects": [
+    {
+      "file": "sfx_door_open.wav",
+      "usage": "door interaction"
+    },
+    {
+      "file": "sfx_chest_open.wav",
+      "usage": "treasure chest"
+    },
+    {
+      "file": "sfx_item_pickup.wav",
+      "usage": "collect item"
+    },
+    {
+      "file": "sfx_switch_toggle.wav",
+      "usage": "puzzle switch"
+    },
+    {
+      "file": "sfx_teleport.wav",
+      "usage": "portal/warp"
+    }
+  ]
+}

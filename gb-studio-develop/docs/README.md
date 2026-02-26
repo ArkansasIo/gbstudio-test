@@ -13,6 +13,7 @@ This folder contains product, technical, process, and diagram documentation for 
 - [Style Guide](./STYLE_GUIDE.md)
 - [Roadmap](./ROADMAP.md)
 - [UML Overview](./UML.md)
+- [Unreal-Style 8-bit UI + Blueprint System](./UNREAL5_8BIT_UI_BLUEPRINT_SYSTEM.md)
 
 ## Existing Domain Docs
 

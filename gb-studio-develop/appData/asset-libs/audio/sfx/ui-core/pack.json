@@ -1,0 +1,24 @@
+{
+  "id": "ui-core",
+  "type": "sfx",
+  "targetFolder": "assets/sounds",
+  "format": [".wav", ".vgm", ".sav"],
+  "effects": [
+    {
+      "file": "ui_cursor_move.wav",
+      "usage": "menu navigation"
+    },
+    {
+      "file": "ui_confirm.wav",
+      "usage": "accept/select"
+    },
+    {
+      "file": "ui_cancel.wav",
+      "usage": "back/cancel"
+    },
+    {
+      "file": "ui_error.wav",
+      "usage": "invalid action"
+    }
+  ]
+}
