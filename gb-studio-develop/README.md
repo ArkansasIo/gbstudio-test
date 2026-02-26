@@ -166,7 +166,7 @@ Local project docs index: [docs/README.md](./docs/README.md)
 
 ## Note For Translators
 
-If you'd like to help contribute new language localisations to Enchantment Game Engine you can do so by submitting pull requests adding or updating the JSON files found here https://github.com/chrismaltby/gb-studio/tree/develop/src/lang
+If you'd like to help contribute new language localisations to Enchantment Game Engine you can do so by submitting pull requests adding or updating the JSON files found here https://github.com/ArkansasIo/gbstudio-test/tree/main/src/lang
 
 If you're looking to update an existing translation with content that is missing, there is a handy script that lists keys found in the English localisation that are not found and copies them to your localisation
 

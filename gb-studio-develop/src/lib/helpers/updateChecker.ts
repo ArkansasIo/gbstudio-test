@@ -24,8 +24,8 @@ const getLatestVersion = async () => {
   }
 
   const latest = await github.repos.getLatestRelease({
-    owner: "chrismaltby",
-    repo: "gb-studio",
+    owner: "ArkansasIo",
+    repo: "gbstudio-test",
   });
 
   if (latest) {

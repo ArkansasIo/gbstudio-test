@@ -128,7 +128,13 @@ export const unrealTopMenus: MenuDefinition[] = [
   },
   {
     label: "Help",
-    items: ["Documentation", "API Reference", "Tutorials", "About"],
+    items: [
+      "Documentation",
+      "API Reference",
+      "Tutorials",
+      "About",
+      "Check for Updates (GitHub)"
+    ],
   },
 ];
 

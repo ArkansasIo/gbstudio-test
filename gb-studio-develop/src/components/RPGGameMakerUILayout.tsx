@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import {
   audioLibraryPacks,
   addBlueprintNodeFromCategory,
+  type BlueprintNodeModel,
   connectSelectedToLatestNode,
   createInitialEditorState,
   removeSelectedBlueprintNode,
@@ -9,14 +10,27 @@ import {
   runToolbarAction,
   selectAsset,
   selectBlueprintNode,
+  selectLeftSidebarEntry,
   selectOutlinerEntry,
+  setInspectorSection,
+  setLeftSidebarList,
+  setTopSearchQuery,
+  setWorkspace,
   setToolCategory,
+  triggerQuickTool,
 } from "./rpgMakerEditorSystems";
 import {
   blueprintNodeCatalog,
   unrealToolbar,
   unrealTopMenus,
 } from "./rpgGameMakerConfig";
+import {
+  leftSidebarLists,
+  rightInspectorSections,
+  statusActions,
+  topBarQuickTools,
+  workspacePresets,
+} from "./rpgGameMakerAdvancedConfig";
 
 const panelStyle: React.CSSProperties = {
   display: "grid",
@@ -67,16 +81,71 @@ export const RPGGameMakerUILayout: React.FC = () => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   const nodeById = useMemo(() => {
-    const map = new Map<string, (typeof state.blueprintNodes)[number]>();
+    const map = new Map<string, BlueprintNodeModel>();
     state.blueprintNodes.forEach((node) => map.set(node.id, node));
     return map;
   }, [state.blueprintNodes]);
+
+  const quickToolsByGroup = useMemo(() => {
+    return topBarQuickTools.reduce<Record<string, typeof topBarQuickTools>>(
+      (acc, tool) => {
+        acc[tool.group] = [...(acc[tool.group] ?? []), tool];
+        return acc;
+      },
+      {},
+    );
+  }, []);
+
+  const leftList = useMemo(
+    () => leftSidebarLists.find((list) => list.id === state.selectedLeftListId),
+    [state.selectedLeftListId],
+  );
+
+  const inspectorSection = useMemo(
+    () =>
+      rightInspectorSections.find(
+        (section) => section.id === state.selectedInspectorSectionId,
+      ),
+    [state.selectedInspectorSectionId],
+  );
+
+  const normalizedSearch = state.topSearchQuery.trim().toLowerCase();
+
+  const filteredAssets = useMemo(() => {
+    if (!normalizedSearch) {
+      return state.assets;
+    }
+    return state.assets.filter((asset) =>
+      `${asset.name} ${asset.type}`.toLowerCase().includes(normalizedSearch),
+    );
+  }, [normalizedSearch, state.assets]);
+
+  const filteredOutliner = useMemo(() => {
+    if (!normalizedSearch) {
+      return state.outliner;
+    }
+    return state.outliner.filter((entry) =>
+      entry.toLowerCase().includes(normalizedSearch),
+    );
+  }, [normalizedSearch, state.outliner]);
+
+  const filteredLeftEntries = useMemo(() => {
+    if (!leftList) {
+      return [];
+    }
+    if (!normalizedSearch) {
+      return leftList.entries;
+    }
+    return leftList.entries.filter((entry) =>
+      entry.toLowerCase().includes(normalizedSearch),
+    );
+  }, [leftList, normalizedSearch]);
 
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateRows: "30px 40px 1fr 120px 24px",
+        gridTemplateRows: "30px 42px 40px 1fr 120px 24px",
         height: "100vh",
         background: "#111827",
         color: "#e5e7eb",
@@ -159,6 +228,81 @@ export const RPGGameMakerUILayout: React.FC = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: 8,
+          padding: "6px 10px",
+          background: "#0b1220",
+          borderBottom: "1px solid #374151",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {workspacePresets.map((workspace) => (
+            <button
+              key={workspace.id}
+              style={{
+                ...buttonStyle,
+                background:
+                  state.activeWorkspaceId === workspace.id ? "#1d4ed8" : "#273244",
+              }}
+              title={workspace.description}
+              onClick={() => setState((prev) => setWorkspace(prev, workspace.id))}
+            >
+              {workspace.label}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {Object.entries(quickToolsByGroup).map(([group, tools]) => (
+            <div
+              key={group}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                paddingRight: 8,
+                borderRight: "1px solid #334155",
+              }}
+            >
+              <span style={{ fontSize: 10, color: "#94a3b8" }}>{group}</span>
+              {tools.map((tool) => (
+                <button
+                  key={tool.id}
+                  style={{
+                    ...buttonStyle,
+                    padding: "3px 6px",
+                    background:
+                      state.activeQuickToolId === tool.id ? "#2563eb" : "#374151",
+                  }}
+                  onClick={() => setState((prev) => triggerQuickTool(prev, tool.id))}
+                >
+                  {tool.label}
+                </button>
+              ))}
+            </div>
+          ))}
+          <input
+            value={state.topSearchQuery}
+            placeholder="Search assets, actors, layers..."
+            onChange={(e) =>
+              setState((prev) => setTopSearchQuery(prev, e.currentTarget.value))
+            }
+            style={{
+              width: 260,
+              background: "#0f172a",
+              color: "#e5e7eb",
+              border: "1px solid #334155",
+              borderRadius: 4,
+              padding: "6px 8px",
+              fontSize: 12,
+            }}
+          />
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
           padding: "6px 10px",
           background: "#111827",
           borderBottom: "1px solid #374151",
@@ -219,11 +363,11 @@ export const RPGGameMakerUILayout: React.FC = () => {
           overflow: "hidden",
         }}
       >
-        <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateRows: "1fr 1fr 1fr", gap: 8 }}>
           <div style={panelStyle}>
             <div style={panelHeaderStyle}>Content Browser</div>
             <div style={panelBodyStyle}>
-              {state.assets.map((asset) => (
+              {filteredAssets.map((asset) => (
                 <div
                   key={asset.id}
                   style={{
@@ -244,7 +388,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
           <div style={panelStyle}>
             <div style={panelHeaderStyle}>World Outliner</div>
             <div style={panelBodyStyle}>
-              {state.outliner.map((entry) => (
+              {filteredOutliner.map((entry) => (
                 <div
                   key={entry}
                   style={{
@@ -255,6 +399,42 @@ export const RPGGameMakerUILayout: React.FC = () => {
                         : "transparent",
                   }}
                   onClick={() => setState((prev) => selectOutlinerEntry(prev, entry))}
+                >
+                  {entry}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={panelStyle}>
+            <div style={panelHeaderStyle}>Scene Lists</div>
+            <div style={panelBodyStyle}>
+              <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+                {leftSidebarLists.map((list) => (
+                  <button
+                    key={list.id}
+                    style={{
+                      ...buttonStyle,
+                      background:
+                        state.selectedLeftListId === list.id ? "#2563eb" : "#374151",
+                    }}
+                    onClick={() => setState((prev) => setLeftSidebarList(prev, list.id))}
+                  >
+                    {list.title}
+                  </button>
+                ))}
+              </div>
+              {filteredLeftEntries.map((entry) => (
+                <div
+                  key={entry}
+                  style={{
+                    ...listRowStyle,
+                    background:
+                      state.selectedLeftListEntry === entry
+                        ? "rgba(37,99,235,0.2)"
+                        : "transparent",
+                  }}
+                  onClick={() => setState((prev) => selectLeftSidebarEntry(prev, entry))}
                 >
                   {entry}
                 </div>
@@ -384,16 +564,25 @@ export const RPGGameMakerUILayout: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateRows: "1fr 1fr 1fr", gap: 8 }}>
           <div style={panelStyle}>
             <div style={panelHeaderStyle}>Details</div>
             <div style={panelBodyStyle}>
               <div style={listRowStyle}>Project: {state.projectName}</div>
               <div style={listRowStyle}>Map: {state.mapName}</div>
               <div style={listRowStyle}>Layer: {state.layerName}</div>
+              <div style={listRowStyle}>
+                Workspace:{" "}
+                {workspacePresets.find((w) => w.id === state.activeWorkspaceId)?.label}
+              </div>
               <div style={listRowStyle}>Modified: {state.modified ? "Yes" : "No"}</div>
               <div style={listRowStyle}>
-                Selection: {state.selectedAssetId || state.selectedOutlinerId || state.selectedBlueprintNodeId || "None"}
+                Selection:{" "}
+                {state.selectedAssetId ||
+                  state.selectedOutlinerId ||
+                  state.selectedLeftListEntry ||
+                  state.selectedBlueprintNodeId ||
+                  "None"}
               </div>
             </div>
           </div>
@@ -435,6 +624,36 @@ export const RPGGameMakerUILayout: React.FC = () => {
               <div style={listRowStyle}>SFX Packs: {audioLibraryPacks.sfx.join(", ")}</div>
             </div>
           </div>
+
+          <div style={panelStyle}>
+            <div style={panelHeaderStyle}>Inspector</div>
+            <div style={panelBodyStyle}>
+              <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+                {rightInspectorSections.map((section) => (
+                  <button
+                    key={section.id}
+                    style={{
+                      ...buttonStyle,
+                      background:
+                        state.selectedInspectorSectionId === section.id
+                          ? "#2563eb"
+                          : "#374151",
+                    }}
+                    onClick={() =>
+                      setState((prev) => setInspectorSection(prev, section.id))
+                    }
+                  >
+                    {section.title}
+                  </button>
+                ))}
+              </div>
+              {(inspectorSection?.fields ?? []).map((field) => (
+                <div key={field} style={listRowStyle}>
+                  {field}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -467,7 +686,20 @@ export const RPGGameMakerUILayout: React.FC = () => {
         <span>
           Project: {state.projectName} | Map: {state.mapName} | Layer: {state.layerName}
         </span>
-        <span>RAM Budget: 68% | ROM Bank: 21/32 | FPS: 60</span>
+        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {statusActions.map((action) => (
+            <button
+              key={action.id}
+              style={{ ...buttonStyle, padding: "2px 6px" }}
+              onClick={() =>
+                setState((prev) => triggerQuickTool(prev, `status:${action.id}`))
+              }
+            >
+              {action.label}
+            </button>
+          ))}
+          <span>RAM Budget: 68% | ROM Bank: 21/32 | FPS: 60</span>
+        </span>
       </div>
     </div>
   );

@@ -5,6 +5,12 @@ import {
   unrealToolbar,
   unrealTopMenus,
 } from "./rpgGameMakerConfig";
+import {
+  leftSidebarLists,
+  rightInspectorSections,
+  topBarQuickTools,
+  workspacePresets,
+} from "./rpgGameMakerAdvancedConfig";
 
 export type ProjectAssetType =
   | "Maps"
@@ -39,6 +45,12 @@ export interface EditorState {
   selectedMenu: string;
   selectedToolCategory: string;
   activeTool: string;
+  activeWorkspaceId: string;
+  activeQuickToolId: string | null;
+  topSearchQuery: string;
+  selectedLeftListId: string;
+  selectedLeftListEntry: string | null;
+  selectedInspectorSectionId: string;
   selectedAssetId: string | null;
   selectedOutlinerId: string | null;
   selectedBlueprintNodeId: string | null;
@@ -73,6 +85,12 @@ export const createInitialEditorState = (): EditorState => ({
   selectedMenu: unrealTopMenus[0]?.label ?? "File",
   selectedToolCategory: blueprintNodeCatalog[0]?.category ?? "Events",
   activeTool: unrealToolbar[2]?.actions[0] ?? "Paint Tile",
+  activeWorkspaceId: workspacePresets[0]?.id ?? "world-build",
+  activeQuickToolId: null,
+  topSearchQuery: "",
+  selectedLeftListId: leftSidebarLists[0]?.id ?? "layers",
+  selectedLeftListEntry: null,
+  selectedInspectorSectionId: rightInspectorSections[0]?.id ?? "transform",
   selectedAssetId: null,
   selectedOutlinerId: null,
   selectedBlueprintNodeId: null,
@@ -94,6 +112,13 @@ const appendLog = (state: EditorState, message: string): EditorState => ({
   ...state,
   outputLog: [...state.outputLog.slice(-59), message],
 });
+
+const getWorkspaceLabel = (workspaceId: string): string =>
+  workspacePresets.find((workspace) => workspace.id === workspaceId)?.label ??
+  workspaceId;
+
+const getQuickToolLabel = (toolId: string): string =>
+  topBarQuickTools.find((tool) => tool.id === toolId)?.label ?? toolId;
 
 const nextNodeId = (nodes: BlueprintNodeModel[]): string => {
   const maxId = nodes.reduce((max, node) => {
@@ -184,6 +209,71 @@ export const runToolbarAction = (
   }
   return base;
 };
+
+export const setWorkspace = (
+  state: EditorState,
+  workspaceId: string,
+): EditorState =>
+  appendLog(
+    {
+      ...state,
+      activeWorkspaceId: workspaceId,
+    },
+    `Switched workspace: ${getWorkspaceLabel(workspaceId)}`,
+  );
+
+export const setTopSearchQuery = (
+  state: EditorState,
+  query: string,
+): EditorState => ({
+  ...state,
+  topSearchQuery: query,
+});
+
+export const triggerQuickTool = (
+  state: EditorState,
+  toolId: string,
+): EditorState =>
+  appendLog(
+    {
+      ...state,
+      activeQuickToolId: toolId,
+      modified: true,
+    },
+    `Quick tool executed: ${getQuickToolLabel(toolId)}`,
+  );
+
+export const setLeftSidebarList = (
+  state: EditorState,
+  listId: string,
+): EditorState => ({
+  ...state,
+  selectedLeftListId: listId,
+  selectedLeftListEntry: null,
+});
+
+export const selectLeftSidebarEntry = (
+  state: EditorState,
+  entry: string,
+): EditorState =>
+  appendLog(
+    {
+      ...state,
+      selectedLeftListEntry: entry,
+      selectedAssetId: null,
+      selectedOutlinerId: null,
+      selectedBlueprintNodeId: null,
+    },
+    `Selected list entry: ${entry}`,
+  );
+
+export const setInspectorSection = (
+  state: EditorState,
+  sectionId: string,
+): EditorState => ({
+  ...state,
+  selectedInspectorSectionId: sectionId,
+});
 
 export const selectAsset = (state: EditorState, assetId: string): EditorState => {
   const asset = state.assets.find((a) => a.id === assetId);

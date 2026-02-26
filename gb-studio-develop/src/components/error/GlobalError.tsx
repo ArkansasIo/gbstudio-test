@@ -110,7 +110,7 @@ const GlobalError = () => {
       `**Error message**\n\`${message}\`\n\n**Stack trace**\n\`\`\`\n${stackTrace}\n\`\`\`\n\n**Platform**\n- OS: ${API.platform}\n- Version: Enchantment Game Engine ${VERSION} (${COMMITHASH})\n\n**Additional context**\nAdd any other context about the problem here.\ne.g. What was the last thing you did before the error appeared.\n`,
     );
     const labels = encodeURIComponent("bug");
-    const issueUrl = `https://github.com/${owner}/${repo}/issues/new?title=${issueTitle}&body=${issueBody}&labels=${labels}`;
+    const issueUrl = `https://github.com/ArkansasIo/gbstudio-test/issues/new?title=${issueTitle}&body=${issueBody}&labels=${labels}`;
     API.app.openExternal(issueUrl);
   }, [message, stackTrace]);
 

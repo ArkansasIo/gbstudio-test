@@ -30,9 +30,9 @@ export const eventsRoot = normalize(`${rootDir}/src/lib/events`);
 export const assetsRoot = normalize(`${rootDir}/src/assets`);
 
 // Plugin Manager
-export const OFFICIAL_REPO_URL = "https://plugins.gbstudio.dev/repository.json";
+export const OFFICIAL_REPO_URL = "https://github.com/ArkansasIo/gbstudio-test";
 export const OFFICIAL_REPO_GITHUB =
-  "https://github.com/gb-studio-dev/gb-studio-plugins";
+  "https://github.com/ArkansasIo/gbstudio-test";
 export const OFFICIAL_REPO_GITHUB_SUBMIT = `${OFFICIAL_REPO_GITHUB}#submitting-plugins`;
 
 // Electron Settings
