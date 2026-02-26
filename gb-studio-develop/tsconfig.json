@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react",
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "baseUrl": "src",
+    "sourceMap": true,
+    "noImplicitOverride": true,
+    "paths": {
+      "store/*": [ "./store/*" ],
+      "lib/*": [ "./lib/*" ],
+      "ui/*": [ "./components/ui/*" ],
+      "components/*": [ "./components/*" ],
+      "lang/*": [ "./lang/*" ],
+      "wasm/*": ["../appData/wasm/*" ],
+      "contributors.json": ["../contributors.json"],
+      "contributors-external.json": ["../contributors-external.json"],
+      "patrons.json": ["../patrons.json"],
+      "#my-quickjs-variant": [
+        "../node_modules/@jitl/quickjs-singlefile-cjs-release-sync"
+      ]      
+    }
+  },
+  "include": ["src", "test"]
+}
