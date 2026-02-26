@@ -28,17 +28,35 @@ if (-not $SkipBuild) {
 }
 $copied = @()
 
-# Also include the packaged portable app directory (contains gb-studio.exe + runtime files).
-$packagedAppDir = Join-Path $RepoRoot "out\GB Studio-win32-x64"
-if (Test-Path $packagedAppDir) {
-  $packagedOutputDir = Join-Path $OutputDir "GB Studio-win32-x64"
+# Detect the most recently packaged Windows app directory and keep naming dynamic.
+$packagedAppDir = Get-ChildItem -Path (Join-Path $RepoRoot "out") -Directory -Filter "*-win32-x64" |
+  Sort-Object LastWriteTime -Descending |
+  Select-Object -First 1
+
+if ($packagedAppDir) {
+  $packagedName = $packagedAppDir.Name
+  $packagedOutputDir = Join-Path $OutputDir $packagedName
   if (Test-Path $packagedOutputDir) {
     Remove-Item -Path $packagedOutputDir -Recurse -Force
   }
-  Copy-Item -Path $packagedAppDir -Destination $packagedOutputDir -Recurse -Force
-  $copied += (Join-Path $packagedOutputDir "gb-studio.exe")
 
-  $zipPath = Join-Path $OutputDir "GB Studio-win32-x64-portable.zip"
+  Copy-Item -Path $packagedAppDir.FullName -Destination $packagedOutputDir -Recurse -Force
+
+  # Prefer the exe matching the package folder name; otherwise fallback to first app exe.
+  $appBaseName = ($packagedName -replace "-win32-x64$", "")
+  $preferredExe = Join-Path $packagedOutputDir "$appBaseName.exe"
+  if (Test-Path $preferredExe) {
+    $copied += $preferredExe
+  } else {
+    $fallbackExe = Get-ChildItem -Path $packagedOutputDir -Filter "*.exe" -File |
+      Where-Object { $_.Name -ne "crashpad_handler.exe" } |
+      Select-Object -First 1
+    if ($fallbackExe) {
+      $copied += $fallbackExe.FullName
+    }
+  }
+
+  $zipPath = Join-Path $OutputDir "$packagedName-portable.zip"
   if (Test-Path $zipPath) {
     Remove-Item -Path $zipPath -Force
   }
