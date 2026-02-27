@@ -5,9 +5,14 @@ import type { Patrons, PatreonUser } from "scripts/fetchPatrons";
 const github = new Octokit();
 const oneHour = 60 * 60 * 1000;
 
-const cache = {
+const cache: {
   latest: {
-    value: inbuiltPatrons,
+    value: Patrons;
+    timestamp: number;
+  };
+} = {
+  latest: {
+    value: inbuiltPatrons as Patrons,
     timestamp: 0,
   },
 };

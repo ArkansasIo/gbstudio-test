@@ -10,6 +10,11 @@ import type { RpgRuntimeAction } from "./types";
 const stripLabelSuffix = (label: string): string =>
   label.replace(/\s+\[[^\]]+\]\s*$/, "").trim();
 
+const normalizeLabel = (label: string): string =>
+  stripLabelSuffix(label).replace(/\s+/g, " ").trim().toLowerCase();
+
+const labelsEqual = (a: string, b: string): boolean => normalizeLabel(a) === normalizeLabel(b);
+
 const ensureFunctionCall = (fn: string): string =>
   fn.includes("(") ? fn : `${fn}()`;
 
@@ -38,9 +43,12 @@ export const resolveFeatureAction = (label: string): RpgRuntimeAction | null => 
 export const resolveEngineLogicAction = (
   summaryOrName: string,
 ): RpgRuntimeAction | null => {
-  const clean = stripLabelSuffix(summaryOrName);
+  const clean = summaryOrName.trim();
   const system = RPG_ENGINE_SYSTEMS.find(
-    (entry) => entry.summary === clean || entry.name === clean,
+    (entry) =>
+      labelsEqual(entry.summary, clean) ||
+      labelsEqual(entry.name, clean) ||
+      labelsEqual(`${entry.name} [${entry.domain}]`, clean),
   );
   if (!system) return null;
   return {
@@ -56,7 +64,10 @@ export const resolveEngineLogicAction = (
 export const resolvePremadeSystemAction = (label: string): RpgRuntimeAction | null => {
   const clean = label.trim();
   const system = RPG_PREMADE_SYSTEMS.find(
-    (entry) => `${entry.name} [${entry.category}]` === clean || entry.name === clean,
+    (entry) =>
+      labelsEqual(`${entry.name} [${entry.category}]`, clean) ||
+      labelsEqual(entry.name, clean) ||
+      labelsEqual(entry.id, clean),
   );
   if (!system) return null;
   return {
@@ -69,7 +80,10 @@ export const resolvePremadeSystemAction = (label: string): RpgRuntimeAction | nu
 export const resolveTemplateAction = (label: string): RpgRuntimeAction | null => {
   const clean = label.trim();
   const template = RPG_TEMPLATE_LIBRARY.find(
-    (entry) => `${entry.name} [${entry.domain}]` === clean || entry.name === clean,
+    (entry) =>
+      labelsEqual(`${entry.name} [${entry.domain}]`, clean) ||
+      labelsEqual(entry.name, clean) ||
+      labelsEqual(entry.id, clean),
   );
   if (!template) return null;
   return {
@@ -84,7 +98,10 @@ export const resolvePluginTemplateAction = (
 ): RpgRuntimeAction | null => {
   const clean = label.trim();
   const plugin = RPG_PLUGIN_SYSTEM_TEMPLATES.find(
-    (entry) => `${entry.name} [${entry.type}]` === clean || entry.name === clean,
+    (entry) =>
+      labelsEqual(`${entry.name} [${entry.type}]`, clean) ||
+      labelsEqual(entry.name, clean) ||
+      labelsEqual(entry.id, clean),
   );
   if (!plugin) return null;
   return {
@@ -99,4 +116,3 @@ export const resolvePluginTemplateAction = (
 
 export const isKnownFeature = (name: string): boolean =>
   RPG_FEATURE_DEFINITIONS.some((feature) => feature.name === name.trim());
-

@@ -69,11 +69,15 @@ const fromLegacySound = (sound: (typeof RPG_SOUND_LIBRARY)[number]): GameDatabas
 
 const fromRpg5ePack = (): GameDatabaseIndexRecord[] => {
   const pack = createDnd5eFullSystemPack();
-  const add = (category: string, subtype: string, entries: Array<{ id: string; name: string; tags: string[] }>) =>
+  const add = (
+    category: string,
+    subtype: string,
+    entries: Array<{ id: string; name: string; tags: string[] }>,
+  ): GameDatabaseIndexRecord[] =>
     entries.map((entry) => ({
       id: `rpg5e:${category}:${entry.id}`,
       name: entry.name,
-      domain: "rpg",
+      domain: "rpg" as const,
       source: "rpg5e" as const,
       category,
       subtype,
@@ -255,4 +259,3 @@ export const searchGameDatabaseIndex = (
 };
 
 export const GAME_DATABASE_INDEX = createGameDatabaseIndex();
-

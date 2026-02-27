@@ -383,6 +383,21 @@ export const executeRpgMenuFunction = (
   }
 
   if (
+    parsed.name.startsWith("craft") ||
+    parsed.name.startsWith("salvage") ||
+    parsed.name.startsWith("place") ||
+    parsed.name.startsWith("broadcast")
+  ) {
+    return appendLog(
+      {
+        ...withCallLog,
+        modified: true,
+      },
+      `Applied gameplay operation: ${parsed.name}`,
+    );
+  }
+
+  if (
     parsed.name.startsWith("run") ||
     parsed.name.startsWith("suspend") ||
     parsed.name.startsWith("block")
