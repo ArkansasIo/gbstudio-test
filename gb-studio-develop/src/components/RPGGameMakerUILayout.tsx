@@ -103,6 +103,12 @@ import {
   type WorkbenchStatus,
 } from "app/rpg/runtime";
 import type { RPGSubMenuDefinition } from "app/rpg/systemMenus";
+import {
+  generateDebugReport,
+  exportDebugData,
+  logDebugInfo,
+  suggestNextActions,
+} from "app/rpg/debug/workbenchDebugger";
 import API from "renderer/lib/api";
 
 const panelStyle: React.CSSProperties = {
@@ -683,6 +689,27 @@ export const RPGGameMakerUILayout: React.FC = () => {
       .catch(() => appendLog("[ERROR] Failed to copy workbench template JSON"));
   }, [appendLog]);
 
+  const exportWorkbenchDebugData = useCallback(() => {
+    const debugData = exportDebugData(toolWorkbenchRecords, state);
+    navigator.clipboard
+      .writeText(debugData)
+      .then(() => {
+        appendLog("[DEBUG] Exported workbench debug data to clipboard");
+        logDebugInfo(toolWorkbenchRecords, state);
+      })
+      .catch(() => appendLog("[ERROR] Failed to export debug data"));
+  }, [appendLog, state, toolWorkbenchRecords]);
+
+  const showWorkbenchSuggestions = useCallback(() => {
+    const suggestions = suggestNextActions(toolWorkbenchRecords, state.activeTool);
+    suggestions.forEach((suggestion) => {
+      appendLog(`[HINT] ${suggestion}`);
+    });
+    if (suggestions.length === 0) {
+      appendLog("[INFO] No suggestions - tool is in good shape!");
+    }
+  }, [appendLog, state.activeTool, toolWorkbenchRecords]);
+
   const runRpgSubMenuAction = useCallback(
     (subMenu: RPGSubMenuDefinition, actionLabel: string, functionName: string) => {
       if (!functionName || !functionName.trim()) {
@@ -895,6 +922,9 @@ export const RPGGameMakerUILayout: React.FC = () => {
 
   const handleMenuCommand = useCallback(
     (menuLabel: string, item: string) => {
+      console.log(`[MENU CLICK] ${menuLabel} > ${item}`);
+      appendLog(`[MENU] ${menuLabel} > ${item}`);
+      
       if (item === "Save Layout") {
         saveLayout();
       } else if (item === "Load Layout") {
@@ -1479,6 +1509,22 @@ export const RPGGameMakerUILayout: React.FC = () => {
         fontFamily: "Segoe UI, Tahoma, sans-serif",
       }}
     >
+      {/* Debug indicator - remove this later */}
+      <div style={{
+        position: "fixed",
+        top: 0,
+        right: 0,
+        background: "#10b981",
+        color: "white",
+        padding: "4px 12px",
+        fontSize: 12,
+        fontWeight: "bold",
+        zIndex: 9999,
+        borderBottomLeftRadius: 4,
+      }}>
+        ✓ RPG WORKBENCH LOADED
+      </div>
+      
       <div
         ref={topMenuBarRef}
         style={{
@@ -1505,6 +1551,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
                 cursor: "pointer",
               }}
               onClick={() => {
+                console.log(`[TOP MENU CLICK] ${menu.label}`);
                 setState((prev) => ({
                   ...prev,
                   selectedMenu: menu.label,
@@ -1568,7 +1615,10 @@ export const RPGGameMakerUILayout: React.FC = () => {
                   state.activeWorkspaceId === workspace.id ? "#1d4ed8" : "#273244",
               }}
               title={workspace.description}
-              onClick={() => setState((prev) => setWorkspace(prev, workspace.id))}
+              onClick={() => {
+                console.log(`[WORKSPACE CLICK] ${workspace.label} (${workspace.id})`);
+                setState((prev) => setWorkspace(prev, workspace.id));
+              }}
             >
               {workspace.label}
             </button>
@@ -1676,6 +1726,23 @@ export const RPGGameMakerUILayout: React.FC = () => {
           </button>
           <button style={buttonStyle} onClick={resetLayout}>
             Reset Layout
+          </button>
+          <button style={buttonStyle} onClick={exportWorkbenchDebugData}>
+            Export Debug Data
+          </button>
+          <button style={buttonStyle} onClick={showWorkbenchSuggestions}>
+            Show Suggestions
+          </button>
+          <button 
+            style={{...buttonStyle, background: "#dc2626", fontWeight: "bold"}}
+            onClick={() => {
+              appendLog("[INFO] Press F12 or Ctrl+Shift+I to open DevTools");
+              appendLog("[INFO] Or use View menu > Toggle Developer Tools");
+              alert("To open DevTools:\n\n• Press F12\n• Or press Ctrl+Shift+I\n• Or use menu: View > Toggle Developer Tools");
+            }}
+            title="Click for instructions to open DevTools"
+          >
+            🔧 DevTools Help
           </button>
           {Object.entries(quickToolsByGroup).map(([group, tools]) => (
             <div
