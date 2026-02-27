@@ -5,6 +5,7 @@ import {
   RPG_ENGINE_LOGIC_TOOLS,
 } from "app/rpg/engineLogic";
 import {
+  RPG_SYSTEM_MENU_DEFINITIONS,
   RPG_SYSTEM_MENU_FUNCTIONS,
   RPG_SYSTEM_MENUS,
   RPG_SYSTEM_SUB_MENUS,
@@ -340,6 +341,8 @@ export const blueprintGraph = {
 export const linkedRPGFeatureNames = RPG_FEATURE_DEFINITIONS.map(
   (feature) => feature.name,
 );
+
+export const linkedRPGSystemMenuDefinitions = RPG_SYSTEM_MENU_DEFINITIONS;
 
 export const linkedRPGFeatureCapabilities = RPG_FEATURE_DEFINITIONS.flatMap(
   (feature) =>

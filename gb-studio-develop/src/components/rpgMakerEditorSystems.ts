@@ -266,6 +266,88 @@ export const runMenuCommand = (
   if (command === "Check for Updates (GitHub)") {
     return openToolLink(base, "github-repo");
   }
+  if (command === "Open Project") {
+    return appendLog(base, "Project picker opened");
+  }
+  if (command === "Source Control") {
+    return appendLog(base, "Source control integration opened");
+  }
+  if (command === "Project Settings" || command === "Editor Preferences") {
+    return appendLog(base, "Settings panel focused");
+  }
+  if (command === "Package Project" || command === "Build Project") {
+    return appendLog(base, "Queued full project package build");
+  }
+  if (command === "Exit") {
+    return appendLog(base, "Exit requested");
+  }
+  if (command === "Undo" || command === "Redo") {
+    return appendLog(base, `History action: ${command}`);
+  }
+  if (
+    command === "Cut" ||
+    command === "Copy" ||
+    command === "Paste" ||
+    command === "Duplicate" ||
+    command === "Delete"
+  ) {
+    return appendLog(base, `Edit action applied: ${command}`);
+  }
+  if (
+    command === "Viewport Layouts" ||
+    command === "World Outliner" ||
+    command === "Details" ||
+    command === "Content Browser" ||
+    command === "Blueprint Debugger" ||
+    command === "Output Log" ||
+    command === "Fullscreen"
+  ) {
+    return appendLog(base, `View updated: ${command}`);
+  }
+  if (
+    command === "Tilemap Editor" ||
+    command === "Sprite Editor" ||
+    command === "Collision Painter" ||
+    command === "Palette Manager" ||
+    command === "Animation Timeline" ||
+    command === "Audio Mixer" ||
+    command === "Data Tables" ||
+    command === "Plugin Browser"
+  ) {
+    return appendLog(base, `Tool opened: ${command}`);
+  }
+  if (
+    command === "Open Level Blueprint" ||
+    command === "Open Actor Blueprint" ||
+    command === "Open UI Blueprint" ||
+    command === "Create Blueprint Class" ||
+    command === "Compile Blueprint" ||
+    command === "Blueprint Diff"
+  ) {
+    return appendLog(base, `Blueprint action completed: ${command}`);
+  }
+  if (command === "Clean") {
+    return appendLog(base, "Build cache clean requested");
+  }
+  if (
+    command === "Play In Editor" ||
+    command === "Play From Camera" ||
+    command === "Pause" ||
+    command === "Step" ||
+    command === "Stop" ||
+    command === "Network Emulation"
+  ) {
+    return appendLog(base, `Play command executed: ${command}`);
+  }
+  if (command === "Save Layout") {
+    return appendLog(base, "Layout save requested");
+  }
+  if (command === "Developer Tools") {
+    return appendLog(base, "Developer tools opened");
+  }
+  if (command === "About") {
+    return appendLog(base, "About dialog opened");
+  }
   return base;
 };
 
@@ -290,6 +372,25 @@ export const runToolbarAction = (
   }
   if (groupName === "Play" && action === "Play") {
     return appendLog(base, "Play in editor started");
+  }
+  if (
+    groupName === "Project" &&
+    (action === "New" || action === "Open" || action === "Source Control")
+  ) {
+    return appendLog(base, `Project command executed: ${action}`);
+  }
+  if (groupName === "Transform") {
+    return appendLog(
+      {
+        ...base,
+        activeTool: action,
+        modified: true,
+      },
+      `Transform tool selected: ${action}`,
+    );
+  }
+  if (groupName === "Play" && (action === "Simulate" || action === "Pause" || action === "Stop")) {
+    return appendLog(base, `Play state command: ${action}`);
   }
   if (groupName === "Blueprint" && action === "Compile") {
     return appendLog(base, "Blueprint compile completed");

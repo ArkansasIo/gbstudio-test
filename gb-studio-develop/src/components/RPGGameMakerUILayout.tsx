@@ -41,7 +41,7 @@ import {
   linkedRPGFeatureNames,
   linkedRPGInputTools,
   linkedRPGMenuFunctions,
-  linkedRPGSubMenus,
+  linkedRPGSystemMenuDefinitions,
   linkedRPGSystemMenus,
   linkedDnd5eAbilities,
   linkedDnd5eActionEconomy,
@@ -72,6 +72,7 @@ import {
   workspacePresets,
 } from "./rpgGameMakerAdvancedConfig";
 import { RPG_COLOR_PROFILES, RPG_SETTINGS_PRESETS } from "app/rpg/input";
+import type { RPGSubMenuDefinition } from "app/rpg/systemMenus";
 import API from "renderer/lib/api";
 
 const panelStyle: React.CSSProperties = {
@@ -182,6 +183,17 @@ type TerminalEntry = {
   text: string;
 };
 
+type SourceLanguage = "c" | "asm" | "txt";
+
+type SourceIdeFile = {
+  id: string;
+  name: string;
+  language: SourceLanguage;
+  content: string;
+  dirty: boolean;
+  diagnostics: string[];
+};
+
 const initialFloatingWindows: FloatingWindow[] = [
   {
     id: "wnd-details",
@@ -271,6 +283,41 @@ const classifyTerminalLine = (line: string): TerminalChannel => {
   return "system";
 };
 
+const inferSourceLanguage = (filename: string): SourceLanguage => {
+  const ext = getExt(filename);
+  if (ext === ".c" || ext === ".h") return "c";
+  if (ext === ".s" || ext === ".asm") return "asm";
+  return "txt";
+};
+
+const sourceDiagnostics = (source: string, language: SourceLanguage): string[] => {
+  const diagnostics: string[] = [];
+  const lines = source.split(/\r?\n/);
+  const longLineIndex = lines.findIndex((line) => line.length > 120);
+  if (longLineIndex >= 0) {
+    diagnostics.push(`Line ${longLineIndex + 1}: line length exceeds 120 chars`);
+  }
+  if (language === "c") {
+    const openBraces = (source.match(/{/g) || []).length;
+    const closeBraces = (source.match(/}/g) || []).length;
+    if (openBraces !== closeBraces) {
+      diagnostics.push("Brace mismatch detected in C source");
+    }
+    if (!source.includes("main(") && !source.includes("script_")) {
+      diagnostics.push("No main/script entry function found");
+    }
+  }
+  if (language === "asm") {
+    if (!/^\s*[A-Za-z_.$][\w.$@]*:/m.test(source)) {
+      diagnostics.push("No labels found in ASM source");
+    }
+  }
+  if (diagnostics.length === 0) {
+    diagnostics.push("No diagnostics");
+  }
+  return diagnostics;
+};
+
 export const RPGGameMakerUILayout: React.FC = () => {
   const [state, setState] = useState(createInitialEditorState);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -290,6 +337,20 @@ export const RPGGameMakerUILayout: React.FC = () => {
   const [terminalFilter, setTerminalFilter] = useState<TerminalChannel | "all">("all");
   const [pendingNodeTitle, setPendingNodeTitle] = useState("");
   const [dragOffset, setDragOffset] = useState<DragOffset>({ x: 0, y: 0 });
+  const [sourceFiles, setSourceFiles] = useState<SourceIdeFile[]>([
+    {
+      id: "source-sample-main",
+      name: "script_main.c",
+      language: "c",
+      content:
+        "void script_main(void) {\n  // Entry script for RPG event runtime\n}\n",
+      dirty: false,
+      diagnostics: ["No diagnostics"],
+    },
+  ]);
+  const [activeSourceFileId, setActiveSourceFileId] = useState("source-sample-main");
+  const [sourceSearch, setSourceSearch] = useState("");
+  const [sourceReplace, setSourceReplace] = useState("");
   const blueprintCanvasRef = useRef<HTMLDivElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const selectedColorProfile = useMemo(
@@ -373,6 +434,17 @@ export const RPGGameMakerUILayout: React.FC = () => {
     [state.projectName],
   );
 
+  const flatRpgSubMenus = useMemo(
+    () =>
+      linkedRPGSystemMenuDefinitions.flatMap((menu) =>
+        menu.subMenus.map((subMenu) => ({
+          menuLabel: menu.label,
+          ...subMenu,
+        })),
+      ),
+    [],
+  );
+
   const edgeKey = useCallback((fromId: string, toId: string) => `${fromId}->${toId}`, []);
 
   const terminalEntries = useMemo(() => {
@@ -385,6 +457,11 @@ export const RPGGameMakerUILayout: React.FC = () => {
     }
     return entries.filter((entry) => entry.channel === terminalFilter);
   }, [state.outputLog, terminalFilter]);
+
+  const activeSourceFile = useMemo(
+    () => sourceFiles.find((entry) => entry.id === activeSourceFileId) || null,
+    [activeSourceFileId, sourceFiles],
+  );
 
   const toNodeRect = useCallback((node: BlueprintNodeModel) => {
     return {
@@ -425,6 +502,86 @@ export const RPGGameMakerUILayout: React.FC = () => {
       outputLog: [...prev.outputLog.slice(-59), message],
     }));
   }, []);
+
+  const openSourceInIde = useCallback(
+    (filename: string, content: string) => {
+      const language = inferSourceLanguage(filename);
+      const fileId = `source:${filename}`;
+      const diagnostics = sourceDiagnostics(content, language);
+      setSourceFiles((prev) => {
+        const existing = prev.find((entry) => entry.id === fileId);
+        if (existing) {
+          return prev.map((entry) =>
+            entry.id === fileId
+              ? { ...entry, content, dirty: false, diagnostics }
+              : entry,
+          );
+        }
+        return [
+          ...prev,
+          {
+            id: fileId,
+            name: filename,
+            language,
+            content,
+            dirty: false,
+            diagnostics,
+          },
+        ];
+      });
+      setActiveSourceFileId(fileId);
+      appendLog(`[IDE] Opened source file: ${filename}`);
+    },
+    [appendLog],
+  );
+
+  const runSourceDiagnostics = useCallback(() => {
+    if (!activeSourceFile) return;
+    const diagnostics = sourceDiagnostics(
+      activeSourceFile.content,
+      activeSourceFile.language,
+    );
+    setSourceFiles((prev) =>
+      prev.map((entry) =>
+        entry.id === activeSourceFile.id ? { ...entry, diagnostics } : entry,
+      ),
+    );
+    appendLog(
+      diagnostics[0] === "No diagnostics"
+        ? `[IDE] Build check passed: ${activeSourceFile.name}`
+        : `[WARN] ${activeSourceFile.name}: ${diagnostics.join("; ")}`,
+    );
+  }, [activeSourceFile, appendLog]);
+
+  const applySourceReplace = useCallback(() => {
+    if (!activeSourceFile || !sourceSearch) return;
+    const replaced = activeSourceFile.content.split(sourceSearch).join(sourceReplace);
+    if (replaced === activeSourceFile.content) {
+      appendLog(`[IDE] No matches for '${sourceSearch}'`);
+      return;
+    }
+    setSourceFiles((prev) =>
+      prev.map((entry) =>
+        entry.id === activeSourceFile.id
+          ? { ...entry, content: replaced, dirty: true }
+          : entry,
+      ),
+    );
+    appendLog(
+      `[IDE] Replaced '${sourceSearch}' with '${sourceReplace}' in ${activeSourceFile.name}`,
+    );
+  }, [activeSourceFile, appendLog, sourceReplace, sourceSearch]);
+
+  const runRpgSubMenuAction = useCallback(
+    (subMenu: RPGSubMenuDefinition, actionLabel: string, functionName: string) => {
+      appendLog(`[RPG] ${subMenu.label} -> ${actionLabel}`);
+      appendLog(`[RPG] call ${functionName}`);
+      if (functionName.toLowerCase().includes("debug")) {
+        appendLog("[WARN] Debug action toggled for runtime tracing");
+      }
+    },
+    [appendLog],
+  );
 
   const saveLayout = useCallback(() => {
     const payload: SavedLayout = {
@@ -495,12 +652,21 @@ export const RPGGameMakerUILayout: React.FC = () => {
         loadLayout();
       } else if (item === "Reset Layout") {
         resetLayout();
+      } else if (item === "C Script Editor") {
+        openSourceInIde(
+          "script_main.c",
+          "void script_main(void) {\n  // TODO: Add RPG event script\n}\n",
+        );
+        setState((prev) => runMenuCommand(prev, menuLabel, item));
+      } else if (item === "Compile C Scripts") {
+        runSourceDiagnostics();
+        setState((prev) => runMenuCommand(prev, menuLabel, item));
       } else {
         setState((prev) => runMenuCommand(prev, menuLabel, item));
       }
       setOpenMenu(null);
     },
-    [loadLayout, resetLayout, saveLayout],
+    [loadLayout, openSourceInIde, resetLayout, runSourceDiagnostics, saveLayout],
   );
 
   const importSourceProgram = useCallback(
@@ -529,6 +695,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
 
       const symbols =
         kind === "c" ? parseCFunctions(source) : parseAsmLabels(source);
+      openSourceInIde(filename, source);
 
       setState((prev) => {
         let next = prev;
@@ -593,7 +760,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
         ];
       });
     },
-    [appendLog],
+    [appendLog, openSourceInIde],
   );
 
   const getNextWindowZ = useCallback(
@@ -1302,9 +1469,15 @@ export const RPGGameMakerUILayout: React.FC = () => {
                     background:
                       state.activeTool === action ? "#2563eb" : buttonStyle.background,
                   }}
-                  onClick={() =>
-                    setState((prev) => runToolbarAction(prev, group.name, action))
-                  }
+                  onClick={() => {
+                    if (group.name === "Blueprint" && action === "Compile") {
+                      runSourceDiagnostics();
+                    }
+                    if (group.name === "Blueprint" && action === "Debug") {
+                      appendLog("[RPG] Blueprint debugger activated");
+                    }
+                    setState((prev) => runToolbarAction(prev, group.name, action));
+                  }}
                 >
                   {action}
                 </button>
@@ -1415,7 +1588,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateRows: "58% 42%", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateRows: "46% 27% 27%", gap: 8 }}>
           <div
             style={{
               ...panelStyle,
@@ -1732,6 +1905,142 @@ export const RPGGameMakerUILayout: React.FC = () => {
               ))}
             </div>
           </div>
+
+          <div style={panelStyle}>
+            <div style={panelHeaderStyle}>
+              <span>Source Code IDE</span>
+              <div style={{ display: "flex", gap: 6 }}>
+                <button style={buttonStyle} onClick={() => void importSourceProgram("c")}>
+                  Open C
+                </button>
+                <button
+                  style={buttonStyle}
+                  onClick={() => void importSourceProgram("asm")}
+                >
+                  Open ASM
+                </button>
+                <button style={buttonStyle} onClick={runSourceDiagnostics}>
+                  Build Check
+                </button>
+              </div>
+            </div>
+            <div style={{ ...panelBodyStyle, display: "grid", gridTemplateRows: "30px 1fr 80px", gap: 8 }}>
+              <div style={{ display: "flex", gap: 6, overflowX: "auto" }}>
+                {sourceFiles.map((file) => (
+                  <button
+                    key={file.id}
+                    style={{
+                      ...buttonStyle,
+                      background:
+                        activeSourceFileId === file.id ? "#1d4ed8" : "#334155",
+                      whiteSpace: "nowrap",
+                    }}
+                    onClick={() => setActiveSourceFileId(file.id)}
+                  >
+                    {file.name}
+                    {file.dirty ? "*" : ""}
+                  </button>
+                ))}
+              </div>
+              <textarea
+                value={activeSourceFile?.content ?? ""}
+                onChange={(event) => {
+                  const nextValue = event.currentTarget.value;
+                  if (!activeSourceFile) return;
+                  setSourceFiles((prev) =>
+                    prev.map((entry) =>
+                      entry.id === activeSourceFile.id
+                        ? { ...entry, content: nextValue, dirty: true }
+                        : entry,
+                    ),
+                  );
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  resize: "none",
+                  borderRadius: 6,
+                  border: "1px solid #334155",
+                  background: "#020617",
+                  color: "#e2e8f0",
+                  fontFamily: "Consolas, monospace",
+                  fontSize: 12,
+                  padding: 8,
+                }}
+              />
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                <div style={{ border: "1px solid #334155", borderRadius: 6, padding: 8 }}>
+                  <div style={{ fontWeight: 700, marginBottom: 6 }}>Search/Replace</div>
+                  <div style={{ display: "flex", gap: 6, marginBottom: 6 }}>
+                    <input
+                      value={sourceSearch}
+                      placeholder="Find"
+                      onChange={(event) => setSourceSearch(event.currentTarget.value)}
+                      style={{ ...buttonStyle, width: "100%", cursor: "text", textAlign: "left" }}
+                    />
+                    <input
+                      value={sourceReplace}
+                      placeholder="Replace"
+                      onChange={(event) => setSourceReplace(event.currentTarget.value)}
+                      style={{ ...buttonStyle, width: "100%", cursor: "text", textAlign: "left" }}
+                    />
+                    <button style={buttonStyle} onClick={applySourceReplace}>
+                      Apply
+                    </button>
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button
+                      style={buttonStyle}
+                      onClick={() => {
+                        if (!activeSourceFile) return;
+                        setSourceFiles((prev) =>
+                          prev.map((entry) =>
+                            entry.id === activeSourceFile.id
+                              ? {
+                                  ...entry,
+                                  content: entry.content
+                                    .split(/\r?\n/)
+                                    .map((line) => line.replace(/\s+$/g, ""))
+                                    .join("\n"),
+                                  dirty: true,
+                                }
+                              : entry,
+                          ),
+                        );
+                        appendLog(`[IDE] Formatted ${activeSourceFile.name}`);
+                      }}
+                    >
+                      Format
+                    </button>
+                    <button
+                      style={buttonStyle}
+                      onClick={() => {
+                        if (!activeSourceFile) return;
+                        setSourceFiles((prev) =>
+                          prev.map((entry) =>
+                            entry.id === activeSourceFile.id
+                              ? { ...entry, dirty: false }
+                              : entry,
+                          ),
+                        );
+                        appendLog(`[IDE] Saved ${activeSourceFile.name}`);
+                      }}
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+                <div style={{ border: "1px solid #334155", borderRadius: 6, padding: 8 }}>
+                  <div style={{ fontWeight: 700, marginBottom: 6 }}>Diagnostics</div>
+                  {(activeSourceFile?.diagnostics ?? ["No file selected"]).map((diagnostic) => (
+                    <div key={diagnostic} style={listRowStyle}>
+                      {diagnostic}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div style={{ display: "grid", gridTemplateRows: "1fr 1fr 1fr", gap: 8 }}>
@@ -1895,11 +2204,35 @@ export const RPGGameMakerUILayout: React.FC = () => {
                 </div>
               ))}
               <div style={{ marginTop: 10, fontWeight: 700 }}>Sub Menus</div>
-              {linkedRPGSubMenus.slice(0, 24).map((subMenu) => (
-                <div key={subMenu} style={listRowStyle}>
-                  {subMenu}
+              {flatRpgSubMenus.map((subMenu) => (
+                <div
+                  key={`${subMenu.menuLabel}-${subMenu.id}`}
+                  style={listRowStyle}
+                  onClick={() =>
+                    appendLog(`[RPG] Submenu opened: ${subMenu.menuLabel} > ${subMenu.label}`)
+                  }
+                >
+                  {subMenu.menuLabel}
+                  {" > "}
+                  {subMenu.label}
                 </div>
               ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                Sub Menu Actions
+              </div>
+              {flatRpgSubMenus.flatMap((subMenu) =>
+                subMenu.actions.map((action) => (
+                  <div
+                    key={`${subMenu.id}-${action.id}`}
+                    style={listRowStyle}
+                    onClick={() =>
+                      runRpgSubMenuAction(subMenu, action.label, action.functionName)
+                    }
+                  >
+                    {subMenu.label}: {action.label}
+                  </div>
+                ))
+              )}
               <div style={{ marginTop: 10, fontWeight: 700 }}>Menu Functions</div>
               {linkedRPGMenuFunctions.slice(0, 24).map((fn) => (
                 <div key={fn} style={listRowStyle}>
@@ -1929,8 +2262,15 @@ export const RPGGameMakerUILayout: React.FC = () => {
               <div style={{ marginTop: 10, fontWeight: 700 }}>
                 Registered RPG Tools
               </div>
-              {linkedRPGInputTools.slice(0, 40).map((tool) => (
-                <div key={tool} style={listRowStyle}>
+              {linkedRPGInputTools.map((tool) => (
+                <div
+                  key={tool}
+                  style={listRowStyle}
+                  onClick={() => {
+                    appendLog(`[RPG] Tool opened: ${tool}`);
+                    setState((prev) => ({ ...prev, activeTool: tool, modified: true }));
+                  }}
+                >
                   {tool}
                 </div>
               ))}
