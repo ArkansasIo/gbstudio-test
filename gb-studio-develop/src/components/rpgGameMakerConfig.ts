@@ -9,6 +9,17 @@ import {
   RPG_SYSTEM_MENUS,
   RPG_SYSTEM_SUB_MENUS,
 } from "app/rpg/systemMenus";
+import { RPG_TOOL_LABELS } from "app/rpg/input";
+import {
+  DND5E_ABILITIES,
+  DND5E_ACTION_ECONOMY,
+  DND5E_CONDITIONS,
+  DND5E_CORE_CLASSES,
+  DND5E_CORE_RULE_NOTES,
+  DND5E_DAMAGE_TYPES,
+  DND5E_RPG_FIELD_TEMPLATES,
+  DND5E_SKILLS,
+} from "shared/lib/rpg5e/systemFields";
 
 export type MenuDefinition = {
   label: string;
@@ -338,3 +349,33 @@ export const linkedRPGEngineLogicTools = RPG_ENGINE_LOGIC_TOOLS.map(
 );
 
 export const linkedRPGEngineFunctions = RPG_ENGINE_FUNCTIONS;
+
+export const linkedRPGInputTools = RPG_TOOL_LABELS;
+
+export const linkedDnd5eAbilities = DND5E_ABILITIES.map(
+  (ability) => `${ability.name} (${ability.abbreviation})`,
+);
+
+export const linkedDnd5eSkills = DND5E_SKILLS.map(
+  (skill) => `${skill.name} [${skill.ability}]`,
+);
+
+export const linkedDnd5eClasses = DND5E_CORE_CLASSES.map(
+  (dndClass) =>
+    `${dndClass.name}: hit die ${dndClass.hitDie}, saves ${dndClass.savingThrows.join(
+      "/",
+    )}, casting ${dndClass.progression}`,
+);
+
+export const linkedDnd5eConditions = [...DND5E_CONDITIONS];
+
+export const linkedDnd5eDamageTypes = [...DND5E_DAMAGE_TYPES];
+
+export const linkedDnd5eActionEconomy = [...DND5E_ACTION_ECONOMY];
+
+export const linkedDnd5eRuleNotes = [...DND5E_CORE_RULE_NOTES];
+
+export const linkedDnd5eSystemFields = DND5E_RPG_FIELD_TEMPLATES.flatMap(
+  (template) =>
+    template.fields.map((field) => `${template.category}: ${field}`),
+);

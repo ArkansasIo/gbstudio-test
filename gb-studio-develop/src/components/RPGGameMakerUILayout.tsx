@@ -28,9 +28,18 @@ import {
   linkedRPGEngineLogicTools,
   linkedRPGFeatureCapabilities,
   linkedRPGFeatureNames,
+  linkedRPGInputTools,
   linkedRPGMenuFunctions,
   linkedRPGSubMenus,
   linkedRPGSystemMenus,
+  linkedDnd5eAbilities,
+  linkedDnd5eActionEconomy,
+  linkedDnd5eClasses,
+  linkedDnd5eConditions,
+  linkedDnd5eDamageTypes,
+  linkedDnd5eRuleNotes,
+  linkedDnd5eSkills,
+  linkedDnd5eSystemFields,
   unrealToolbar,
   unrealTopMenus,
 } from "./rpgGameMakerConfig";
@@ -732,6 +741,70 @@ export const RPGGameMakerUILayout: React.FC = () => {
               {linkedRPGEngineFunctions.slice(0, 30).map((fn) => (
                 <div key={fn} style={listRowStyle}>
                   {fn}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                Registered RPG Tools
+              </div>
+              {linkedRPGInputTools.slice(0, 40).map((tool) => (
+                <div key={tool} style={listRowStyle}>
+                  {tool}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>DnD5E Abilities</div>
+              {linkedDnd5eAbilities.map((ability) => (
+                <div key={ability} style={listRowStyle}>
+                  {ability}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>DnD5E Skills</div>
+              {linkedDnd5eSkills.map((skill) => (
+                <div key={skill} style={listRowStyle}>
+                  {skill}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>DnD5E Classes</div>
+              {linkedDnd5eClasses.map((dndClass) => (
+                <div key={dndClass} style={listRowStyle}>
+                  {dndClass}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                DnD5E Action Economy
+              </div>
+              {linkedDnd5eActionEconomy.map((actionType) => (
+                <div key={actionType} style={listRowStyle}>
+                  {actionType}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>DnD5E Conditions</div>
+              {linkedDnd5eConditions.map((condition) => (
+                <div key={condition} style={listRowStyle}>
+                  {condition}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                DnD5E Damage Types
+              </div>
+              {linkedDnd5eDamageTypes.map((damageType) => (
+                <div key={damageType} style={listRowStyle}>
+                  {damageType}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                DnD5E Core Rule Notes
+              </div>
+              {linkedDnd5eRuleNotes.map((rule) => (
+                <div key={rule} style={listRowStyle}>
+                  {rule}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                DnD5E RPG System Fields
+              </div>
+              {linkedDnd5eSystemFields.slice(0, 120).map((field) => (
+                <div key={field} style={listRowStyle}>
+                  {field}
                 </div>
               ))}
               <div style={{ marginTop: 10, fontWeight: 700 }}>Tool Links</div>
