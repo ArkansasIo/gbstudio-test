@@ -3,9 +3,16 @@ import logoFile from "ui/icons/app_icon_256.png";
 
 interface BootScreenProps {
   message?: string;
+  progress?: number;
 }
 
-const BootScreen = ({ message = "Booting Enchantment Game Engine..." }: BootScreenProps) => {
+const clampProgress = (progress: number) => Math.max(6, Math.min(100, progress));
+
+const BootScreen = ({
+  message = "Booting Enchantment Game Engine...",
+  progress = 26,
+}: BootScreenProps) => {
+  const safeProgress = clampProgress(progress);
   return (
     <div
       style={{
@@ -47,6 +54,7 @@ const BootScreen = ({ message = "Booting Enchantment Game Engine..." }: BootScre
           Enchantment Game Engine
         </div>
         <div style={{ fontSize: 12, color: "#93a3b8" }}>{message}</div>
+        <div style={{ fontSize: 10, color: "#8bb0c8" }}>Initializing project manager...</div>
         <div
           style={{
             marginTop: 6,
@@ -59,10 +67,11 @@ const BootScreen = ({ message = "Booting Enchantment Game Engine..." }: BootScre
         >
           <div
             style={{
-              width: "42%",
+              width: `${safeProgress}%`,
               height: "100%",
               borderRadius: 999,
               background: "linear-gradient(90deg, #f59e0b 0%, #3b82f6 100%)",
+              transition: "width 0.25s ease-in-out",
               animation: "egs_boot_pulse 1.15s ease-in-out infinite alternate",
             }}
           />

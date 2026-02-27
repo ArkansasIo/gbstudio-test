@@ -1,14 +1,16 @@
 import {
-  RPG_COLOR_PROFILES,
-  RPG_SETTING_GROUPS,
-  RPG_SETTINGS_PRESETS,
-  type RPGSettingValue,
   blueprintGraph,
   blueprintNodeCatalog,
   unrealPanels,
   unrealToolbar,
   unrealTopMenus,
 } from "./rpgGameMakerConfig";
+import {
+  RPG_COLOR_PROFILES,
+  RPG_SETTING_GROUPS,
+  RPG_SETTINGS_PRESETS,
+  type RPGSettingValue,
+} from "app/rpg/input";
 import {
   editorThemes,
   leftSidebarLists,

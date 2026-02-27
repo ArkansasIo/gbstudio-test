@@ -30,8 +30,9 @@ export const SplashWindow = ({ focus, children }: SplashWindowProps) => {
 export const SplashSidebar = styled.div`
   display: flex;
   flex-direction: column;
-  background: ${(props) => props.theme.colors.sidebar.background};
-  width: 200px;
+  background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+  border-right: 1px solid rgba(148, 163, 184, 0.18);
+  width: 232px;
   height: 100%;
   flex-shrink: 0;
   -webkit-app-region: drag;
@@ -41,9 +42,9 @@ export const SplashContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  background: ${(props) => props.theme.colors.background};
-  color: ${(props) => props.theme.colors.text};
-  padding: 20px;
+  background: linear-gradient(180deg, #0f172a 0%, #111827 52%, #0b1220 100%);
+  color: #e2e8f0;
+  padding: 20px 24px;
   flex-grow: 1;
   -webkit-app-region: drag;
   input,
@@ -62,7 +63,11 @@ export const SplashForm = styled.form`
 
 export const SplashLogo = styled.div`
   position: relative;
-  margin: 35px 20px 5px;
+  margin: 24px 18px 8px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.22);
   transition: transform 0.2s ease-in-out;
 
   img {
@@ -104,10 +109,11 @@ export const SplashEasterEggButton = styled.button`
 `;
 
 const SplashAppTitleWrapper = styled.div`
-  color: ${(props) => props.theme.colors.secondaryText};
+  color: #9fb5ce;
   font-size: 11px;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+  letter-spacing: 0.3px;
   div {
     user-select: text;
   }
@@ -140,11 +146,14 @@ export const SplashTab = ({ selected, ...props }: SplashTabProps) => (
 export const SplashOpenButton = styled(Button).attrs(() => ({
   variant: "transparent",
 }))`
-  color: ${(props) => props.theme.colors.text};
+  color: #e2e8f0;
   font-size: 13px;
   justify-content: flex-start;
-  padding: 5px;
-  margin: 15px;
+  padding: 8px 10px;
+  margin: 14px 12px 18px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.5);
   -webkit-app-region: no-drag;
 `;
 
@@ -372,7 +381,7 @@ export const SplashTemplateSelect: FC<SplashTemplateSelectProps> = ({
 };
 
 export const SplashCreateButton = styled.div`
-  padding: 0px 10px;
+  padding: 0 2px;
 `;
 
 export const SplashScroll = styled.div`
@@ -380,8 +389,9 @@ export const SplashScroll = styled.div`
   height: 100%;
   overflow: auto;
   box-sizing: border-box;
-  background: ${(props) => props.theme.colors.background};
-  color: ${(props) => props.theme.colors.text};
+  padding: 10px 8px;
+  background: transparent;
+  color: #e2e8f0;
   position: relative;
 
   h2 {
@@ -421,14 +431,14 @@ interface SplashProjectProps {
 
 const SplashProjectRemoveButton = styled.div`
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 10px;
+  right: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: opacity 0.2s ease-in-out;
   transition-delay: 0.2s;
-  background: ${(props) => props.theme.colors.input.background};
+  background: rgba(15, 23, 42, 0.66);
   border: 0;
   border-radius: 4px;
   width: 25px;
@@ -454,12 +464,12 @@ const SplashProjectWrapper = styled.button`
   position: relative;
   display: flex;
   text-align: left;
-  background: ${(props) => props.theme.colors.input.background};
-  color: ${(props) => props.theme.colors.text};
-  border: 0;
-  border-bottom: 1px solid ${(props) => props.theme.colors.input.border};
-  border-radius: 0px;
-  padding: 15px 30px;
+  background: rgba(15, 23, 42, 0.7);
+  color: #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding: 16px 44px 16px 16px;
   width: 100%;
 
   img {
@@ -472,14 +482,15 @@ const SplashProjectWrapper = styled.button`
   }
 
   &:hover {
-    background: ${(props) => props.theme.colors.input.hoverBackground};
+    background: rgba(30, 41, 59, 0.84);
+    border-color: rgba(59, 130, 246, 0.7);
     ${SplashProjectRemoveButton} {
       opacity: 1;
     }
   }
 
   &:active {
-    background: ${(props) => props.theme.colors.input.activeBackground};
+    background: rgba(37, 99, 235, 0.2);
   }
 
   &:focus {
@@ -521,6 +532,7 @@ const SplashProjectPath = styled.span`
 export const SplashLoading = styled.form`
   display: flex;
   flex-direction: column;
+  gap: 4px;
   width: 100%;
   height: 100%;
   align-items: center;

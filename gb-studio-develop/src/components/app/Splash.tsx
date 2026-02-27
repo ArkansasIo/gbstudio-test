@@ -75,6 +75,16 @@ const toSplashTab = (tab: string): SplashTabSection => {
   return "new";
 };
 
+const splashHeroStyle: React.CSSProperties = {
+  width: "100%",
+  borderRadius: 12,
+  border: "1px solid rgba(148,163,184,0.24)",
+  background:
+    "linear-gradient(135deg, rgba(30,64,175,0.24) 0%, rgba(15,23,42,0.64) 56%, rgba(20,184,166,0.18) 100%)",
+  padding: "14px 16px",
+  marginBottom: 14,
+};
+
 const Splash = () => {
   const [loading, setLoading] = useState(true);
   const [templateId, setTemplateId] = useState("gbs2");
@@ -302,6 +312,15 @@ const Splash = () => {
         {section === "new" && (
           <SplashContent>
             <SplashForm onSubmit={onSubmit}>
+              <div style={splashHeroStyle}>
+                <div style={{ fontSize: 18, fontWeight: 700 }}>
+                  Project Manager
+                </div>
+                <div style={{ fontSize: 12, color: "#9fb5ce", marginTop: 4 }}>
+                  Create a new Enchantment Game Engine project with templates and
+                  starter workflows.
+                </div>
+              </div>
               <FormRow>
                 <TextField
                   name="name"
@@ -353,6 +372,14 @@ const Splash = () => {
 
         {section === "recent" && (
           <SplashScroll>
+            <div style={splashHeroStyle}>
+              <div style={{ fontSize: 18, fontWeight: 700 }}>
+                Recent Projects
+              </div>
+              <div style={{ fontSize: 12, color: "#9fb5ce", marginTop: 4 }}>
+                Resume existing projects, clean entries, or open another folder.
+              </div>
+            </div>
             {recentProjects.map((project, index) => (
               <SplashProject
                 key={index}
