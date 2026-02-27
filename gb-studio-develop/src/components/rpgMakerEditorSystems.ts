@@ -182,6 +182,212 @@ const appendBattlePreview = (state: EditorState): EditorState => {
   );
 };
 
+const parseRpgFunctionCall = (
+  functionName: string,
+): { name: string; args: string[] } => {
+  const match = functionName.match(/^([A-Za-z_]\w*)\((.*)\)$/);
+  if (!match) {
+    return { name: functionName.trim(), args: [] };
+  }
+  const args = match[2]
+    .split(",")
+    .map((arg) => arg.trim())
+    .filter(Boolean);
+  return { name: match[1], args };
+};
+
+export const executeRpgMenuFunction = (
+  state: EditorState,
+  functionName: string,
+  sourceLabel?: string,
+): EditorState => {
+  const parsed = parseRpgFunctionCall(functionName);
+  const withCallLog = appendLog(
+    state,
+    `[RPG] ${sourceLabel || "Action"} -> ${parsed.name}(${parsed.args.join(", ")})`,
+  );
+
+  if (parsed.name === "startNewGame") {
+    return appendLog(
+      {
+        ...withCallLog,
+        projectName: "Adventure_08bit",
+        mapName: "Start_Map",
+        layerName: "FG",
+        selectedAssetId: null,
+        selectedOutlinerId: null,
+        selectedBlueprintNodeId: null,
+        modified: false,
+      },
+      "Runtime start state initialized",
+    );
+  }
+  if (parsed.name === "continueFromSave" || parsed.name === "loadGame") {
+    return appendLog(withCallLog, "Loaded latest save slot snapshot");
+  }
+  if (parsed.name === "saveGame") {
+    return appendLog(
+      {
+        ...withCallLog,
+        modified: false,
+      },
+      "Save data written to active slot",
+    );
+  }
+  if (parsed.name === "quitToTitle") {
+    return appendLog(
+      {
+        ...withCallLog,
+        selectedMenu: "File",
+      },
+      "Returned to title/menu context",
+    );
+  }
+  if (
+    parsed.name === "openOptionsMenu" ||
+    parsed.name === "openTutorialMenu" ||
+    parsed.name === "openPartyMenu" ||
+    parsed.name === "openInventoryMenu" ||
+    parsed.name === "openSkillsMenu" ||
+    parsed.name === "openCharacterStats" ||
+    parsed.name === "openQuestJournal" ||
+    parsed.name === "openDebugMenu" ||
+    parsed.name === "openBestiary" ||
+    parsed.name === "openGallery" ||
+    parsed.name === "openCreditsRoll"
+  ) {
+    return appendLog(withCallLog, `Opened UI panel: ${parsed.name}`);
+  }
+  if (parsed.name === "allocateStatPoints") {
+    return appendLog(
+      {
+        ...withCallLog,
+        modified: true,
+      },
+      "Allocated available stat points",
+    );
+  }
+  if (parsed.name === "equipItem" || parsed.name === "unequipItem") {
+    return appendLog(
+      {
+        ...withCallLog,
+        modified: true,
+      },
+      `Equipment state updated via ${parsed.name}`,
+    );
+  }
+  if (parsed.name === "openWorldMap") {
+    return appendLog(
+      {
+        ...withCallLog,
+        mapName: "World_Map",
+      },
+      "World map opened",
+    );
+  }
+  if (parsed.name === "fastTravel") {
+    return appendLog(
+      {
+        ...withCallLog,
+        mapName: "FastTravel_Node",
+        modified: true,
+      },
+      "Fast travel completed",
+    );
+  }
+  if (parsed.name === "setActiveQuest") {
+    return appendLog(
+      {
+        ...withCallLog,
+        activeTool: "Quest Tracker",
+      },
+      "Quest tracker updated",
+    );
+  }
+  if (parsed.name === "battleAttack") {
+    const damage = wolfmanAlphaDamage(
+      { atk: 22, def: 8, level: 5 },
+      { atk: 17, def: 12, level: 4 },
+    );
+    return appendLog(withCallLog, wolfmanAlphaDebugLine(`battleAttack damage=${damage}`));
+  }
+  if (parsed.name === "battleUseSkill") {
+    const damage = wolfmanAlphaDamage(
+      { atk: 28, def: 10, level: 6 },
+      { atk: 15, def: 9, level: 4 },
+    );
+    return appendLog(withCallLog, wolfmanAlphaDebugLine(`battleUseSkill damage=${damage}`));
+  }
+  if (parsed.name === "battleUseItem") {
+    return appendLog(withCallLog, "Battle item consumed and effects applied");
+  }
+  if (parsed.name === "battleGuard") {
+    return appendLog(withCallLog, "Guard stance enabled for current turn");
+  }
+  if (parsed.name === "battleSummon") {
+    return appendLog(
+      withCallLog,
+      wolfmanAlphaDebugLine("Summon command resolved and queued"),
+    );
+  }
+  if (parsed.name === "battleAttemptEscape") {
+    return appendLog(withCallLog, "Escape roll executed");
+  }
+  if (parsed.name === "setLanguage") {
+    return appendLog(withCallLog, "Language setting updated");
+  }
+  if (parsed.name === "applyAccessibilityPreset") {
+    return appendLog(
+      {
+        ...withCallLog,
+        modified: true,
+      },
+      "Accessibility preset applied",
+    );
+  }
+
+  if (
+    parsed.name.startsWith("open") ||
+    parsed.name.startsWith("create") ||
+    parsed.name.startsWith("invite") ||
+    parsed.name.startsWith("join") ||
+    parsed.name.startsWith("start")
+  ) {
+    return appendLog(
+      {
+        ...withCallLog,
+        modified: true,
+      },
+      `Executed system action: ${parsed.name}`,
+    );
+  }
+
+  if (
+    parsed.name.startsWith("claim") ||
+    parsed.name.startsWith("send") ||
+    parsed.name.startsWith("set") ||
+    parsed.name.startsWith("toggle")
+  ) {
+    return appendLog(
+      {
+        ...withCallLog,
+        modified: true,
+      },
+      `Applied runtime update: ${parsed.name}`,
+    );
+  }
+
+  if (
+    parsed.name.startsWith("run") ||
+    parsed.name.startsWith("suspend") ||
+    parsed.name.startsWith("block")
+  ) {
+    return appendLog(withCallLog, `Operations command executed: ${parsed.name}`);
+  }
+
+  return appendLog(withCallLog, `[WARN] Unhandled RPG function: ${parsed.name}`);
+};
+
 const nextNodeId = (nodes: BlueprintNodeModel[]): string => {
   const maxId = nodes.reduce((max, node) => {
     const numeric = parseInt(node.id.replace("n", ""), 10);

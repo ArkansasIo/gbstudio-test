@@ -1,5 +1,4 @@
 import React from "react";
-import logoFile from "ui/icons/app_icon_256.png";
 
 interface BootScreenProps {
   message?: string;
@@ -44,12 +43,30 @@ const BootScreen = ({
           gap: 12,
         }}
       >
-        <img
-          src={logoFile}
-          alt="Enchantment Game Engine"
-          draggable={false}
-          style={{ width: 132, height: 132, objectFit: "contain" }}
-        />
+        <div
+          style={{
+            width: 132,
+            height: 132,
+            borderRadius: 16,
+            border: "1px solid #475569",
+            background:
+              "linear-gradient(160deg, rgba(245,158,11,0.22) 0%, rgba(59,130,246,0.24) 100%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            padding: 10,
+            fontSize: 13,
+            fontWeight: 800,
+            letterSpacing: 0.35,
+            lineHeight: 1.15,
+            color: "#f8fafc",
+          }}
+        >
+          ENCHANTMENT
+          <br />
+          GAME ENGINE
+        </div>
         <div style={{ fontSize: 19, fontWeight: 700, letterSpacing: 0.2 }}>
           Enchantment Game Engine
         </div>

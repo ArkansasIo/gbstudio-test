@@ -1,7 +1,6 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
 import l10n from "shared/lib/lang/l10n";
-import logoFile from "ui/icons/app_icon_256.png";
 
 const fadeIn = keyframes`
 from {
@@ -39,10 +38,25 @@ const Card = styled.div`
   gap: 10px;
 `;
 
-const Logo = styled.img`
+const Logo = styled.div`
   width: 108px;
   height: 108px;
-  object-fit: contain;
+  border-radius: 14px;
+  border: 1px solid #475569;
+  background: linear-gradient(
+    155deg,
+    rgba(245, 158, 11, 0.2) 0%,
+    rgba(59, 130, 246, 0.22) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.25px;
+  line-height: 1.2;
+  color: #f8fafc;
 `;
 
 const Title = styled.div`
@@ -59,7 +73,11 @@ const Message = styled.div`
 const LoadingPane = () => (
   <Wrapper>
     <Card>
-      <Logo src={logoFile} alt="Enchantment Game Engine" draggable={false} />
+      <Logo>
+        ENCHANTMENT
+        <br />
+        ENGINE
+      </Logo>
       <Title>Enchantment Game Engine</Title>
       <Message>{l10n("FIELD_LOADING")}</Message>
     </Card>

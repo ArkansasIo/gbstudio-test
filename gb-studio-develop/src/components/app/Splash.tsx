@@ -20,7 +20,6 @@ import {
 } from "ui/splash/Splash";
 import GlobalStyle from "ui/globalStyle";
 import ThemeProvider from "ui/theme/ThemeProvider";
-import logoFile from "ui/icons/app_icon_256.png";
 import { FormField, FormRow } from "ui/form/layout/FormLayout";
 import { TextField } from "ui/form/TextField";
 import { DotsIcon, LoadingIcon } from "ui/icons/Icons";
@@ -256,7 +255,29 @@ const Splash = () => {
       <SplashWindow focus={windowFocus}>
         <SplashSidebar>
           <SplashLogo>
-            <img src={logoFile} alt="Enchantment Game Engine" draggable={false} />
+            <div
+              style={{
+                width: 86,
+                height: 86,
+                borderRadius: 14,
+                border: "1px solid #4a5f79",
+                background:
+                  "linear-gradient(150deg, rgba(245,158,11,0.2) 0%, rgba(59,130,246,0.22) 100%)",
+                color: "#f8fafc",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                fontSize: 11,
+                fontWeight: 800,
+                lineHeight: 1.2,
+                letterSpacing: 0.25,
+              }}
+            >
+              ENCHANTMENT
+              <br />
+              ENGINE
+            </div>
           </SplashLogo>
           <SplashAppTitle />
           <SplashTab
@@ -285,12 +306,29 @@ const Splash = () => {
         {loading && !section && (
           <SplashContent>
             <SplashLoading>
-              <img
-                src={logoFile}
-                alt="Enchantment Game Engine"
-                draggable={false}
-                style={{ width: 120, height: 120, objectFit: "contain" }}
-              />
+              <div
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: 16,
+                  border: "1px solid #4a5f79",
+                  background:
+                    "linear-gradient(150deg, rgba(245,158,11,0.2) 0%, rgba(59,130,246,0.22) 100%)",
+                  color: "#f8fafc",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  fontSize: 13,
+                  fontWeight: 800,
+                  lineHeight: 1.2,
+                  letterSpacing: 0.3,
+                }}
+              >
+                ENCHANTMENT
+                <br />
+                GAME ENGINE
+              </div>
               <div
                 style={{
                   marginTop: 8,

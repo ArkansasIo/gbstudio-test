@@ -6,3 +6,6 @@ export * from "./functionRegistry";
 export * from "./colorProfiles";
 export * from "./settingsCatalog";
 export * from "./settingsPresets";
+export * from "./premadeSystems";
+export * from "./pluginSystems";
+export * from "./templateLibrary";

@@ -2,7 +2,6 @@ import React, { useLayoutEffect, useRef, useState, FC } from "react";
 import l10n from "shared/lib/lang/l10n";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
-import projectIcon from "ui/icons/gbsproj.png";
 import { CloseIcon } from "ui/icons/Icons";
 import { StyledSplashTab, StyledSplashWindow } from "ui/splash/style";
 import type { TemplatePlugin } from "lib/templates/templateManager";
@@ -472,11 +471,6 @@ const SplashProjectWrapper = styled.button`
   padding: 16px 44px 16px 16px;
   width: 100%;
 
-  img {
-    width: 42px;
-    margin-right: 10px;
-  }
-
   ${SplashProjectRemoveButton} {
     opacity: 0;
   }
@@ -508,6 +502,26 @@ const SplashProjectDetails = styled.span`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+`;
+
+const SplashProjectBadge = styled.span`
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: linear-gradient(
+    150deg,
+    rgba(245, 158, 11, 0.2) 0%,
+    rgba(59, 130, 246, 0.24) 100%
+  );
+  color: #f8fafc;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
 `;
 
 const SplashProjectName = styled.span`
@@ -545,7 +559,7 @@ export const SplashProject: FC<SplashProjectProps> = ({
   onRemove,
 }) => (
   <SplashProjectWrapper onClick={onClick}>
-    <img src={projectIcon} alt="" draggable={false} />
+    <SplashProjectBadge>EGE</SplashProjectBadge>
     <SplashProjectDetails>
       <SplashProjectName>{project.name}</SplashProjectName>
       <SplashProjectPath>{project.dir}</SplashProjectPath>

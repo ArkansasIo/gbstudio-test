@@ -438,4 +438,343 @@ export const RPG_MENU_TREE: RPGMenuInputDefinition[] = [
       },
     ],
   },
+  {
+    id: "crafting-housing",
+    label: "Crafting, Gathering, and Housing Menus",
+    subMenus: [
+      {
+        id: "crafting-stations",
+        label: "Crafting Stations",
+        tools: [
+          {
+            id: "crafting-station-editor",
+            label: "Crafting Station Editor",
+            category: "authoring",
+            description: "Define station types, recipes, and upgrade tiers.",
+          },
+          {
+            id: "resource-node-editor",
+            label: "Resource Node Editor",
+            category: "authoring",
+            description: "Configure gatherable nodes, respawn rules, and loot.",
+          },
+        ],
+        actions: [
+          {
+            id: "open-crafting-book",
+            label: "Recipe Book",
+            functionName: "openCraftingBook()",
+          },
+          {
+            id: "craft-item",
+            label: "Craft Item",
+            functionName: "craftItem(recipeId)",
+          },
+          {
+            id: "salvage-item",
+            label: "Salvage",
+            functionName: "salvageItem(itemId)",
+          },
+        ],
+      },
+      {
+        id: "housing",
+        label: "Housing and Base Building",
+        tools: [
+          {
+            id: "housing-layout-editor",
+            label: "Housing Layout Editor",
+            category: "authoring",
+            description: "Build player housing floors, rooms, and props.",
+          },
+          {
+            id: "furniture-placement-grid",
+            label: "Furniture Placement Grid",
+            category: "authoring",
+            description: "Snap and validate furniture placement rules.",
+          },
+        ],
+        actions: [
+          {
+            id: "open-housing-menu",
+            label: "Housing",
+            functionName: "openHousingMenu()",
+          },
+          {
+            id: "place-furniture",
+            label: "Place Furniture",
+            functionName: "placeFurniture(furnitureId)",
+          },
+          {
+            id: "set-home-point",
+            label: "Set Home Point",
+            functionName: "setHomePoint(locationId)",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "mmorpg-social",
+    label: "MMORPG Social and Guild Menus",
+    subMenus: [
+      {
+        id: "social-chat",
+        label: "Chat and Presence",
+        tools: [
+          {
+            id: "chat-channel-manager",
+            label: "Chat Channel Manager",
+            category: "runtime",
+            description: "Create public/private channels and moderation rules.",
+          },
+          {
+            id: "presence-state-editor",
+            label: "Presence State Editor",
+            category: "runtime",
+            description: "Set online/away/busy social status behavior.",
+          },
+        ],
+        actions: [
+          {
+            id: "open-chat",
+            label: "Open Chat",
+            functionName: "openChatWindow(channelId)",
+          },
+          {
+            id: "send-chat",
+            label: "Send Message",
+            functionName: "sendChatMessage(channelId, text)",
+          },
+          {
+            id: "block-player",
+            label: "Block Player",
+            functionName: "blockPlayer(playerId)",
+          },
+        ],
+      },
+      {
+        id: "guild-clan",
+        label: "Guild and Clan",
+        tools: [
+          {
+            id: "guild-rank-editor",
+            label: "Guild Rank Editor",
+            category: "authoring",
+            description: "Define guild rank permissions and hierarchy.",
+          },
+          {
+            id: "guild-bank-auditor",
+            label: "Guild Bank Auditor",
+            category: "debug",
+            description: "Track deposits, withdrawals, and role limits.",
+          },
+        ],
+        actions: [
+          {
+            id: "open-guild",
+            label: "Open Guild Panel",
+            functionName: "openGuildPanel()",
+          },
+          {
+            id: "create-guild",
+            label: "Create Guild",
+            functionName: "createGuild(guildName)",
+          },
+          {
+            id: "invite-guild",
+            label: "Invite Member",
+            functionName: "inviteGuildMember(playerId)",
+          },
+          {
+            id: "start-guild-quest",
+            label: "Guild Quest",
+            functionName: "startGuildQuest(questId)",
+          },
+        ],
+      },
+      {
+        id: "party-lfg",
+        label: "Party Finder and Matchmaking",
+        tools: [
+          {
+            id: "matchmaking-rule-editor",
+            label: "Matchmaking Rule Editor",
+            category: "authoring",
+            description: "Set queue filters for role, level, and region.",
+          },
+          {
+            id: "lfg-board-moderator",
+            label: "LFG Board Moderator",
+            category: "debug",
+            description: "Inspect listings and anti-spam controls.",
+          },
+        ],
+        actions: [
+          {
+            id: "open-lfg",
+            label: "Open LFG",
+            functionName: "openLookingForGroup()",
+          },
+          {
+            id: "create-party-listing",
+            label: "Create Listing",
+            functionName: "createPartyListing(templateId)",
+          },
+          {
+            id: "join-party-listing",
+            label: "Join Listing",
+            functionName: "joinPartyListing(listingId)",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "mmorpg-liveops",
+    label: "MMORPG Live Ops and Seasonal Menus",
+    subMenus: [
+      {
+        id: "season-pass",
+        label: "Season Pass and Rewards",
+        tools: [
+          {
+            id: "season-track-editor",
+            label: "Season Track Editor",
+            category: "authoring",
+            description: "Define tiers, XP requirements, and claim windows.",
+          },
+          {
+            id: "reward-claim-debugger",
+            label: "Reward Claim Debugger",
+            category: "debug",
+            description: "Validate reward claims and duplicate protection.",
+          },
+        ],
+        actions: [
+          {
+            id: "open-season-pass",
+            label: "Season Pass",
+            functionName: "openSeasonPass()",
+          },
+          {
+            id: "claim-season-reward",
+            label: "Claim Reward",
+            functionName: "claimSeasonReward(tierId)",
+          },
+        ],
+      },
+      {
+        id: "events-calendar",
+        label: "Events and Rotations",
+        tools: [
+          {
+            id: "event-rotation-editor",
+            label: "Event Rotation Editor",
+            category: "authoring",
+            description: "Schedule dailies, weeklies, and timed challenges.",
+          },
+          {
+            id: "telemetry-kpi-viewer",
+            label: "Telemetry KPI Viewer",
+            category: "debug",
+            description: "Track retention, completion, and event economy impact.",
+          },
+        ],
+        actions: [
+          {
+            id: "open-events",
+            label: "Open Events",
+            functionName: "openEventCalendar()",
+          },
+          {
+            id: "start-world-event",
+            label: "Start World Event",
+            functionName: "startWorldEvent(eventId)",
+          },
+          {
+            id: "claim-daily",
+            label: "Claim Daily",
+            functionName: "claimDailyReward(dayKey)",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "system-admin",
+    label: "System Admin and Operations Menus",
+    subMenus: [
+      {
+        id: "server-ops",
+        label: "Server Operations",
+        tools: [
+          {
+            id: "server-shard-panel",
+            label: "Server Shard Panel",
+            category: "runtime",
+            description: "Inspect shard uptime, load, and channel health.",
+          },
+          {
+            id: "maintenance-mode-switch",
+            label: "Maintenance Mode Switch",
+            category: "build",
+            description: "Manage safe deploy and downtime windows.",
+          },
+        ],
+        actions: [
+          {
+            id: "open-server-status",
+            label: "Server Status",
+            functionName: "openServerStatus()",
+          },
+          {
+            id: "toggle-maintenance",
+            label: "Toggle Maintenance",
+            functionName: "toggleMaintenanceMode()",
+          },
+          {
+            id: "broadcast-message",
+            label: "Broadcast Message",
+            functionName: "broadcastSystemMessage(text)",
+          },
+        ],
+      },
+      {
+        id: "economy-security",
+        label: "Economy and Security",
+        tools: [
+          {
+            id: "economy-anomaly-detector",
+            label: "Economy Anomaly Detector",
+            category: "debug",
+            description: "Flags unusual market spikes and exploit signatures.",
+          },
+          {
+            id: "anti-cheat-rule-editor",
+            label: "Anti-Cheat Rule Editor",
+            category: "debug",
+            description: "Define suspicious activity triggers and responses.",
+          },
+        ],
+        actions: [
+          {
+            id: "open-economy-board",
+            label: "Economy Board",
+            functionName: "openEconomyBoard()",
+          },
+          {
+            id: "run-cheat-scan",
+            label: "Run Cheat Scan",
+            functionName: "runCheatScan(playerId)",
+          },
+          {
+            id: "suspend-account",
+            label: "Suspend Account",
+            functionName: "suspendAccount(playerId)",
+          },
+        ],
+      },
+    ],
+  },
 ];

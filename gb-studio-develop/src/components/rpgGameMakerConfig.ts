@@ -12,6 +12,8 @@ import {
 } from "app/rpg/systemMenus";
 import { RPG_TOOL_LABELS } from "app/rpg/input";
 import {
+  RPG_PLUGIN_TEMPLATE_LABELS,
+  RPG_PREMADE_SYSTEM_LABELS,
   RPG_COLOR_PROFILE_LABELS,
   RPG_COLOR_PROFILE_VARIABLES,
   RPG_SETTING_FUNCTIONS,
@@ -19,6 +21,7 @@ import {
   RPG_SETTING_LOGIC_NOTES,
   RPG_SETTING_OPTION_LABELS,
   RPG_SETTINGS_PRESET_LABELS,
+  RPG_TEMPLATE_LIBRARY_LABELS,
 } from "app/rpg/input";
 import {
   DND5E_ABILITIES,
@@ -364,6 +367,9 @@ export const linkedRPGEngineLogicTools = RPG_ENGINE_LOGIC_TOOLS.map(
 export const linkedRPGEngineFunctions = RPG_ENGINE_FUNCTIONS;
 
 export const linkedRPGInputTools = RPG_TOOL_LABELS;
+export const linkedRPGPremadeSystems = RPG_PREMADE_SYSTEM_LABELS;
+export const linkedRPGPluginTemplates = RPG_PLUGIN_TEMPLATE_LABELS;
+export const linkedRPGTemplateLibrary = RPG_TEMPLATE_LIBRARY_LABELS;
 
 export const linkedDnd5eAbilities = DND5E_ABILITIES.map(
   (ability) => `${ability.name} (${ability.abbreviation})`,

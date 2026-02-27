@@ -14,6 +14,7 @@ import {
   type BlueprintNodeModel,
   connectSelectedToLatestNode,
   createInitialEditorState,
+  executeRpgMenuFunction,
   openToolLink,
   removeSelectedBlueprintNode,
   runMenuCommand,
@@ -41,8 +42,11 @@ import {
   linkedRPGFeatureNames,
   linkedRPGInputTools,
   linkedRPGMenuFunctions,
+  linkedRPGPluginTemplates,
+  linkedRPGPremadeSystems,
   linkedRPGSystemMenuDefinitions,
   linkedRPGSystemMenus,
+  linkedRPGTemplateLibrary,
   linkedDnd5eAbilities,
   linkedDnd5eActionEconomy,
   linkedDnd5eClasses,
@@ -574,13 +578,15 @@ export const RPGGameMakerUILayout: React.FC = () => {
 
   const runRpgSubMenuAction = useCallback(
     (subMenu: RPGSubMenuDefinition, actionLabel: string, functionName: string) => {
-      appendLog(`[RPG] ${subMenu.label} -> ${actionLabel}`);
-      appendLog(`[RPG] call ${functionName}`);
-      if (functionName.toLowerCase().includes("debug")) {
-        appendLog("[WARN] Debug action toggled for runtime tracing");
-      }
+      setState((prev) =>
+        executeRpgMenuFunction(
+          prev,
+          functionName,
+          `${subMenu.label}: ${actionLabel}`,
+        ),
+      );
     },
-    [appendLog],
+    [],
   );
 
   const saveLayout = useCallback(() => {
@@ -2235,7 +2241,18 @@ export const RPGGameMakerUILayout: React.FC = () => {
               )}
               <div style={{ marginTop: 10, fontWeight: 700 }}>Menu Functions</div>
               {linkedRPGMenuFunctions.slice(0, 24).map((fn) => (
-                <div key={fn} style={listRowStyle}>
+                <div
+                  key={fn}
+                  style={listRowStyle}
+                  onClick={() => {
+                    const functionName = fn.includes(":")
+                      ? fn.slice(fn.lastIndexOf(":") + 1).trim()
+                      : fn;
+                    setState((prev) =>
+                      executeRpgMenuFunction(prev, functionName, "Menu Functions"),
+                    );
+                  }}
+                >
                   {fn}
                 </div>
               ))}
@@ -2272,6 +2289,42 @@ export const RPGGameMakerUILayout: React.FC = () => {
                   }}
                 >
                   {tool}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                Premade RPG/MMORPG Systems
+              </div>
+              {linkedRPGPremadeSystems.map((system) => (
+                <div
+                  key={system}
+                  style={listRowStyle}
+                  onClick={() => appendLog(`[RPG] Premade system loaded: ${system}`)}
+                >
+                  {system}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                Template Library
+              </div>
+              {linkedRPGTemplateLibrary.map((template) => (
+                <div
+                  key={template}
+                  style={listRowStyle}
+                  onClick={() => appendLog(`[RPG] Template opened: ${template}`)}
+                >
+                  {template}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                Plugin System Templates
+              </div>
+              {linkedRPGPluginTemplates.map((plugin) => (
+                <div
+                  key={plugin}
+                  style={listRowStyle}
+                  onClick={() => appendLog(`[RPG] Plugin template opened: ${plugin}`)}
+                >
+                  {plugin}
                 </div>
               ))}
               <div style={{ marginTop: 10, fontWeight: 700 }}>

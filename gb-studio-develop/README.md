@@ -4,8 +4,6 @@
 Enchantment Game Engine is a quick and easy to use retro adventure game creator for Game Boy available for Mac, Linux and Windows.
 For more information see the [Enchantment Game Engine]
 
-![Enchantment Game Engine]
-
 Enchantment Game Engine consists of an [Electron](https://electronjs.org/) game builder application and a C based game engine using [GBDK](http://gbdk.sourceforge.net/).
 
 ## Installation
@@ -177,5 +175,4 @@ npm run missing-translations lang
 ````bash
 > cd enchantment-game-engine
 > nvm use
-
 
