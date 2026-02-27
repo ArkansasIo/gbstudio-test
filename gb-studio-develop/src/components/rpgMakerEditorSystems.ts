@@ -183,11 +183,15 @@ const appendBattlePreview = (state: EditorState): EditorState => {
 };
 
 const parseRpgFunctionCall = (
-  functionName: string,
+  functionName: unknown,
 ): { name: string; args: string[] } => {
-  const match = functionName.match(/^([A-Za-z_]\w*)\((.*)\)$/);
+  const normalized = typeof functionName === "string" ? functionName.trim() : "";
+  if (!normalized) {
+    return { name: "unknownAction", args: [] };
+  }
+  const match = normalized.match(/^([A-Za-z_]\w*)\((.*)\)$/);
   if (!match) {
-    return { name: functionName.trim(), args: [] };
+    return { name: normalized, args: [] };
   }
   const args = match[2]
     .split(",")
@@ -198,14 +202,15 @@ const parseRpgFunctionCall = (
 
 export const executeRpgMenuFunction = (
   state: EditorState,
-  functionName: string,
+  functionName: unknown,
   sourceLabel?: string,
 ): EditorState => {
-  const parsed = parseRpgFunctionCall(functionName);
-  const withCallLog = appendLog(
-    state,
-    `[RPG] ${sourceLabel || "Action"} -> ${parsed.name}(${parsed.args.join(", ")})`,
-  );
+  try {
+    const parsed = parseRpgFunctionCall(functionName);
+    const withCallLog = appendLog(
+      state,
+      `[RPG] ${sourceLabel || "Action"} -> ${parsed.name}(${parsed.args.join(", ")})`,
+    );
 
   if (parsed.name === "startNewGame") {
     return appendLog(
@@ -385,7 +390,14 @@ export const executeRpgMenuFunction = (
     return appendLog(withCallLog, `Operations command executed: ${parsed.name}`);
   }
 
-  return appendLog(withCallLog, `[WARN] Unhandled RPG function: ${parsed.name}`);
+    return appendLog(withCallLog, `[WARN] Unhandled RPG function: ${parsed.name}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return appendLog(
+      state,
+      `[ERROR] RPG action failed${sourceLabel ? ` (${sourceLabel})` : ""}: ${message}`,
+    );
+  }
 };
 
 const nextNodeId = (nodes: BlueprintNodeModel[]): string => {

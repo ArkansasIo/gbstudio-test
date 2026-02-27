@@ -507,6 +507,23 @@ export const RPGGameMakerUILayout: React.FC = () => {
     }));
   }, []);
 
+  const applySafeStateUpdate = useCallback(
+    (label: string, updater: (prev: ReturnType<typeof createInitialEditorState>) => ReturnType<typeof createInitialEditorState>) => {
+      setState((prev) => {
+        try {
+          return updater(prev);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          return {
+            ...prev,
+            outputLog: [...prev.outputLog.slice(-59), `[ERROR] ${label}: ${message}`],
+          };
+        }
+      });
+    },
+    [],
+  );
+
   const openSourceInIde = useCallback(
     (filename: string, content: string) => {
       const language = inferSourceLanguage(filename);
@@ -578,15 +595,23 @@ export const RPGGameMakerUILayout: React.FC = () => {
 
   const runRpgSubMenuAction = useCallback(
     (subMenu: RPGSubMenuDefinition, actionLabel: string, functionName: string) => {
-      setState((prev) =>
-        executeRpgMenuFunction(
-          prev,
-          functionName,
-          `${subMenu.label}: ${actionLabel}`,
-        ),
+      if (!functionName || !functionName.trim()) {
+        appendLog(
+          `[ERROR] Missing RPG action function for ${subMenu.label}: ${actionLabel}`,
+        );
+        return;
+      }
+      applySafeStateUpdate(
+        `RPG submenu ${subMenu.label}: ${actionLabel}`,
+        (prev) =>
+          executeRpgMenuFunction(
+            prev,
+            functionName,
+            `${subMenu.label}: ${actionLabel}`,
+          ),
       );
     },
-    [],
+    [appendLog, applySafeStateUpdate],
   );
 
   const saveLayout = useCallback(() => {
@@ -663,16 +688,29 @@ export const RPGGameMakerUILayout: React.FC = () => {
           "script_main.c",
           "void script_main(void) {\n  // TODO: Add RPG event script\n}\n",
         );
-        setState((prev) => runMenuCommand(prev, menuLabel, item));
+        applySafeStateUpdate(`Menu ${menuLabel}: ${item}`, (prev) =>
+          runMenuCommand(prev, menuLabel, item),
+        );
       } else if (item === "Compile C Scripts") {
         runSourceDiagnostics();
-        setState((prev) => runMenuCommand(prev, menuLabel, item));
+        applySafeStateUpdate(`Menu ${menuLabel}: ${item}`, (prev) =>
+          runMenuCommand(prev, menuLabel, item),
+        );
       } else {
-        setState((prev) => runMenuCommand(prev, menuLabel, item));
+        applySafeStateUpdate(`Menu ${menuLabel}: ${item}`, (prev) =>
+          runMenuCommand(prev, menuLabel, item),
+        );
       }
       setOpenMenu(null);
     },
-    [loadLayout, openSourceInIde, resetLayout, runSourceDiagnostics, saveLayout],
+    [
+      applySafeStateUpdate,
+      loadLayout,
+      openSourceInIde,
+      resetLayout,
+      runSourceDiagnostics,
+      saveLayout,
+    ],
   );
 
   const importSourceProgram = useCallback(
@@ -2248,7 +2286,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
                     const functionName = fn.includes(":")
                       ? fn.slice(fn.lastIndexOf(":") + 1).trim()
                       : fn;
-                    setState((prev) =>
+                    applySafeStateUpdate("Menu Functions", (prev) =>
                       executeRpgMenuFunction(prev, functionName, "Menu Functions"),
                     );
                   }}
@@ -2285,7 +2323,11 @@ export const RPGGameMakerUILayout: React.FC = () => {
                   style={listRowStyle}
                   onClick={() => {
                     appendLog(`[RPG] Tool opened: ${tool}`);
-                    setState((prev) => ({ ...prev, activeTool: tool, modified: true }));
+                    applySafeStateUpdate(`RPG Tool ${tool}`, (prev) => ({
+                      ...prev,
+                      activeTool: tool,
+                      modified: true,
+                    }));
                   }}
                 >
                   {tool}
