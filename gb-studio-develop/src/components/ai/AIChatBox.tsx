@@ -65,10 +65,17 @@ interface ChatMessage {
 }
 
 const AI_PROVIDER = (process.env.AI_PROVIDER || "openrouter").toLowerCase();
-const AI_MODEL = process.env.AI_MODEL || "openai/gpt-4o-mini";
+const AI_MODEL =
+  process.env.AI_MODEL ||
+  (AI_PROVIDER === "openai" ? "gpt-4o-mini" : "openai/gpt-4o-mini");
 const AI_BASE_URL =
-  process.env.AI_BASE_URL || "https://openrouter.ai/api/v1/chat/completions";
-const AI_API_KEY = process.env.AI_API_KEY || "";
+  process.env.AI_BASE_URL ||
+  (AI_PROVIDER === "openai"
+    ? "https://api.openai.com/v1/chat/completions"
+    : "https://openrouter.ai/api/v1/chat/completions");
+const AI_API_KEY =
+  process.env.AI_API_KEY ||
+  (AI_PROVIDER === "openai" ? process.env.OPENAI_API_KEY || "" : "");
 
 const AIChatBox = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -89,22 +96,23 @@ const AIChatBox = () => {
     setInput("");
 
     if (!AI_API_KEY) {
+      const keyName = AI_PROVIDER === "openai" ? "OPENAI_API_KEY" : "AI_API_KEY";
       setMessages((prev) => [
         ...prev,
         {
           sender: "ai",
-          text: "Missing AI_API_KEY. Add it in .env.local and restart the app.",
+          text: `Missing ${keyName}. Add it in .env.local and restart the app.`,
         },
       ]);
       return;
     }
 
-    if (AI_PROVIDER !== "openrouter") {
+    if (AI_PROVIDER !== "openrouter" && AI_PROVIDER !== "openai") {
       setMessages((prev) => [
         ...prev,
         {
           sender: "ai",
-          text: `Unsupported AI_PROVIDER '${AI_PROVIDER}'. Set AI_PROVIDER=openrouter.`,
+          text: `Unsupported AI_PROVIDER '${AI_PROVIDER}'. Set AI_PROVIDER=openrouter or openai.`,
         },
       ]);
       return;
@@ -117,8 +125,12 @@ const AIChatBox = () => {
         headers: {
           Authorization: `Bearer ${AI_API_KEY}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "https://www.gbstudio.dev",
-          "X-Title": "Enchantment Game Engine",
+          ...(AI_PROVIDER === "openrouter"
+            ? {
+                "HTTP-Referer": "https://github.com/ArkansasIo/gbstudio-test",
+                "X-Title": "Enchantment Game Engine",
+              }
+            : {}),
         },
         body: JSON.stringify({
           model: AI_MODEL,

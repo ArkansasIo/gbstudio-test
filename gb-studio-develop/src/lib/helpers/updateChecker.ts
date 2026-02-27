@@ -114,7 +114,7 @@ export const checkForUpdate = async (force?: boolean) => {
         settings.set("dontCheckForUpdates", true);
       }
       if (buttonIndex === 0) {
-        shell.openExternal("https://www.gbstudio.dev/download/");
+        shell.openExternal("https://github.com/ArkansasIo/gbstudio-test");
       } else if (buttonIndex === 2) {
         // Ingore this version but notify for next
         settings.set("dontNotifyUpdatesForVersion", latestVersion);

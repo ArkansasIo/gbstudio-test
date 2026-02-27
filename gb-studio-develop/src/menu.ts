@@ -626,13 +626,13 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
         {
           label: l10n("MENU_DOCUMENTATION"),
           click() {
-            shell.openExternal("https://www.gbstudio.dev/docs/");
+            shell.openExternal("https://github.com/ArkansasIo/gbstudio-test");
           },
         },
         {
           label: l10n("MENU_LEARN_MORE"),
           click() {
-            shell.openExternal("https://www.gbstudio.dev");
+            shell.openExternal("https://github.com/ArkansasIo/gbstudio-test");
           },
         },
       ],

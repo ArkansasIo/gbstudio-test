@@ -740,10 +740,15 @@ const RPG5EPage = () => {
   );
 
   const load = useCallback(async () => {
-    const loaded = await API.project.loadRPG5EData();
-    const safe = coerceRPG5EData(loaded);
-    setData(safe);
-    setStatus("RPG data loaded");
+    try {
+      const loaded = await API.project.loadRPG5EData();
+      const safe = coerceRPG5EData(loaded);
+      setData(safe);
+      setStatus("RPG data loaded");
+    } catch (_e) {
+      setData(createDefaultRPG5EData());
+      setStatus("Failed to load RPG data. Using defaults.");
+    }
   }, []);
 
   useEffect(() => {
@@ -758,13 +763,19 @@ const RPG5EPage = () => {
   }, [entries, selectedEntryId]);
 
   const save = useCallback(async () => {
-    const ok = await API.project.saveRPG5EData(data);
-    setStatus(ok ? "RPG data saved" : "Failed to save RPG data");
+    try {
+      const ok = await API.project.saveRPG5EData(data);
+      setStatus(ok ? "RPG data saved" : "Failed to save RPG data");
+    } catch (_e) {
+      setStatus("Failed to save RPG data");
+    }
   }, [data]);
 
   const exportJson = useCallback(() => {
-    navigator.clipboard.writeText(JSON.stringify(data, null, 2));
-    setStatus("Copied RPG JSON to clipboard");
+    navigator.clipboard
+      .writeText(JSON.stringify(data, null, 2))
+      .then(() => setStatus("Copied RPG JSON to clipboard"))
+      .catch(() => setStatus("Failed to copy RPG JSON"));
   }, [data]);
 
   const addEntry = useCallback(() => {

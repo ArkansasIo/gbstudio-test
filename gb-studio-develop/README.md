@@ -22,6 +22,26 @@ Install [NodeJS](https://nodejs.org/) (required version is given in [.nvmrc](.nv
 > npm start
 ```
 
+## AI Chat Key Setup
+
+Create a `.env.local` file in the project root and set one provider:
+
+```bash
+# OpenRouter
+AI_PROVIDER=openrouter
+AI_MODEL=openai/gpt-4o-mini
+AI_BASE_URL=https://openrouter.ai/api/v1/chat/completions
+AI_API_KEY=your_openrouter_api_key_here
+
+# OR OpenAI direct
+# AI_PROVIDER=openai
+# AI_MODEL=gpt-4o-mini
+# AI_BASE_URL=https://api.openai.com/v1/chat/completions
+# OPENAI_API_KEY=your_openai_api_key_here
+```
+
+Restart the app after changing env vars.
+
 After checking out a new version you may also need to fetch dependencies again to ensure you have the latest v
 ```bash
 > cd enchantment-game-engine
@@ -93,7 +113,7 @@ Pull the latest code and run make:cli again, yarn link is only needed for the fi
 
 ## Documentation
 
-[Enchantment Game Engine Documentation](https://www.gbstudio.dev/docs)
+[Enchantment Game Engine Documentation](https://github.com/ArkansasIo/gbstudio-test)
 
 Local project docs index: [docs/README.md](./docs/README.md)
 
@@ -175,4 +195,3 @@ npm run missing-translations lang
 ````bash
 > cd enchantment-game-engine
 > nvm use
-

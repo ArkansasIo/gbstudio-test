@@ -627,15 +627,15 @@ const waitUntilSplashClosed = (): Promise<void> => {
 
 const openHelp = async (helpPage: string) => {
   if (helpPage === "sprites") {
-    shell.openExternal("https://www.gbstudio.dev/docs/sprites/");
+    shell.openExternal("https://github.com/ArkansasIo/gbstudio-test");
   } else if (helpPage === "backgrounds") {
-    shell.openExternal("https://www.gbstudio.dev/docs/backgrounds/");
+    shell.openExternal("https://github.com/ArkansasIo/gbstudio-test");
   } else if (helpPage === "ui-elements") {
-    shell.openExternal("https://www.gbstudio.dev/docs/ui-elements/");
+    shell.openExternal("https://github.com/ArkansasIo/gbstudio-test");
   } else if (helpPage === "music") {
-    shell.openExternal("https://www.gbstudio.dev/docs/music/");
+    shell.openExternal("https://github.com/ArkansasIo/gbstudio-test");
   } else if (helpPage === "error") {
-    shell.openExternal("https://www.gbstudio.dev/docs/error/");
+    shell.openExternal("https://github.com/ArkansasIo/gbstudio-test");
   }
 };
 
@@ -989,7 +989,7 @@ ipcMain.handle("read-text-file", async (_event, filePath: string) => {
 ipcMain.handle("open-external", async (_event, url) => {
   if (!isString(url)) throw new Error("Invalid URL");
   const allowedExternalDomains = [
-    "https://www.gbstudio.dev",
+    "https://github.com/ArkansasIo/gbstudio-test",
     "https://www.itch.io",
     "https://github.com",
   ];

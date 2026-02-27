@@ -10,7 +10,7 @@ const gitRevisionPlugin = new GitRevisionPlugin({
   commithashCommand: "rev-list --max-count=1 --no-merges --abbrev-commit HEAD",
 });
 
-const docsUrl = "https://www.gbstudio.dev/docs/";
+const docsUrl = "https://github.com/ArkansasIo/gbstudio-test";
 
 const plugins = [
   new webpack.DefinePlugin({

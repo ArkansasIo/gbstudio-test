@@ -45,7 +45,7 @@ const migrateWarning = async (projectPath: string) => {
       }),
     });
     if (updateButtonIndex === 0) {
-      await shell.openExternal("https://www.gbstudio.dev/download/");
+      await shell.openExternal("https://github.com/ArkansasIo/gbstudio-test");
       return false;
     }
     if (updateButtonIndex === 2) {
@@ -86,7 +86,7 @@ const migrateWarning = async (projectPath: string) => {
     return true;
   }
   if (buttonIndex === 1) {
-    await shell.openExternal("https://www.gbstudio.dev/migrate/");
+    await shell.openExternal("https://github.com/ArkansasIo/gbstudio-test");
   }
   return false;
 };

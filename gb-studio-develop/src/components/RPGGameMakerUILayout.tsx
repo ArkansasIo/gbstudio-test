@@ -614,6 +614,39 @@ export const RPGGameMakerUILayout: React.FC = () => {
     [appendLog, applySafeStateUpdate],
   );
 
+  const activateRpgTool = useCallback(
+    (toolLabel: string, source: string) => {
+      const normalized = toolLabel.trim();
+      if (!normalized) {
+        appendLog(`[ERROR] ${source}: missing tool label`);
+        return;
+      }
+      applySafeStateUpdate(`${source}: ${normalized}`, (prev) => ({
+        ...prev,
+        activeTool: normalized,
+        modified: true,
+      }));
+      appendLog(`[RPG] ${source}: ${normalized}`);
+    },
+    [appendLog, applySafeStateUpdate],
+  );
+
+  const executeFunctionListEntry = useCallback(
+    (entry: string, source: string) => {
+      const functionName = entry.includes(":")
+        ? entry.slice(entry.lastIndexOf(":") + 1).trim()
+        : entry.trim();
+      if (!functionName) {
+        appendLog(`[ERROR] ${source}: invalid function entry`);
+        return;
+      }
+      applySafeStateUpdate(source, (prev) =>
+        executeRpgMenuFunction(prev, functionName, source),
+      );
+    },
+    [appendLog, applySafeStateUpdate],
+  );
+
   const saveLayout = useCallback(() => {
     const payload: SavedLayout = {
       blueprintNodes: state.blueprintNodes,
@@ -2243,7 +2276,16 @@ export const RPGGameMakerUILayout: React.FC = () => {
               ))}
               <div style={{ marginTop: 10, fontWeight: 700 }}>Main Menus</div>
               {linkedRPGSystemMenus.map((menu) => (
-                <div key={menu} style={listRowStyle}>
+                <div
+                  key={menu}
+                  style={listRowStyle}
+                  onClick={() =>
+                    applySafeStateUpdate(`RPG Menu ${menu}`, (prev) => ({
+                      ...prev,
+                      selectedMenu: menu,
+                    }))
+                  }
+                >
                   {menu}
                 </div>
               ))}
@@ -2252,9 +2294,24 @@ export const RPGGameMakerUILayout: React.FC = () => {
                 <div
                   key={`${subMenu.menuLabel}-${subMenu.id}`}
                   style={listRowStyle}
-                  onClick={() =>
-                    appendLog(`[RPG] Submenu opened: ${subMenu.menuLabel} > ${subMenu.label}`)
-                  }
+                  onClick={() => {
+                    appendLog(
+                      `[RPG] Submenu opened: ${subMenu.menuLabel} > ${subMenu.label}`,
+                    );
+                    if (subMenu.tools[0]) {
+                      activateRpgTool(
+                        subMenu.tools[0],
+                        `${subMenu.menuLabel} > ${subMenu.label}`,
+                      );
+                    }
+                    if (subMenu.actions[0]?.functionName) {
+                      runRpgSubMenuAction(
+                        subMenu,
+                        subMenu.actions[0].label,
+                        subMenu.actions[0].functionName,
+                      );
+                    }
+                  }}
                 >
                   {subMenu.menuLabel}
                   {" > "}
@@ -2282,14 +2339,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
                 <div
                   key={fn}
                   style={listRowStyle}
-                  onClick={() => {
-                    const functionName = fn.includes(":")
-                      ? fn.slice(fn.lastIndexOf(":") + 1).trim()
-                      : fn;
-                    applySafeStateUpdate("Menu Functions", (prev) =>
-                      executeRpgMenuFunction(prev, functionName, "Menu Functions"),
-                    );
-                  }}
+                  onClick={() => executeFunctionListEntry(fn, "Menu Functions")}
                 >
                   {fn}
                 </div>
@@ -2304,13 +2354,23 @@ export const RPGGameMakerUILayout: React.FC = () => {
                 Engine Logic Tools
               </div>
               {linkedRPGEngineLogicTools.map((tool) => (
-                <div key={tool} style={listRowStyle}>
+                <div
+                  key={tool}
+                  style={listRowStyle}
+                  onClick={() =>
+                    activateRpgTool(tool.replace(/\s+\[[^\]]+\]$/, ""), "Engine Tool")
+                  }
+                >
                   {tool}
                 </div>
               ))}
               <div style={{ marginTop: 10, fontWeight: 700 }}>Engine Functions</div>
               {linkedRPGEngineFunctions.slice(0, 30).map((fn) => (
-                <div key={fn} style={listRowStyle}>
+                <div
+                  key={fn}
+                  style={listRowStyle}
+                  onClick={() => executeFunctionListEntry(fn, "Engine Functions")}
+                >
                   {fn}
                 </div>
               ))}
@@ -2322,12 +2382,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
                   key={tool}
                   style={listRowStyle}
                   onClick={() => {
-                    appendLog(`[RPG] Tool opened: ${tool}`);
-                    applySafeStateUpdate(`RPG Tool ${tool}`, (prev) => ({
-                      ...prev,
-                      activeTool: tool,
-                      modified: true,
-                    }));
+                    activateRpgTool(tool, "Registered RPG Tool");
                   }}
                 >
                   {tool}
