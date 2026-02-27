@@ -103,7 +103,7 @@ This document describes the conceptual layout, UI components, and system design 
 
 ## 7. Tools for 8, 16, 32, 64-bit Game Development
 
-### 8-bit (Game Boy)
+### 8-bit (Game Console)
 - RGBDS, BGB, GBTD, GBMB, hUGETracker, Enchantment Game Engine
 
 ### 16-bit (SNES, Genesis)

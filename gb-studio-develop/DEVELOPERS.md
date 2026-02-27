@@ -11,7 +11,7 @@ Enchantment Game Engine includes utility modules for painting, text formatting, 
 
 ## Text Utilities
 
-- **trimlines**: Trims/crops text to fit Game Boy display limits, including variables and commands.
+- **trimlines**: Trims/crops text to fit Game Console display limits, including variables and commands.
 - **textNumLines**: Counts lines in a string.
 - **textNumNewlines**: Counts newline characters in input.
 - Location: `/src/shared/lib/helpers/trimlines.ts`

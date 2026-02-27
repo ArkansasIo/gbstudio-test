@@ -25,6 +25,7 @@ import {
   selectLeftSidebarEntry,
   selectOutlinerEntry,
   setEditorTheme,
+  setRpgSettingValue,
   setSettingsPreset,
   setInspectorSection,
   setLeftSidebarList,
@@ -255,6 +256,8 @@ const sourceExtByKind = {
   asm: [".s", ".asm"],
 };
 
+const BIT_MODE_CHOICES = ["8bit", "16bit", "32bit", "64bit"] as const;
+
 const getFilename = (fullPath: string): string => {
   const parts = fullPath.split(/[\\/]/);
   return parts[parts.length - 1] || fullPath;
@@ -381,6 +384,16 @@ export const RPGGameMakerUILayout: React.FC = () => {
       RPG_SETTINGS_PRESETS.find((preset) => preset.id === state.activeSettingsPresetId),
     [state.activeSettingsPresetId],
   );
+  const targetPlatform =
+    typeof state.settingValues.targetPlatform === "string"
+      ? state.settingValues.targetPlatform
+      : "gameboy";
+  const architectureBitMode =
+    typeof state.settingValues.architectureBitMode === "string"
+      ? state.settingValues.architectureBitMode
+      : "8bit";
+  const targetPlatformLabel =
+    targetPlatform === "gameboy" ? "game-console" : targetPlatform;
   const activeThemeBg =
     selectedColorProfile?.colors.background ??
     themeBackgrounds[state.activeThemeId] ??
@@ -1707,7 +1720,36 @@ export const RPGGameMakerUILayout: React.FC = () => {
           ))}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button style={buttonStyle}>Target: Game Boy</button>
+          <button style={buttonStyle}>Target: {targetPlatformLabel}</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 10, color: "#94a3b8" }}>Bit Mode</span>
+            <select
+              value={architectureBitMode}
+              onChange={(event) =>
+                setState((prev) =>
+                  setRpgSettingValue(
+                    prev,
+                    "architectureBitMode",
+                    event.currentTarget.value,
+                  ),
+                )
+              }
+              style={{
+                background: "#0f172a",
+                color: "#e5e7eb",
+                border: "1px solid #334155",
+                borderRadius: 4,
+                padding: "4px 6px",
+                fontSize: 12,
+              }}
+            >
+              {BIT_MODE_CHOICES.map((mode) => (
+                <option key={mode} value={mode}>
+                  {mode}
+                </option>
+              ))}
+            </select>
+          </div>
           <button style={buttonStyle}>Build: Development</button>
           <button
             style={buttonStyle}

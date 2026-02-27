@@ -226,6 +226,16 @@ export const RPG_SETTING_GROUPS: RPGSettingGroupDefinition[] = [
         logic: "Selects export pipeline and output format presets.",
       },
       {
+        id: "architectureBitMode",
+        label: "Architecture Bit Mode",
+        valueType: "select",
+        defaultValue: "8bit",
+        choices: ["8bit", "16bit", "32bit", "64bit"],
+        description: "Selects the runtime architecture profile.",
+        functionName: "setArchitectureBitMode(mode)",
+        logic: "Controls bit-target assumptions for build and compatibility presets.",
+      },
+      {
         id: "optimizationLevel",
         label: "Optimization Level",
         valueType: "select",

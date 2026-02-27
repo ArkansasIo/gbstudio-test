@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Enchantment Game Engine is a desktop game-authoring environment for building Game Boy-style games with an Electron editor and a C-based runtime/export pipeline.
+Enchantment Game Engine is a desktop game-authoring environment for building Game Console-style games with an Electron editor and a C-based runtime/export pipeline.
 
 ## High-Level Architecture
 

@@ -49,7 +49,7 @@ export const validateCScript = (source: string): CScriptDiagnostic[] => {
           line: index + 1,
           column: col + 1,
           severity: "warning",
-          message: `Avoid ${fnName.replace("(", "")} in Game Boy runtime code`,
+          message: `Avoid ${fnName.replace("(", "")} in Game Console runtime code`,
         });
       }
     });

@@ -1,7 +1,7 @@
 # Enchantment Game Engine
 
 
-Enchantment Game Engine is a quick and easy to use retro adventure game creator for Game Boy available for Mac, Linux and Windows.
+Enchantment Game Engine is a quick and easy to use retro adventure game creator for Game Console available for Mac, Linux and Windows.
 For more information see the [Enchantment Game Engine]
 
 Enchantment Game Engine consists of an [Electron](https://electronjs.org/) game builder application and a C based game engine using [GBDK](http://gbdk.sourceforge.net/).
@@ -60,10 +60,10 @@ Install Enchantment Game Engine from source as above then
 ```bash
 > npm run make:cli
 > yarn link
-# From any folder you can now run gb-studio-cli
-> $(yarn bin gb-studio-cli) -V
+# From any folder you can now run editor-studio-cli
+> $(yarn bin tudio-cli) -V
 4.1.2
-> $(yarn bin gb-studio-cli) --help
+> $(yarn bin editor-studio-cli) --help
 ```
 
 ### Update the CLI

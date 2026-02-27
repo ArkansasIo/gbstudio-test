@@ -2,7 +2,7 @@
 
 ## Vision
 
-Create a modern, approachable editor for classic Game Boy-style adventure games with low friction from idea to playable build.
+Create a modern, approachable editor for classic Game Console-style adventure games with low friction from idea to playable build.
 
 ## Design Pillars
 
