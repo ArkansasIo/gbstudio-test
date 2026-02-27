@@ -978,6 +978,14 @@ ipcMain.handle("open-file", async (_event, assetPath) => {
   shell.openPath(filename);
 });
 
+ipcMain.handle("read-text-file", async (_event, filePath: string) => {
+  if (!isString(filePath)) {
+    throw new Error("Invalid Path");
+  }
+  const content = await readFile(filePath, "utf8");
+  return content;
+});
+
 ipcMain.handle("open-external", async (_event, url) => {
   if (!isString(url)) throw new Error("Invalid URL");
   const allowedExternalDomains = [

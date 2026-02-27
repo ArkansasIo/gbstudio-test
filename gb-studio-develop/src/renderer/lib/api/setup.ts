@@ -125,6 +125,8 @@ const APISetup = {
     openImageFile: (path: string) => ipcRenderer.invoke("open-image", path),
     openModFile: (path: string) => ipcRenderer.invoke("open-mod", path),
     openFile: (path: string) => ipcRenderer.invoke("open-file", path),
+    readTextFile: (path: string): Promise<string> =>
+      ipcRenderer.invoke("read-text-file", path),
     getIsFullScreen: (): Promise<boolean> =>
       ipcRenderer.invoke("app:get-is-full-screen"),
     deleteBuildCache: () => ipcRenderer.invoke("build:delete-cache"),
