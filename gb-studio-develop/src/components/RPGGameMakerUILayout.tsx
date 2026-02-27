@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useReducer, useRef, useState } from "react";
 import {
   audioLibraryPacks,
   addBlueprintNodeFromCategory,
@@ -34,6 +34,12 @@ import {
   setToolCategory,
   triggerQuickTool,
 } from "./rpgMakerEditorSystems";
+import {
+  createInitialRPGState,
+  rpgGameReducer,
+  getPanelComponent,
+  type RPGAction,
+} from "app/rpg/generated";
 import {
   blueprintNodeCatalog,
   linkedRPGEngineFunctions,
@@ -365,6 +371,10 @@ const sourceDiagnostics = (source: string, language: SourceLanguage): string[] =
 
 export const RPGGameMakerUILayout: React.FC = () => {
   const [state, setState] = useState(createInitialEditorState);
+  const [rpgState, dispatchRPG] = useReducer(
+    rpgGameReducer,
+    createInitialRPGState()
+  );
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [floatingWindows, setFloatingWindows] = useState<FloatingWindow[]>(
     initialFloatingWindows,
@@ -718,6 +728,11 @@ export const RPGGameMakerUILayout: React.FC = () => {
         );
         return;
       }
+      
+      // Find the action to get its ID for panel opening
+      const action = subMenu.actions.find(a => a.label === actionLabel);
+      const panelId = action?.id;
+      
       const leadTool = subMenu.tools[0]?.trim();
       if (leadTool) {
         setToolWorkbenchRecords((prev) =>
@@ -728,6 +743,28 @@ export const RPGGameMakerUILayout: React.FC = () => {
           ),
         );
       }
+      
+      // Open the panel if it exists in the registry
+      if (panelId) {
+        const panelComponent = getPanelComponent(panelId);
+        if (panelComponent) {
+          dispatchRPG({ 
+            type: 'OPEN_PANEL', 
+            payload: { 
+              panelId,
+              data: { 
+                title: actionLabel,
+                source: `${subMenu.label}: ${actionLabel}`,
+                timestamp: Date.now()
+              }
+            }
+          });
+          appendLog(`[RPG PANEL] Opened: ${actionLabel}`);
+        } else {
+          appendLog(`[RPG] ${subMenu.label}: ${actionLabel} (panel not yet implemented)`);
+        }
+      }
+      
       applySafeStateUpdate(
         `RPG submenu ${subMenu.label}: ${actionLabel}`,
         (prev) => {
@@ -746,7 +783,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
         },
       );
     },
-    [appendLog, applySafeStateUpdate],
+    [appendLog, applySafeStateUpdate, dispatchRPG],
   );
 
   const activateRpgTool = useCallback(
@@ -1606,23 +1643,34 @@ export const RPGGameMakerUILayout: React.FC = () => {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          {workspacePresets.map((workspace) => (
-            <button
-              key={workspace.id}
-              style={{
-                ...buttonStyle,
-                background:
-                  state.activeWorkspaceId === workspace.id ? "#1d4ed8" : "#273244",
-              }}
-              title={workspace.description}
-              onClick={() => {
-                console.log(`[WORKSPACE CLICK] ${workspace.label} (${workspace.id})`);
-                setState((prev) => setWorkspace(prev, workspace.id));
-              }}
-            >
-              {workspace.label}
-            </button>
-          ))}
+          {workspacePresets.map((workspace) => {
+            const isActive = state.activeWorkspaceId === workspace.id;
+            return (
+              <button
+                key={workspace.id}
+                style={{
+                  ...buttonStyle,
+                  background: isActive ? "#1d4ed8" : "#273244",
+                  border: isActive ? "2px solid #60a5fa" : "2px solid transparent",
+                  fontWeight: isActive ? "bold" : "normal",
+                  transform: isActive ? "scale(1.05)" : "scale(1)",
+                  transition: "all 0.2s ease",
+                }}
+                title={`${workspace.description} ${isActive ? "(ACTIVE)" : ""}`}
+                onClick={() => {
+                  console.log(`[WORKSPACE CLICK] ${workspace.label} (${workspace.id})`);
+                  console.log(`[WORKSPACE] Previous: ${state.activeWorkspaceId}, New: ${workspace.id}`);
+                  setState((prev) => {
+                    const next = setWorkspace(prev, workspace.id);
+                    console.log(`[WORKSPACE] State updated to: ${next.activeWorkspaceId}`);
+                    return next;
+                  });
+                }}
+              >
+                {isActive ? `✓ ${workspace.label}` : workspace.label}
+              </button>
+            );
+          })}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -3329,6 +3377,50 @@ export const RPGGameMakerUILayout: React.FC = () => {
           </span>
         </span>
       </div>
+
+      {/* RPG Panel Rendering */}
+      {rpgState.panelState.activePanel && (() => {
+        const PanelComponent = getPanelComponent(rpgState.panelState.activePanel);
+        if (!PanelComponent) return null;
+        
+        return (
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 10000,
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              overflow: 'auto',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              borderRadius: 8,
+            }}
+          >
+            <PanelComponent 
+              onClose={() => dispatchRPG({ type: 'CLOSE_PANEL' })}
+              {...(rpgState.panelState.panelData[rpgState.panelState.activePanel] || {})}
+            />
+          </div>
+        );
+      })()}
+
+      {/* Backdrop for panels */}
+      {rpgState.panelState.activePanel && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.7)',
+            zIndex: 9999,
+          }}
+          onClick={() => dispatchRPG({ type: 'CLOSE_PANEL' })}
+        />
+      )}
     </div>
   );
 };
