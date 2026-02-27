@@ -76,6 +76,13 @@ import {
   workspacePresets,
 } from "./rpgGameMakerAdvancedConfig";
 import { RPG_COLOR_PROFILES, RPG_SETTINGS_PRESETS } from "app/rpg/input";
+import {
+  resolveEngineLogicAction,
+  resolveFeatureAction,
+  resolvePluginTemplateAction,
+  resolvePremadeSystemAction,
+  resolveTemplateAction,
+} from "app/rpg/runtime";
 import type { RPGSubMenuDefinition } from "app/rpg/systemMenus";
 import API from "renderer/lib/api";
 
@@ -645,6 +652,76 @@ export const RPGGameMakerUILayout: React.FC = () => {
       );
     },
     [appendLog, applySafeStateUpdate],
+  );
+
+  const runEngineLogicEntry = useCallback(
+    (summary: string) => {
+      const action = resolveEngineLogicAction(summary);
+      if (!action) {
+        appendLog(`[WARN] Engine logic not linked: ${summary}`);
+        return;
+      }
+      if (action.toolLabel) {
+        activateRpgTool(action.toolLabel, action.source);
+      }
+      if (action.functionName) {
+        applySafeStateUpdate(action.source, (prev) =>
+          executeRpgMenuFunction(prev, action.functionName, action.source),
+        );
+      }
+      appendLog(`[RPG] ${action.message || `Engine logic opened: ${summary}`}`);
+    },
+    [activateRpgTool, appendLog, applySafeStateUpdate],
+  );
+
+  const openPremadeSystem = useCallback(
+    (label: string) => {
+      const action = resolvePremadeSystemAction(label);
+      if (!action) {
+        appendLog(`[WARN] Premade system not linked: ${label}`);
+        return;
+      }
+      if (action.toolLabel) {
+        activateRpgTool(action.toolLabel, action.source);
+      }
+      appendLog(`[RPG] ${action.message || `Premade system loaded: ${label}`}`);
+    },
+    [activateRpgTool, appendLog],
+  );
+
+  const openTemplateLibraryItem = useCallback(
+    (label: string) => {
+      const action = resolveTemplateAction(label);
+      if (!action) {
+        appendLog(`[WARN] Template not linked: ${label}`);
+        return;
+      }
+      if (action.toolLabel) {
+        activateRpgTool(action.toolLabel, action.source);
+      }
+      appendLog(`[RPG] ${action.message || `Template opened: ${label}`}`);
+    },
+    [activateRpgTool, appendLog],
+  );
+
+  const openPluginTemplateItem = useCallback(
+    (label: string) => {
+      const action = resolvePluginTemplateAction(label);
+      if (!action) {
+        appendLog(`[WARN] Plugin template not linked: ${label}`);
+        return;
+      }
+      if (action.toolLabel) {
+        activateRpgTool(action.toolLabel, action.source);
+      }
+      if (action.functionName) {
+        applySafeStateUpdate(action.source, (prev) =>
+          executeRpgMenuFunction(prev, action.functionName, action.source),
+        );
+      }
+      appendLog(`[RPG] ${action.message || `Plugin template opened: ${label}`}`);
+    },
+    [activateRpgTool, appendLog, applySafeStateUpdate],
   );
 
   const saveLayout = useCallback(() => {
@@ -2262,7 +2339,19 @@ export const RPGGameMakerUILayout: React.FC = () => {
               <div style={listRowStyle}>SFX Packs: {audioLibraryPacks.sfx.join(", ")}</div>
               <div style={{ marginTop: 10, fontWeight: 700 }}>Linked RPG Features</div>
               {linkedRPGFeatureNames.map((featureName) => (
-                <div key={featureName} style={listRowStyle}>
+                <div
+                  key={featureName}
+                  style={listRowStyle}
+                  onClick={() => {
+                    const action = resolveFeatureAction(featureName);
+                    if (!action || !action.toolLabel) {
+                      appendLog(`[WARN] Feature not linked: ${featureName}`);
+                      return;
+                    }
+                    activateRpgTool(action.toolLabel, action.source);
+                    appendLog(`[RPG] ${action.message || `Feature opened: ${featureName}`}`);
+                  }}
+                >
                   {featureName}
                 </div>
               ))}
@@ -2270,7 +2359,17 @@ export const RPGGameMakerUILayout: React.FC = () => {
                 Linked Feature Capabilities
               </div>
               {linkedRPGFeatureCapabilities.slice(0, 20).map((capability) => (
-                <div key={capability} style={listRowStyle}>
+                <div
+                  key={capability}
+                  style={listRowStyle}
+                  onClick={() => {
+                    const action = resolveFeatureAction(capability);
+                    if (action?.toolLabel) {
+                      activateRpgTool(action.toolLabel, action.source);
+                    }
+                    appendLog(`[RPG] ${action?.message || `Capability inspected: ${capability}`}`);
+                  }}
+                >
                   {capability}
                 </div>
               ))}
@@ -2346,7 +2445,11 @@ export const RPGGameMakerUILayout: React.FC = () => {
               ))}
               <div style={{ marginTop: 10, fontWeight: 700 }}>Engine Logic</div>
               {linkedRPGEngineLogic.map((logic) => (
-                <div key={logic} style={listRowStyle}>
+                <div
+                  key={logic}
+                  style={listRowStyle}
+                  onClick={() => runEngineLogicEntry(logic)}
+                >
                   {logic}
                 </div>
               ))}
@@ -2395,7 +2498,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
                 <div
                   key={system}
                   style={listRowStyle}
-                  onClick={() => appendLog(`[RPG] Premade system loaded: ${system}`)}
+                  onClick={() => openPremadeSystem(system)}
                 >
                   {system}
                 </div>
@@ -2407,7 +2510,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
                 <div
                   key={template}
                   style={listRowStyle}
-                  onClick={() => appendLog(`[RPG] Template opened: ${template}`)}
+                  onClick={() => openTemplateLibraryItem(template)}
                 >
                   {template}
                 </div>
@@ -2419,7 +2522,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
                 <div
                   key={plugin}
                   style={listRowStyle}
-                  onClick={() => appendLog(`[RPG] Plugin template opened: ${plugin}`)}
+                  onClick={() => openPluginTemplateItem(plugin)}
                 >
                   {plugin}
                 </div>
