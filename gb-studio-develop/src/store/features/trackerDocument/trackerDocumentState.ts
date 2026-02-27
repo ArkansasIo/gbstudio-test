@@ -16,6 +16,7 @@ import {
   WaveInstrument,
 } from "./trackerDocumentTypes";
 import { SubPatternCell } from "shared/lib/uge/song/SubPatternCell";
+import { ensureDefaultInstruments } from "shared/lib/uge/ugeHelper";
 import { InstrumentType } from "store/features/editor/editorState";
 import API from "renderer/lib/api";
 import { MusicResourceAsset } from "shared/lib/resources/types";
@@ -477,6 +478,7 @@ const trackerSlice = createSlice({
         console.error(action.error);
         state.status = "error";
         state.song = new Song();
+        ensureDefaultInstruments(state.song);
         state.error = action.error.message;
       })
       .addCase(loadSongFile.fulfilled, (state, action) => {

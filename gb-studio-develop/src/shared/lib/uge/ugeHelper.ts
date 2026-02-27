@@ -32,6 +32,170 @@ interface InstrumentData {
   noise_macro: number[];
 }
 
+const DEFAULT_DUTY_INSTRUMENT_PRESETS: Array<
+  Pick<
+    DutyInstrument,
+    | "name"
+    | "length"
+    | "duty_cycle"
+    | "initial_volume"
+    | "volume_sweep_change"
+    | "frequency_sweep_time"
+    | "frequency_sweep_shift"
+  >
+> = [
+  { name: "Lead Square", length: null, duty_cycle: 2, initial_volume: 14, volume_sweep_change: -1, frequency_sweep_time: 0, frequency_sweep_shift: 0 },
+  { name: "Pulse Bass", length: 40, duty_cycle: 1, initial_volume: 13, volume_sweep_change: -2, frequency_sweep_time: 0, frequency_sweep_shift: 0 },
+  { name: "Chord Pulse", length: null, duty_cycle: 3, initial_volume: 10, volume_sweep_change: 1, frequency_sweep_time: 0, frequency_sweep_shift: 0 },
+  { name: "Bright Pluck", length: 20, duty_cycle: 0, initial_volume: 15, volume_sweep_change: -3, frequency_sweep_time: 0, frequency_sweep_shift: 0 },
+  { name: "Arp Bell", length: 16, duty_cycle: 0, initial_volume: 12, volume_sweep_change: -2, frequency_sweep_time: 0, frequency_sweep_shift: 0 },
+  { name: "Soft Lead", length: null, duty_cycle: 2, initial_volume: 11, volume_sweep_change: -1, frequency_sweep_time: 0, frequency_sweep_shift: 0 },
+  { name: "Retro Saw", length: null, duty_cycle: 3, initial_volume: 13, volume_sweep_change: 0, frequency_sweep_time: 0, frequency_sweep_shift: 0 },
+  { name: "Square Organ", length: null, duty_cycle: 2, initial_volume: 9, volume_sweep_change: 1, frequency_sweep_time: 0, frequency_sweep_shift: 0 },
+  { name: "Thin Pulse", length: null, duty_cycle: 0, initial_volume: 12, volume_sweep_change: -1, frequency_sweep_time: 0, frequency_sweep_shift: 0 },
+  { name: "Chunky Pulse", length: null, duty_cycle: 3, initial_volume: 14, volume_sweep_change: -1, frequency_sweep_time: 0, frequency_sweep_shift: 0 },
+  { name: "Sweep Up FX", length: 28, duty_cycle: 1, initial_volume: 11, volume_sweep_change: -1, frequency_sweep_time: 5, frequency_sweep_shift: 2 },
+  { name: "Sweep Down FX", length: 28, duty_cycle: 1, initial_volume: 11, volume_sweep_change: -1, frequency_sweep_time: 5, frequency_sweep_shift: -2 },
+  { name: "Stab", length: 12, duty_cycle: 2, initial_volume: 15, volume_sweep_change: -4, frequency_sweep_time: 0, frequency_sweep_shift: 0 },
+  { name: "Warm Poly", length: null, duty_cycle: 1, initial_volume: 10, volume_sweep_change: 1, frequency_sweep_time: 0, frequency_sweep_shift: 0 },
+  { name: "FX Pulse", length: 22, duty_cycle: 3, initial_volume: 15, volume_sweep_change: -2, frequency_sweep_time: 3, frequency_sweep_shift: -1 },
+];
+
+const DEFAULT_WAVE_INSTRUMENT_PRESETS: Array<
+  Pick<WaveInstrument, "name" | "length" | "volume" | "wave_index">
+> = [
+  { name: "Wave Sine", length: null, volume: 1, wave_index: 0 },
+  { name: "Wave Soft Saw", length: null, volume: 1, wave_index: 1 },
+  { name: "Wave Triangle", length: null, volume: 1, wave_index: 2 },
+  { name: "Wave Organ", length: null, volume: 2, wave_index: 3 },
+  { name: "Wave Hollow", length: null, volume: 2, wave_index: 4 },
+  { name: "Wave Vox", length: null, volume: 2, wave_index: 5 },
+  { name: "Wave Bass", length: 180, volume: 1, wave_index: 6 },
+  { name: "Wave Bell", length: 70, volume: 2, wave_index: 7 },
+  { name: "Wave Flute", length: null, volume: 1, wave_index: 8 },
+  { name: "Wave Brass", length: null, volume: 2, wave_index: 9 },
+  { name: "Wave Growl", length: null, volume: 3, wave_index: 10 },
+  { name: "Wave Pluck", length: 90, volume: 2, wave_index: 11 },
+  { name: "Wave Pad", length: null, volume: 3, wave_index: 12 },
+  { name: "Wave Bite", length: 64, volume: 1, wave_index: 13 },
+  { name: "Wave FX", length: 72, volume: 2, wave_index: 14 },
+];
+
+const DEFAULT_NOISE_INSTRUMENT_PRESETS: Array<
+  Pick<
+    NoiseInstrument,
+    "name" | "length" | "initial_volume" | "volume_sweep_change" | "bit_count"
+  >
+> = [
+  { name: "Kick", length: 18, initial_volume: 15, volume_sweep_change: -4, bit_count: 15 },
+  { name: "Snare", length: 20, initial_volume: 14, volume_sweep_change: -3, bit_count: 7 },
+  { name: "Closed Hat", length: 8, initial_volume: 10, volume_sweep_change: -5, bit_count: 7 },
+  { name: "Open Hat", length: 28, initial_volume: 11, volume_sweep_change: -2, bit_count: 7 },
+  { name: "Crash", length: 34, initial_volume: 13, volume_sweep_change: -3, bit_count: 7 },
+  { name: "Tom Low", length: 22, initial_volume: 12, volume_sweep_change: -2, bit_count: 15 },
+  { name: "Tom Mid", length: 18, initial_volume: 12, volume_sweep_change: -2, bit_count: 15 },
+  { name: "Tom High", length: 14, initial_volume: 12, volume_sweep_change: -2, bit_count: 15 },
+  { name: "Clap", length: 16, initial_volume: 13, volume_sweep_change: -3, bit_count: 7 },
+  { name: "Rim", length: 6, initial_volume: 9, volume_sweep_change: -4, bit_count: 7 },
+  { name: "Noise Sweep Up", length: 30, initial_volume: 12, volume_sweep_change: -1, bit_count: 15 },
+  { name: "Noise Sweep Down", length: 30, initial_volume: 12, volume_sweep_change: -2, bit_count: 7 },
+  { name: "Explosion", length: 40, initial_volume: 15, volume_sweep_change: -2, bit_count: 15 },
+  { name: "Hit FX", length: 10, initial_volume: 15, volume_sweep_change: -4, bit_count: 7 },
+  { name: "UI Click", length: 6, initial_volume: 8, volume_sweep_change: -4, bit_count: 7 },
+];
+
+const DEFAULT_WAVEFORMS: number[][] = [
+  [8, 9, 10, 11, 12, 13, 14, 15, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7],
+  [0, 1, 3, 5, 7, 9, 11, 13, 15, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6],
+  [8, 9, 10, 11, 12, 13, 14, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8],
+  [0, 0, 4, 4, 8, 8, 12, 12, 15, 15, 12, 12, 8, 8, 4, 4, 0, 0, 4, 4, 8, 8, 12, 12, 15, 15, 12, 12, 8, 8, 4, 4],
+  [8, 10, 12, 14, 15, 14, 12, 10, 8, 6, 4, 2, 1, 2, 4, 6, 8, 10, 12, 14, 15, 14, 12, 10, 8, 6, 4, 2, 1, 2, 4, 6],
+  [15, 12, 9, 6, 3, 0, 3, 6, 9, 12, 15, 12, 9, 6, 3, 0, 3, 6, 9, 12, 15, 12, 9, 6, 3, 0, 3, 6, 9, 12, 15, 12],
+  [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+  [15, 0, 15, 0, 15, 0, 12, 0, 9, 0, 6, 0, 3, 0, 1, 0, 15, 0, 15, 0, 12, 0, 9, 0, 6, 0, 3, 0, 1, 0, 0, 0],
+  [7, 8, 9, 10, 11, 12, 13, 14, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6, 7, 8],
+  [2, 4, 6, 8, 10, 12, 14, 15, 13, 11, 9, 7, 5, 3, 1, 0, 1, 3, 5, 7, 9, 11, 13, 15, 14, 12, 10, 8, 6, 4, 2, 1],
+  [0, 2, 4, 6, 8, 10, 12, 14, 15, 13, 11, 9, 7, 5, 3, 1, 0, 1, 3, 5, 7, 9, 11, 13, 15, 14, 12, 10, 8, 6, 4, 2],
+  [15, 13, 11, 9, 7, 5, 3, 1, 0, 1, 3, 5, 7, 9, 11, 13, 15, 13, 11, 9, 7, 5, 3, 1, 0, 1, 3, 5, 7, 9, 11, 13],
+  [6, 7, 8, 9, 10, 11, 12, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+  [15, 15, 12, 9, 6, 3, 0, 0, 3, 6, 9, 12, 15, 12, 9, 6, 3, 0, 0, 3, 6, 9, 12, 15, 12, 9, 6, 3, 0, 0, 3, 6],
+  [0, 4, 8, 12, 15, 11, 7, 3, 0, 3, 7, 11, 15, 12, 8, 4, 0, 4, 8, 12, 15, 11, 7, 3, 0, 3, 7, 11, 15, 12, 8, 4],
+  [8, 8, 9, 10, 12, 14, 15, 14, 12, 10, 9, 8, 7, 6, 4, 2, 1, 2, 4, 6, 7, 8, 9, 10, 12, 14, 15, 14, 12, 10, 9, 8],
+];
+
+const createEmptySubpattern = () =>
+  [...Array(64)].map(() => new SubPatternCell());
+
+export const ensureDefaultInstruments = (song: Song) => {
+  while (song.duty_instruments.length < 15) {
+    const index = song.duty_instruments.length;
+    const preset = DEFAULT_DUTY_INSTRUMENT_PRESETS[index];
+    song.addDutyInstrument({
+      index,
+      name: preset.name,
+      length: preset.length,
+      duty_cycle: preset.duty_cycle,
+      initial_volume: preset.initial_volume,
+      volume_sweep_change: preset.volume_sweep_change,
+      frequency_sweep_time: preset.frequency_sweep_time,
+      frequency_sweep_shift: preset.frequency_sweep_shift,
+      subpattern_enabled: false,
+      subpattern: createEmptySubpattern(),
+    });
+  }
+
+  while (song.wave_instruments.length < 15) {
+    const index = song.wave_instruments.length;
+    const preset = DEFAULT_WAVE_INSTRUMENT_PRESETS[index];
+    song.addWaveInstrument({
+      index,
+      name: preset.name,
+      length: preset.length,
+      volume: preset.volume,
+      wave_index: preset.wave_index,
+      subpattern_enabled: false,
+      subpattern: createEmptySubpattern(),
+    });
+  }
+
+  while (song.noise_instruments.length < 15) {
+    const index = song.noise_instruments.length;
+    const preset = DEFAULT_NOISE_INSTRUMENT_PRESETS[index];
+    song.addNoiseInstrument({
+      index,
+      name: preset.name,
+      length: preset.length,
+      initial_volume: preset.initial_volume,
+      volume_sweep_change: preset.volume_sweep_change,
+      dividing_ratio: 0,
+      bit_count: preset.bit_count,
+      subpattern_enabled: false,
+      subpattern: createEmptySubpattern(),
+    });
+  }
+
+  while (song.waves.length < 16) {
+    const waveIndex = song.waves.length;
+    song.waves.push(Uint8Array.from(DEFAULT_WAVEFORMS[waveIndex]));
+  }
+
+  if (song.patterns.length === 0) {
+    const pattern = [];
+    for (let n = 0; n < 64; n++) {
+      pattern.push([
+        new PatternCell(),
+        new PatternCell(),
+        new PatternCell(),
+        new PatternCell(),
+      ]);
+    }
+    song.patterns.push(pattern);
+  }
+  if (song.sequence.length === 0) {
+    song.sequence.push(0);
+  }
+};
+
 export const loadUGESong = (data: ArrayBuffer): Song | null => {
   const uint8data = new Uint8Array(data);
 
@@ -419,6 +583,8 @@ export const loadUGESong = (data: ArrayBuffer): Song | null => {
   //   else
   //     idx += 1;
   // }
+
+  ensureDefaultInstruments(song);
 
   return song;
 };
