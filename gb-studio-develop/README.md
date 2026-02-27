@@ -195,3 +195,7 @@ npm run missing-translations lang
 ````bash
 > cd enchantment-game-engine
 > nvm use
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](./LICENSE).
