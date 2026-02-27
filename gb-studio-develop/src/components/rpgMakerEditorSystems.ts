@@ -7,6 +7,8 @@ import {
 } from "./rpgGameMakerConfig";
 import {
   RPG_COLOR_PROFILES,
+  RPG_ENGINE_SYSTEMS,
+  RPG_MENU_TREE,
   RPG_SETTING_GROUPS,
   RPG_SETTINGS_PRESETS,
   type RPGSettingValue,
@@ -200,6 +202,165 @@ const parseRpgFunctionCall = (
   return { name: match[1], args };
 };
 
+const getFunctionNameOnly = (call: string): string =>
+  call.split("(")[0]?.trim() ?? call.trim();
+
+const WORKBENCH_MENU_FUNCTION_TO_TOOL = new Map<string, string>();
+RPG_MENU_TREE.forEach((menu) => {
+  menu.subMenus.forEach((subMenu) => {
+    const primaryTool = subMenu.tools[0]?.label;
+    if (!primaryTool) return;
+    subMenu.actions.forEach((action) => {
+      WORKBENCH_MENU_FUNCTION_TO_TOOL.set(
+        getFunctionNameOnly(action.functionName),
+        primaryTool,
+      );
+    });
+  });
+});
+
+const WORKBENCH_ENGINE_FUNCTION_TO_TOOL = new Map<string, string>();
+RPG_ENGINE_SYSTEMS.forEach((system) => {
+  const primaryTool = system.tools[0]?.label;
+  if (!primaryTool) return;
+  system.functions.forEach((fn) => {
+    WORKBENCH_ENGINE_FUNCTION_TO_TOOL.set(getFunctionNameOnly(fn), primaryTool);
+  });
+});
+
+const WORKBENCH_FUNCTION_TO_TOOL = new Map<string, string>([
+  ...WORKBENCH_MENU_FUNCTION_TO_TOOL,
+  ...WORKBENCH_ENGINE_FUNCTION_TO_TOOL,
+]);
+
+const WORKBENCH_KNOWN_FUNCTIONS = new Set<string>([
+  ...WORKBENCH_MENU_FUNCTION_TO_TOOL.keys(),
+  ...WORKBENCH_ENGINE_FUNCTION_TO_TOOL.keys(),
+]);
+
+const OPEN_PANEL_FUNCTIONS = new Set<string>([
+  "openOptionsMenu",
+  "openTutorialMenu",
+  "openPartyMenu",
+  "openInventoryMenu",
+  "openSkillsMenu",
+  "openCharacterStats",
+  "openQuestJournal",
+  "openDebugMenu",
+  "openBestiary",
+  "openGallery",
+  "openCreditsRoll",
+  "openCraftingBook",
+  "openHousingMenu",
+  "openChatWindow",
+  "openGuildPanel",
+  "openLookingForGroup",
+  "openSeasonPass",
+  "openEventCalendar",
+  "openServerStatus",
+  "openEconomyBoard",
+]);
+
+const CHARACTER_PROGRESS_FUNCTIONS = new Set<string>([
+  "allocateStatPoints",
+  "equipItem",
+  "unequipItem",
+]);
+
+const QUEST_FUNCTIONS = new Set<string>([
+  "setActiveQuest",
+  "activateQuest",
+  "advanceQuestStep",
+  "isQuestComplete",
+  "grantQuestRewards",
+]);
+
+const DIALOGUE_FUNCTIONS = new Set<string>([
+  "startDialogue",
+  "evaluateChoice",
+  "setDialogueFlag",
+  "closeDialogue",
+]);
+
+const INVENTORY_ECONOMY_FUNCTIONS = new Set<string>([
+  "addItem",
+  "removeItem",
+  "buyItem",
+  "sellItem",
+  "recalculateCarryWeight",
+]);
+
+const MOVEMENT_WORLD_FUNCTIONS = new Set<string>([
+  "findPath",
+  "moveActor",
+  "checkCollision",
+  "teleportActor",
+]);
+
+const WORLD_SIM_FUNCTIONS = new Set<string>([
+  "setTimeOfDay",
+  "tickWeatherSystem",
+  "rollEncounter",
+  "spawnDynamicEvent",
+  "despawnDynamicEvent",
+]);
+
+const SAVE_RUNTIME_FUNCTIONS = new Set<string>([
+  "createSaveSlot",
+  "writeAutosave",
+  "loadSave",
+  "migrateSaveData",
+]);
+
+const SCRIPT_PLUGIN_FUNCTIONS = new Set<string>([
+  "loadPlugin",
+  "runScriptEvent",
+  "registerNativeHook",
+  "validatePluginManifest",
+]);
+
+const SOCIAL_GUILD_FUNCTIONS = new Set<string>([
+  "sendChatMessage",
+  "blockPlayer",
+  "createGuild",
+  "inviteGuildMember",
+  "startGuildQuest",
+  "createPartyListing",
+  "joinPartyListing",
+]);
+
+const LIVEOPS_FUNCTIONS = new Set<string>([
+  "claimSeasonReward",
+  "startWorldEvent",
+  "claimDailyReward",
+]);
+
+const ADMIN_OPERATION_FUNCTIONS = new Set<string>([
+  "toggleMaintenanceMode",
+  "broadcastSystemMessage",
+  "runCheatScan",
+  "suspendAccount",
+]);
+
+const CRAFTING_HOUSING_FUNCTIONS = new Set<string>([
+  "craftItem",
+  "salvageItem",
+  "placeFurniture",
+  "setHomePoint",
+]);
+
+const BATTLE_ENGINE_FUNCTIONS = new Set<string>([
+  "startBattle",
+  "queueTurn",
+  "resolveAction",
+  "applyDamage",
+  "endBattle",
+  "evaluateAggro",
+  "pickAbility",
+  "scoreTargets",
+  "tickBehaviorTree",
+]);
+
 export const executeRpgMenuFunction = (
   state: EditorState,
   functionName: unknown,
@@ -207,203 +368,195 @@ export const executeRpgMenuFunction = (
 ): EditorState => {
   try {
     const parsed = parseRpgFunctionCall(functionName);
+    const arg0 = parsed.args[0] || "default";
+    const arg1 = parsed.args[1] || "value";
+    const applyToolHint = (
+      nextState: EditorState,
+      markModified = true,
+    ): EditorState => {
+      const toolLabel = WORKBENCH_FUNCTION_TO_TOOL.get(parsed.name);
+      if (!toolLabel) return nextState;
+      return {
+        ...nextState,
+        activeTool: toolLabel,
+        modified: markModified ? true : nextState.modified,
+      };
+    };
+    const finish = (
+      nextState: EditorState,
+      message: string,
+      markModified = true,
+    ): EditorState => appendLog(applyToolHint(nextState, markModified), message);
+
     const withCallLog = appendLog(
       state,
       `[RPG] ${sourceLabel || "Action"} -> ${parsed.name}(${parsed.args.join(", ")})`,
     );
 
-  if (parsed.name === "startNewGame") {
-    return appendLog(
-      {
-        ...withCallLog,
-        projectName: "Adventure_08bit",
-        mapName: "Start_Map",
-        layerName: "FG",
-        selectedAssetId: null,
-        selectedOutlinerId: null,
-        selectedBlueprintNodeId: null,
-        modified: false,
-      },
-      "Runtime start state initialized",
-    );
-  }
-  if (parsed.name === "continueFromSave" || parsed.name === "loadGame") {
-    return appendLog(withCallLog, "Loaded latest save slot snapshot");
-  }
-  if (parsed.name === "saveGame") {
-    return appendLog(
-      {
-        ...withCallLog,
-        modified: false,
-      },
-      "Save data written to active slot",
-    );
-  }
-  if (parsed.name === "quitToTitle") {
-    return appendLog(
-      {
-        ...withCallLog,
-        selectedMenu: "File",
-      },
-      "Returned to title/menu context",
-    );
-  }
-  if (
-    parsed.name === "openOptionsMenu" ||
-    parsed.name === "openTutorialMenu" ||
-    parsed.name === "openPartyMenu" ||
-    parsed.name === "openInventoryMenu" ||
-    parsed.name === "openSkillsMenu" ||
-    parsed.name === "openCharacterStats" ||
-    parsed.name === "openQuestJournal" ||
-    parsed.name === "openDebugMenu" ||
-    parsed.name === "openBestiary" ||
-    parsed.name === "openGallery" ||
-    parsed.name === "openCreditsRoll"
-  ) {
-    return appendLog(withCallLog, `Opened UI panel: ${parsed.name}`);
-  }
-  if (parsed.name === "allocateStatPoints") {
-    return appendLog(
-      {
-        ...withCallLog,
-        modified: true,
-      },
-      "Allocated available stat points",
-    );
-  }
-  if (parsed.name === "equipItem" || parsed.name === "unequipItem") {
-    return appendLog(
-      {
-        ...withCallLog,
-        modified: true,
-      },
-      `Equipment state updated via ${parsed.name}`,
-    );
-  }
-  if (parsed.name === "openWorldMap") {
-    return appendLog(
-      {
-        ...withCallLog,
-        mapName: "World_Map",
-      },
-      "World map opened",
-    );
-  }
-  if (parsed.name === "fastTravel") {
-    return appendLog(
-      {
-        ...withCallLog,
-        mapName: "FastTravel_Node",
-        modified: true,
-      },
-      "Fast travel completed",
-    );
-  }
-  if (parsed.name === "setActiveQuest") {
-    return appendLog(
-      {
-        ...withCallLog,
-        activeTool: "Quest Tracker",
-      },
-      "Quest tracker updated",
-    );
-  }
-  if (parsed.name === "battleAttack") {
-    const damage = wolfmanAlphaDamage(
-      { atk: 22, def: 8, level: 5 },
-      { atk: 17, def: 12, level: 4 },
-    );
-    return appendLog(withCallLog, wolfmanAlphaDebugLine(`battleAttack damage=${damage}`));
-  }
-  if (parsed.name === "battleUseSkill") {
-    const damage = wolfmanAlphaDamage(
-      { atk: 28, def: 10, level: 6 },
-      { atk: 15, def: 9, level: 4 },
-    );
-    return appendLog(withCallLog, wolfmanAlphaDebugLine(`battleUseSkill damage=${damage}`));
-  }
-  if (parsed.name === "battleUseItem") {
-    return appendLog(withCallLog, "Battle item consumed and effects applied");
-  }
-  if (parsed.name === "battleGuard") {
-    return appendLog(withCallLog, "Guard stance enabled for current turn");
-  }
-  if (parsed.name === "battleSummon") {
-    return appendLog(
-      withCallLog,
-      wolfmanAlphaDebugLine("Summon command resolved and queued"),
-    );
-  }
-  if (parsed.name === "battleAttemptEscape") {
-    return appendLog(withCallLog, "Escape roll executed");
-  }
-  if (parsed.name === "setLanguage") {
-    return appendLog(withCallLog, "Language setting updated");
-  }
-  if (parsed.name === "applyAccessibilityPreset") {
-    return appendLog(
-      {
-        ...withCallLog,
-        modified: true,
-      },
-      "Accessibility preset applied",
-    );
-  }
+    if (parsed.name === "startNewGame") {
+      return finish(
+        {
+          ...withCallLog,
+          projectName: "Adventure_08bit",
+          mapName: "Start_Map",
+          layerName: "FG",
+          selectedAssetId: null,
+          selectedOutlinerId: null,
+          selectedBlueprintNodeId: null,
+          modified: false,
+        },
+        "Runtime start state initialized",
+        false,
+      );
+    }
+    if (
+      parsed.name === "continueFromSave" ||
+      parsed.name === "loadGame" ||
+      parsed.name === "loadSave"
+    ) {
+      return finish(withCallLog, "Loaded latest save slot snapshot");
+    }
+    if (parsed.name === "saveGame" || parsed.name === "writeAutosave") {
+      return finish(
+        {
+          ...withCallLog,
+          modified: false,
+        },
+        parsed.name === "saveGame"
+          ? "Save data written to active slot"
+          : "Autosave snapshot written",
+        false,
+      );
+    }
+    if (parsed.name === "createSaveSlot") {
+      return finish(withCallLog, `Created save slot: ${arg0}`);
+    }
+    if (parsed.name === "migrateSaveData") {
+      return finish(withCallLog, `Save migration completed for schema ${arg0}`);
+    }
+    if (parsed.name === "quitToTitle") {
+      return finish(
+        {
+          ...withCallLog,
+          selectedMenu: "File",
+        },
+        "Returned to title/menu context",
+        false,
+      );
+    }
+    if (parsed.name === "openWorldMap") {
+      return finish(
+        {
+          ...withCallLog,
+          mapName: "World_Map",
+        },
+        "World map opened",
+      );
+    }
+    if (OPEN_PANEL_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `Opened UI panel: ${parsed.name}`);
+    }
+    if (parsed.name === "fastTravel" || parsed.name === "teleportActor") {
+      return finish(
+        {
+          ...withCallLog,
+          mapName: "FastTravel_Node",
+        },
+        `${parsed.name} completed to ${arg0}`,
+      );
+    }
+    if (parsed.name === "setLanguage") {
+      return finish(withCallLog, `Language setting updated: ${arg0}`);
+    }
+    if (parsed.name === "applyAccessibilityPreset") {
+      return finish(withCallLog, `Accessibility preset applied: ${arg0}`);
+    }
+    if (CHARACTER_PROGRESS_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `Character progression updated via ${parsed.name}`);
+    }
+    if (QUEST_FUNCTIONS.has(parsed.name)) {
+      return finish(
+        {
+          ...withCallLog,
+          activeTool: "Quest Tracker",
+        },
+        `Quest runtime updated via ${parsed.name}(${arg0})`,
+      );
+    }
+    if (DIALOGUE_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `Dialogue runtime executed: ${parsed.name}`);
+    }
+    if (INVENTORY_ECONOMY_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `Inventory/economy runtime updated via ${parsed.name}`);
+    }
+    if (MOVEMENT_WORLD_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `Movement/path runtime executed: ${parsed.name}`);
+    }
+    if (WORLD_SIM_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `World simulation updated via ${parsed.name}`);
+    }
+    if (SAVE_RUNTIME_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `Save runtime executed: ${parsed.name}`);
+    }
+    if (SCRIPT_PLUGIN_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `Script/plugin runtime executed: ${parsed.name}`);
+    }
+    if (SOCIAL_GUILD_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `Social runtime updated via ${parsed.name}(${arg0})`);
+    }
+    if (LIVEOPS_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `LiveOps action processed: ${parsed.name}(${arg0})`);
+    }
+    if (ADMIN_OPERATION_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `Admin operation completed: ${parsed.name}(${arg0})`);
+    }
+    if (CRAFTING_HOUSING_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `Crafting/housing action executed: ${parsed.name}(${arg0})`);
+    }
 
-  if (
-    parsed.name.startsWith("open") ||
-    parsed.name.startsWith("create") ||
-    parsed.name.startsWith("invite") ||
-    parsed.name.startsWith("join") ||
-    parsed.name.startsWith("start")
-  ) {
-    return appendLog(
-      {
-        ...withCallLog,
-        modified: true,
-      },
-      `Executed system action: ${parsed.name}`,
-    );
-  }
+    if (parsed.name === "battleAttack") {
+      const damage = wolfmanAlphaDamage(
+        { atk: 22, def: 8, level: 5 },
+        { atk: 17, def: 12, level: 4 },
+      );
+      return finish(
+        withCallLog,
+        wolfmanAlphaDebugLine(`battleAttack target=${arg0} damage=${damage}`),
+      );
+    }
+    if (parsed.name === "battleUseSkill") {
+      const damage = wolfmanAlphaDamage(
+        { atk: 28, def: 10, level: 6 },
+        { atk: 15, def: 9, level: 4 },
+      );
+      return finish(
+        withCallLog,
+        wolfmanAlphaDebugLine(`battleUseSkill skill=${arg0} target=${arg1} damage=${damage}`),
+      );
+    }
+    if (parsed.name === "battleUseItem") {
+      return finish(withCallLog, `Battle item ${arg0} applied to ${arg1}`);
+    }
+    if (parsed.name === "battleGuard") {
+      return finish(withCallLog, "Guard stance enabled for current turn");
+    }
+    if (parsed.name === "battleSummon") {
+      return finish(
+        withCallLog,
+        wolfmanAlphaDebugLine(`Summon command resolved: ${arg0}`),
+      );
+    }
+    if (parsed.name === "battleAttemptEscape") {
+      return finish(withCallLog, "Escape roll executed");
+    }
+    if (BATTLE_ENGINE_FUNCTIONS.has(parsed.name)) {
+      const next = parsed.name === "startBattle" ? appendBattlePreview(withCallLog) : withCallLog;
+      return finish(next, `Battle runtime step executed: ${parsed.name}`);
+    }
 
-  if (
-    parsed.name.startsWith("claim") ||
-    parsed.name.startsWith("send") ||
-    parsed.name.startsWith("set") ||
-    parsed.name.startsWith("toggle")
-  ) {
-    return appendLog(
-      {
-        ...withCallLog,
-        modified: true,
-      },
-      `Applied runtime update: ${parsed.name}`,
-    );
-  }
-
-  if (
-    parsed.name.startsWith("craft") ||
-    parsed.name.startsWith("salvage") ||
-    parsed.name.startsWith("place") ||
-    parsed.name.startsWith("broadcast")
-  ) {
-    return appendLog(
-      {
-        ...withCallLog,
-        modified: true,
-      },
-      `Applied gameplay operation: ${parsed.name}`,
-    );
-  }
-
-  if (
-    parsed.name.startsWith("run") ||
-    parsed.name.startsWith("suspend") ||
-    parsed.name.startsWith("block")
-  ) {
-    return appendLog(withCallLog, `Operations command executed: ${parsed.name}`);
-  }
+    if (WORKBENCH_KNOWN_FUNCTIONS.has(parsed.name)) {
+      return finish(withCallLog, `Workbench action executed: ${parsed.name}`);
+    }
 
     return appendLog(withCallLog, `[WARN] Unhandled RPG function: ${parsed.name}`);
   } catch (error) {

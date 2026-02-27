@@ -82,11 +82,25 @@ import {
 } from "./rpgWorkbenchTemplate";
 import { RPG_COLOR_PROFILES, RPG_SETTINGS_PRESETS } from "app/rpg/input";
 import {
+  createToolWorkbenchRecords,
+  ensureWorkbenchToolRecord,
+  markWorkbenchToolRun,
   resolveEngineLogicAction,
   resolveFeatureAction,
   resolvePluginTemplateAction,
   resolvePremadeSystemAction,
   resolveTemplateAction,
+  setWorkbenchToolBitMode,
+  setWorkbenchToolCoverageTarget,
+  setWorkbenchToolFrameBudget,
+  setWorkbenchToolNotes,
+  setWorkbenchToolOwner,
+  setWorkbenchToolRisk,
+  setWorkbenchToolStatus,
+  toggleWorkbenchChecklistItem,
+  type WorkbenchBitMode,
+  type WorkbenchRisk,
+  type WorkbenchStatus,
 } from "app/rpg/runtime";
 import type { RPGSubMenuDefinition } from "app/rpg/systemMenus";
 import API from "renderer/lib/api";
@@ -257,6 +271,13 @@ const sourceExtByKind = {
 };
 
 const BIT_MODE_CHOICES = ["8bit", "16bit", "32bit", "64bit"] as const;
+const WORKBENCH_STATUS_CHOICES: WorkbenchStatus[] = [
+  "draft",
+  "in_progress",
+  "ready",
+  "blocked",
+];
+const WORKBENCH_RISK_CHOICES: WorkbenchRisk[] = ["low", "medium", "high"];
 
 const getFilename = (fullPath: string): string => {
   const parts = fullPath.split(/[\\/]/);
@@ -369,6 +390,9 @@ export const RPGGameMakerUILayout: React.FC = () => {
   const [activeSourceFileId, setActiveSourceFileId] = useState("source-sample-main");
   const [sourceSearch, setSourceSearch] = useState("");
   const [sourceReplace, setSourceReplace] = useState("");
+  const [toolWorkbenchRecords, setToolWorkbenchRecords] = useState(
+    createToolWorkbenchRecords,
+  );
   const layoutHydratedRef = useRef(false);
   const skipNextLayoutPersistRef = useRef(true);
   const blueprintCanvasRef = useRef<HTMLDivElement | null>(null);
@@ -394,6 +418,10 @@ export const RPGGameMakerUILayout: React.FC = () => {
       : "8bit";
   const targetPlatformLabel =
     targetPlatform === "gameboy" ? "game-console" : targetPlatform;
+  const activeWorkbenchTool = useMemo(
+    () => toolWorkbenchRecords[state.activeTool],
+    [state.activeTool, toolWorkbenchRecords],
+  );
   const activeThemeBg =
     selectedColorProfile?.colors.background ??
     themeBackgrounds[state.activeThemeId] ??
@@ -520,6 +548,12 @@ export const RPGGameMakerUILayout: React.FC = () => {
     );
     setPendingNodeTitle(selected?.title ?? "");
   }, [state.blueprintNodes, state.selectedBlueprintNodeId]);
+
+  React.useEffect(() => {
+    setToolWorkbenchRecords((prev) =>
+      ensureWorkbenchToolRecord(prev, state.activeTool),
+    );
+  }, [state.activeTool]);
 
   React.useEffect(() => {
     if (state.selectedBlueprintNodeId) {
@@ -657,14 +691,32 @@ export const RPGGameMakerUILayout: React.FC = () => {
         );
         return;
       }
-      applySafeStateUpdate(
-        `RPG submenu ${subMenu.label}: ${actionLabel}`,
-        (prev) =>
-          executeRpgMenuFunction(
-            prev,
-            functionName,
+      const leadTool = subMenu.tools[0]?.trim();
+      if (leadTool) {
+        setToolWorkbenchRecords((prev) =>
+          markWorkbenchToolRun(
+            ensureWorkbenchToolRecord(prev, leadTool),
+            leadTool,
             `${subMenu.label}: ${actionLabel}`,
           ),
+        );
+      }
+      applySafeStateUpdate(
+        `RPG submenu ${subMenu.label}: ${actionLabel}`,
+        (prev) => {
+          const withTool = leadTool
+            ? {
+                ...prev,
+                activeTool: leadTool,
+                modified: true,
+              }
+            : prev;
+          return executeRpgMenuFunction(
+            withTool,
+            functionName,
+            `${subMenu.label}: ${actionLabel}`,
+          );
+        },
       );
     },
     [appendLog, applySafeStateUpdate],
@@ -677,6 +729,9 @@ export const RPGGameMakerUILayout: React.FC = () => {
         appendLog(`[ERROR] ${source}: missing tool label`);
         return;
       }
+      setToolWorkbenchRecords((prev) =>
+        ensureWorkbenchToolRecord(prev, normalized),
+      );
       applySafeStateUpdate(`${source}: ${normalized}`, (prev) => ({
         ...prev,
         activeTool: normalized,
@@ -2344,6 +2399,272 @@ export const RPGGameMakerUILayout: React.FC = () => {
           <div style={panelStyle}>
             <div style={panelHeaderStyle}>Tools and Features</div>
             <div style={panelBodyStyle}>
+              <div
+                style={{
+                  border: "1px solid #334155",
+                  borderRadius: 6,
+                  padding: 8,
+                  marginBottom: 10,
+                }}
+              >
+                <div style={{ fontWeight: 700, marginBottom: 6 }}>
+                  Active Tool Workbench
+                </div>
+                {!activeWorkbenchTool ? (
+                  <div style={{ color: "#94a3b8", fontSize: 12 }}>
+                    No workbench record for the active tool yet.
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ fontSize: 12, color: "#cbd5e1", marginBottom: 6 }}>
+                      {activeWorkbenchTool.label} [{activeWorkbenchTool.category}] -{" "}
+                      {activeWorkbenchTool.description}
+                    </div>
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: 6,
+                        marginBottom: 6,
+                      }}
+                    >
+                      <select
+                        value={activeWorkbenchTool.status}
+                        onChange={(event) =>
+                          setToolWorkbenchRecords((prev) =>
+                            setWorkbenchToolStatus(
+                              prev,
+                              state.activeTool,
+                              event.currentTarget.value as WorkbenchStatus,
+                            ),
+                          )
+                        }
+                        style={{
+                          background: "#0f172a",
+                          color: "#e5e7eb",
+                          border: "1px solid #334155",
+                          borderRadius: 4,
+                          padding: "4px 6px",
+                          fontSize: 12,
+                        }}
+                      >
+                        {WORKBENCH_STATUS_CHOICES.map((status) => (
+                          <option key={status} value={status}>
+                            Status: {status}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        value={activeWorkbenchTool.bitMode}
+                        onChange={(event) =>
+                          setToolWorkbenchRecords((prev) =>
+                            setWorkbenchToolBitMode(
+                              prev,
+                              state.activeTool,
+                              event.currentTarget.value as WorkbenchBitMode,
+                            ),
+                          )
+                        }
+                        style={{
+                          background: "#0f172a",
+                          color: "#e5e7eb",
+                          border: "1px solid #334155",
+                          borderRadius: 4,
+                          padding: "4px 6px",
+                          fontSize: 12,
+                        }}
+                      >
+                        {BIT_MODE_CHOICES.map((mode) => (
+                          <option key={mode} value={mode}>
+                            Bit Mode: {mode}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        value={activeWorkbenchTool.owner}
+                        onChange={(event) =>
+                          setToolWorkbenchRecords((prev) =>
+                            setWorkbenchToolOwner(
+                              prev,
+                              state.activeTool,
+                              event.currentTarget.value,
+                            ),
+                          )
+                        }
+                        placeholder="Owner"
+                        style={{
+                          background: "#0f172a",
+                          color: "#e5e7eb",
+                          border: "1px solid #334155",
+                          borderRadius: 4,
+                          padding: "4px 6px",
+                          fontSize: 12,
+                        }}
+                      />
+                      <select
+                        value={activeWorkbenchTool.config.risk}
+                        onChange={(event) =>
+                          setToolWorkbenchRecords((prev) =>
+                            setWorkbenchToolRisk(
+                              prev,
+                              state.activeTool,
+                              event.currentTarget.value as WorkbenchRisk,
+                            ),
+                          )
+                        }
+                        style={{
+                          background: "#0f172a",
+                          color: "#e5e7eb",
+                          border: "1px solid #334155",
+                          borderRadius: 4,
+                          padding: "4px 6px",
+                          fontSize: 12,
+                        }}
+                      >
+                        {WORKBENCH_RISK_CHOICES.map((risk) => (
+                          <option key={risk} value={risk}>
+                            Risk: {risk}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                      <input
+                        type="number"
+                        value={activeWorkbenchTool.config.frameBudgetMs}
+                        onChange={(event) =>
+                          setToolWorkbenchRecords((prev) =>
+                            setWorkbenchToolFrameBudget(
+                              prev,
+                              state.activeTool,
+                              Number(event.currentTarget.value || 0),
+                            ),
+                          )
+                        }
+                        style={{
+                          background: "#0f172a",
+                          color: "#e5e7eb",
+                          border: "1px solid #334155",
+                          borderRadius: 4,
+                          padding: "4px 6px",
+                          fontSize: 12,
+                        }}
+                      />
+                      <input
+                        type="number"
+                        value={activeWorkbenchTool.config.coverageTarget}
+                        onChange={(event) =>
+                          setToolWorkbenchRecords((prev) =>
+                            setWorkbenchToolCoverageTarget(
+                              prev,
+                              state.activeTool,
+                              Number(event.currentTarget.value || 0),
+                            ),
+                          )
+                        }
+                        style={{
+                          background: "#0f172a",
+                          color: "#e5e7eb",
+                          border: "1px solid #334155",
+                          borderRadius: 4,
+                          padding: "4px 6px",
+                          fontSize: 12,
+                        }}
+                      />
+                    </div>
+                    <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+                      <button
+                        style={buttonStyle}
+                        onClick={() => {
+                          setToolWorkbenchRecords((prev) =>
+                            markWorkbenchToolRun(
+                              prev,
+                              state.activeTool,
+                              "Manual run from workbench panel",
+                            ),
+                          );
+                          appendLog(`[RPG] Workbench run marked for ${state.activeTool}`);
+                        }}
+                      >
+                        Mark Run
+                      </button>
+                      <span style={{ fontSize: 12, color: "#94a3b8", paddingTop: 6 }}>
+                        Completion: {activeWorkbenchTool.completion}% | Last Run:{" "}
+                        {activeWorkbenchTool.lastRunAt || "never"}
+                      </span>
+                    </div>
+                    <div style={{ marginTop: 8, marginBottom: 4, fontWeight: 700 }}>
+                      Checklist
+                    </div>
+                    {activeWorkbenchTool.checklist.map((item) => (
+                      <label
+                        key={item.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                          fontSize: 12,
+                          marginBottom: 4,
+                          color: item.done ? "#86efac" : "#cbd5e1",
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={item.done}
+                          onChange={() =>
+                            setToolWorkbenchRecords((prev) =>
+                              toggleWorkbenchChecklistItem(
+                                prev,
+                                state.activeTool,
+                                item.id,
+                              ),
+                            )
+                          }
+                        />
+                        {item.label}
+                      </label>
+                    ))}
+                    <textarea
+                      value={activeWorkbenchTool.notes}
+                      placeholder="Implementation notes..."
+                      onChange={(event) =>
+                        setToolWorkbenchRecords((prev) =>
+                          setWorkbenchToolNotes(
+                            prev,
+                            state.activeTool,
+                            event.currentTarget.value,
+                          ),
+                        )
+                      }
+                      style={{
+                        width: "100%",
+                        minHeight: 72,
+                        resize: "vertical",
+                        marginTop: 6,
+                        background: "#020617",
+                        color: "#e2e8f0",
+                        border: "1px solid #334155",
+                        borderRadius: 4,
+                        padding: 6,
+                        fontSize: 12,
+                        fontFamily: "Consolas, monospace",
+                      }}
+                    />
+                    <div style={{ marginTop: 6, fontSize: 11, color: "#94a3b8" }}>
+                      Menu Paths:{" "}
+                      {activeWorkbenchTool.menuPaths.length
+                        ? activeWorkbenchTool.menuPaths.join(" | ")
+                        : "none"}
+                    </div>
+                    <div style={{ marginTop: 2, fontSize: 11, color: "#94a3b8" }}>
+                      Engine Systems:{" "}
+                      {activeWorkbenchTool.engineSystems.length
+                        ? activeWorkbenchTool.engineSystems.join(" | ")
+                        : "none"}
+                    </div>
+                  </>
+                )}
+              </div>
               <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
                 <input
                   value={pendingNodeTitle}
