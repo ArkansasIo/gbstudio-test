@@ -195,27 +195,6 @@ export const loadgame = (
 };
 
 
-export const openoptionsmenu = (
-  state: RPGGameState,
-  ...args: any[]
-): RPGGameState => {
-  console.log('[RPG ACTION] openOptionsMenu', args);
-  
-  // TODO: Implement Options logic
-  
-  return {
-    ...state,
-    panelState: {
-      activePanel: 'pause-options',
-      panelData: {
-        ...state.panelState.panelData,
-        ['pause-options']: { timestamp: Date.now() },
-      },
-    },
-  };
-};
-
-
 export const quittotitle = (
   state: RPGGameState,
   ...args: any[]
@@ -1235,7 +1214,6 @@ export const actionHandlers = {
   openskillsmenu,
   savegame,
   loadgame,
-  openoptionsmenu,
   quittotitle,
   opencharacterstats,
   allocatestatpoints,
