@@ -75,6 +75,10 @@ import {
   topBarQuickTools,
   workspacePresets,
 } from "./rpgGameMakerAdvancedConfig";
+import {
+  RPG_WORKBENCH_TEMPLATE,
+  RPG_WORKBENCH_TEMPLATE_JSON,
+} from "./rpgWorkbenchTemplate";
 import { RPG_COLOR_PROFILES, RPG_SETTINGS_PRESETS } from "app/rpg/input";
 import {
   resolveEngineLogicAction,
@@ -362,6 +366,8 @@ export const RPGGameMakerUILayout: React.FC = () => {
   const [activeSourceFileId, setActiveSourceFileId] = useState("source-sample-main");
   const [sourceSearch, setSourceSearch] = useState("");
   const [sourceReplace, setSourceReplace] = useState("");
+  const layoutHydratedRef = useRef(false);
+  const skipNextLayoutPersistRef = useRef(true);
   const blueprintCanvasRef = useRef<HTMLDivElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const topMenuBarRef = useRef<HTMLDivElement | null>(null);
@@ -601,6 +607,35 @@ export const RPGGameMakerUILayout: React.FC = () => {
     );
   }, [activeSourceFile, appendLog, sourceReplace, sourceSearch]);
 
+  const loadRpgWorkbenchTemplate = useCallback(() => {
+    const template = RPG_WORKBENCH_TEMPLATE;
+    applySafeStateUpdate("Load RPG Workbench Template", (prev) => ({
+      ...prev,
+      projectName: template.starterState.projectName,
+      mapName: template.starterState.mapName,
+      layerName: template.starterState.layerName,
+      activeWorkspaceId: template.starterState.workspaceId,
+      activeThemeId: template.starterState.themeId,
+      activeColorProfileId: template.starterState.colorProfileId,
+      activeSettingsPresetId: template.starterState.settingsPresetId,
+      activeTool: template.starterState.enabledTools[0] ?? prev.activeTool,
+      selectedMenu: template.starterState.enabledShellMenus[0] ?? prev.selectedMenu,
+      modified: true,
+      outputLog: [
+        ...prev.outputLog.slice(-55),
+        `[RPG] Loaded template: ${template.name}`,
+        `[RPG] Shell menus=${template.libraries.counts.shellMenuCount}, RPG menus=${template.libraries.counts.rpgMenuCount}, tools=${template.libraries.counts.toolCount}, features=${template.libraries.counts.featureCount}`,
+      ],
+    }));
+  }, [applySafeStateUpdate]);
+
+  const copyRpgWorkbenchTemplateJson = useCallback(() => {
+    navigator.clipboard
+      .writeText(RPG_WORKBENCH_TEMPLATE_JSON)
+      .then(() => appendLog("[RPG] Copied workbench template JSON"))
+      .catch(() => appendLog("[ERROR] Failed to copy workbench template JSON"));
+  }, [appendLog]);
+
   const runRpgSubMenuAction = useCallback(
     (subMenu: RPGSubMenuDefinition, actionLabel: string, functionName: string) => {
       if (!functionName || !functionName.trim()) {
@@ -745,6 +780,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
   }, [appendLog, edgeReroutes, floatingWindows, layoutStorageKey, state]);
 
   const loadLayout = useCallback(() => {
+    layoutHydratedRef.current = false;
     try {
       const raw = localStorage.getItem(layoutStorageKey);
       if (!raw) {
@@ -768,6 +804,9 @@ export const RPGGameMakerUILayout: React.FC = () => {
       appendLog("Layout loaded");
     } catch (_e) {
       appendLog("Failed to load layout");
+    } finally {
+      layoutHydratedRef.current = true;
+      skipNextLayoutPersistRef.current = true;
     }
   }, [appendLog, layoutStorageKey]);
 
@@ -1300,6 +1339,13 @@ export const RPGGameMakerUILayout: React.FC = () => {
   }, [loadLayout]);
 
   React.useEffect(() => {
+    if (!layoutHydratedRef.current) {
+      return;
+    }
+    if (skipNextLayoutPersistRef.current) {
+      skipNextLayoutPersistRef.current = false;
+      return;
+    }
     try {
       const payload: SavedLayout = {
         blueprintNodes: state.blueprintNodes,
@@ -1358,7 +1404,8 @@ export const RPGGameMakerUILayout: React.FC = () => {
       style={{
         display: "grid",
         gridTemplateRows: "30px 42px 40px 1fr 120px 24px",
-        height: "100vh",
+        height: "100%",
+        minHeight: 0,
         background: activeThemeBg,
         color: "#e5e7eb",
         fontFamily: "Segoe UI, Tahoma, sans-serif",
@@ -1546,6 +1593,12 @@ export const RPGGameMakerUILayout: React.FC = () => {
           </button>
           <button style={buttonStyle} onClick={() => void importSourceProgram("asm")}>
             Import ASM
+          </button>
+          <button style={buttonStyle} onClick={loadRpgWorkbenchTemplate}>
+            Load RPG Template
+          </button>
+          <button style={buttonStyle} onClick={copyRpgWorkbenchTemplateJson}>
+            Copy Template JSON
           </button>
           <button style={buttonStyle} onClick={saveLayout}>
             Save Layout

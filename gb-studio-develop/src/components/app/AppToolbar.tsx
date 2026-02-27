@@ -50,8 +50,8 @@ const sectionAccelerators = {
   palettes: "CommandOrControl+6",
   dialogue: "CommandOrControl+7",
   settings: "CommandOrControl+8",
-  rpg5e: "CommandOrControl+9",
-  rpgmaker: "CommandOrControl+0",
+  rpg5e: "CommandOrControl+Shift+9",
+  rpgmaker: "CommandOrControl+Shift+0",
 };
 
 const zoomSections = ["world", "sprites", "backgrounds", "ui"];

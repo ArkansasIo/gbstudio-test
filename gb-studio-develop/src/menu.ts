@@ -383,6 +383,20 @@ const buildMenu = async ({ themeManager, l10nManager }: BuildMenuProps) => {
             notifyListeners("section", "settings");
           },
         },
+        {
+          label: "RPG DND5E",
+          accelerator: "CommandOrControl+Shift+9",
+          click: () => {
+            notifyListeners("section", "rpg5e");
+          },
+        },
+        {
+          label: "RPG WORKBENCH",
+          accelerator: "CommandOrControl+Shift+0",
+          click: () => {
+            notifyListeners("section", "rpgmaker");
+          },
+        },
         { type: "separator" },
         {
           label: l10n("MENU_THEME"),
