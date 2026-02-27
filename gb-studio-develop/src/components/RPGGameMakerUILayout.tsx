@@ -9,11 +9,13 @@ import {
   removeSelectedBlueprintNode,
   runMenuCommand,
   runToolbarAction,
+  setColorProfile,
   selectAsset,
   selectBlueprintNode,
   selectLeftSidebarEntry,
   selectOutlinerEntry,
   setEditorTheme,
+  setSettingsPreset,
   setInspectorSection,
   setLeftSidebarList,
   setTopSearchQuery,
@@ -40,6 +42,13 @@ import {
   linkedDnd5eRuleNotes,
   linkedDnd5eSkills,
   linkedDnd5eSystemFields,
+  linkedRpgColorProfiles,
+  linkedRpgColorVariables,
+  linkedRpgSettingsFunctions,
+  linkedRpgSettingsGroups,
+  linkedRpgSettingsLogic,
+  linkedRpgSettingsOptions,
+  linkedRpgSettingsPresets,
   unrealToolbar,
   unrealTopMenus,
 } from "./rpgGameMakerConfig";
@@ -52,6 +61,7 @@ import {
   topBarQuickTools,
   workspacePresets,
 } from "./rpgGameMakerAdvancedConfig";
+import { RPG_COLOR_PROFILES, RPG_SETTINGS_PRESETS } from "app/rpg/input";
 
 const panelStyle: React.CSSProperties = {
   display: "grid",
@@ -112,7 +122,20 @@ const themeBackgrounds: Record<string, string> = {
 export const RPGGameMakerUILayout: React.FC = () => {
   const [state, setState] = useState(createInitialEditorState);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const activeThemeBg = themeBackgrounds[state.activeThemeId] ?? "#111827";
+  const selectedColorProfile = useMemo(
+    () =>
+      RPG_COLOR_PROFILES.find((profile) => profile.id === state.activeColorProfileId),
+    [state.activeColorProfileId],
+  );
+  const selectedSettingsPreset = useMemo(
+    () =>
+      RPG_SETTINGS_PRESETS.find((preset) => preset.id === state.activeSettingsPresetId),
+    [state.activeSettingsPresetId],
+  );
+  const activeThemeBg =
+    selectedColorProfile?.colors.background ??
+    themeBackgrounds[state.activeThemeId] ??
+    "#111827";
 
   const nodeById = useMemo(() => {
     const map = new Map<string, BlueprintNodeModel>();
@@ -304,6 +327,52 @@ export const RPGGameMakerUILayout: React.FC = () => {
               {editorThemes.map((theme) => (
                 <option key={theme.id} value={theme.id}>
                   {theme.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 10, color: "#94a3b8" }}>Colors</span>
+            <select
+              value={state.activeColorProfileId}
+              onChange={(e) =>
+                setState((prev) => setColorProfile(prev, e.currentTarget.value))
+              }
+              style={{
+                background: "#0f172a",
+                color: "#e5e7eb",
+                border: "1px solid #334155",
+                borderRadius: 4,
+                padding: "4px 6px",
+                fontSize: 12,
+              }}
+            >
+              {RPG_COLOR_PROFILES.map((profile) => (
+                <option key={profile.id} value={profile.id}>
+                  {profile.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 10, color: "#94a3b8" }}>Preset</span>
+            <select
+              value={state.activeSettingsPresetId}
+              onChange={(e) =>
+                setState((prev) => setSettingsPreset(prev, e.currentTarget.value))
+              }
+              style={{
+                background: "#0f172a",
+                color: "#e5e7eb",
+                border: "1px solid #334155",
+                borderRadius: 4,
+                padding: "4px 6px",
+                fontSize: 12,
+              }}
+            >
+              {RPG_SETTINGS_PRESETS.map((preset) => (
+                <option key={preset.id} value={preset.id}>
+                  {preset.label}
                 </option>
               ))}
             </select>
@@ -644,6 +713,16 @@ export const RPGGameMakerUILayout: React.FC = () => {
                 Workspace:{" "}
                 {workspacePresets.find((w) => w.id === state.activeWorkspaceId)?.label}
               </div>
+              <div style={listRowStyle}>
+                Color Profile: {selectedColorProfile?.label ?? state.activeColorProfileId}
+              </div>
+              <div style={listRowStyle}>
+                Settings Preset:{" "}
+                {selectedSettingsPreset?.label ?? state.activeSettingsPresetId}
+              </div>
+              <div style={listRowStyle}>
+                Settings Count: {Object.keys(state.settingValues).length}
+              </div>
               <div style={listRowStyle}>Modified: {state.modified ? "Yes" : "No"}</div>
               <div style={listRowStyle}>
                 Selection:{" "}
@@ -749,6 +828,60 @@ export const RPGGameMakerUILayout: React.FC = () => {
               {linkedRPGInputTools.slice(0, 40).map((tool) => (
                 <div key={tool} style={listRowStyle}>
                   {tool}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                RPG Color Profiles
+              </div>
+              {linkedRpgColorProfiles.map((profile) => (
+                <div key={profile} style={listRowStyle}>
+                  {profile}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>Color Variables</div>
+              {linkedRpgColorVariables.slice(0, 48).map((entry) => (
+                <div key={entry} style={listRowStyle}>
+                  {entry}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                RPG Settings Groups
+              </div>
+              {linkedRpgSettingsGroups.map((group) => (
+                <div key={group} style={listRowStyle}>
+                  {group}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                RPG Settings Presets
+              </div>
+              {linkedRpgSettingsPresets.map((preset) => (
+                <div key={preset} style={listRowStyle}>
+                  {preset}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                RPG Settings Options
+              </div>
+              {linkedRpgSettingsOptions.slice(0, 80).map((option) => (
+                <div key={option} style={listRowStyle}>
+                  {option}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                RPG Settings Functions
+              </div>
+              {linkedRpgSettingsFunctions.slice(0, 80).map((fn) => (
+                <div key={fn} style={listRowStyle}>
+                  {fn}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                RPG Settings Logic
+              </div>
+              {linkedRpgSettingsLogic.slice(0, 80).map((logic) => (
+                <div key={logic} style={listRowStyle}>
+                  {logic}
                 </div>
               ))}
               <div style={{ marginTop: 10, fontWeight: 700 }}>DnD5E Abilities</div>
@@ -902,6 +1035,10 @@ export const RPGGameMakerUILayout: React.FC = () => {
           <span>RAM Budget: 68% | ROM Bank: 21/32 | FPS: 60</span>
           <span>
             Theme: {editorThemes.find((theme) => theme.id === state.activeThemeId)?.label}
+          </span>
+          <span>Colors: {selectedColorProfile?.label ?? state.activeColorProfileId}</span>
+          <span>
+            Preset: {selectedSettingsPreset?.label ?? state.activeSettingsPresetId}
           </span>
         </span>
       </div>

@@ -1,4 +1,8 @@
 import {
+  RPG_COLOR_PROFILES,
+  RPG_SETTING_GROUPS,
+  RPG_SETTINGS_PRESETS,
+  type RPGSettingValue,
   blueprintGraph,
   blueprintNodeCatalog,
   unrealPanels,
@@ -57,6 +61,9 @@ export interface EditorState {
   selectedOutlinerId: string | null;
   selectedBlueprintNodeId: string | null;
   activeThemeId: string;
+  activeColorProfileId: string;
+  activeSettingsPresetId: string;
+  settingValues: Record<string, RPGSettingValue>;
   lastOpenedLinkId: string | null;
   projectName: string;
   mapName: string;
@@ -85,6 +92,16 @@ const makeInitialAssets = (): ProjectAssetItem[] => [
   { id: "dt-items", name: "DT_Items", type: "Data Tables" },
 ];
 
+const makeDefaultSettingValues = (): Record<string, RPGSettingValue> => {
+  const values: Record<string, RPGSettingValue> = {};
+  RPG_SETTING_GROUPS.forEach((group) => {
+    group.options.forEach((option) => {
+      values[option.id] = option.defaultValue;
+    });
+  });
+  return values;
+};
+
 export const createInitialEditorState = (): EditorState => ({
   selectedMenu: unrealTopMenus[0]?.label ?? "File",
   selectedToolCategory: blueprintNodeCatalog[0]?.category ?? "Events",
@@ -99,6 +116,9 @@ export const createInitialEditorState = (): EditorState => ({
   selectedOutlinerId: null,
   selectedBlueprintNodeId: null,
   activeThemeId: editorThemes[0]?.id ?? "midnight-steel",
+  activeColorProfileId: RPG_COLOR_PROFILES[0]?.id ?? "crystal-cyan",
+  activeSettingsPresetId: RPG_SETTINGS_PRESETS[0]?.id ?? "balanced-default",
+  settingValues: makeDefaultSettingValues(),
   lastOpenedLinkId: null,
   projectName: "Adventure_08bit",
   mapName: "Forest_Entrance",
@@ -128,6 +148,14 @@ const getQuickToolLabel = (toolId: string): string =>
 
 const getThemeLabel = (themeId: string): string =>
   editorThemes.find((theme) => theme.id === themeId)?.label ?? themeId;
+
+const getColorProfileLabel = (profileId: string): string =>
+  RPG_COLOR_PROFILES.find((profile) => profile.id === profileId)?.label ??
+  profileId;
+
+const getSettingsPresetLabel = (presetId: string): string =>
+  RPG_SETTINGS_PRESETS.find((preset) => preset.id === presetId)?.label ??
+  presetId;
 
 const getToolLink = (linkId: string) => toolLinks.find((link) => link.id === linkId);
 
@@ -288,6 +316,58 @@ export const setEditorTheme = (
       modified: true,
     },
     `Theme changed: ${getThemeLabel(themeId)}`,
+  );
+
+export const setColorProfile = (
+  state: EditorState,
+  colorProfileId: string,
+): EditorState =>
+  appendLog(
+    {
+      ...state,
+      activeColorProfileId: colorProfileId,
+      modified: true,
+    },
+    `Color profile changed: ${getColorProfileLabel(colorProfileId)}`,
+  );
+
+export const setSettingsPreset = (
+  state: EditorState,
+  settingsPresetId: string,
+): EditorState => {
+  const preset = RPG_SETTINGS_PRESETS.find((entry) => entry.id === settingsPresetId);
+  if (!preset) {
+    return appendLog(state, `Settings preset not found: ${settingsPresetId}`);
+  }
+  return appendLog(
+    {
+      ...state,
+      activeSettingsPresetId: settingsPresetId,
+      settingValues: {
+        ...state.settingValues,
+        ...preset.values,
+      },
+      modified: true,
+    },
+    `Settings preset applied: ${getSettingsPresetLabel(settingsPresetId)}`,
+  );
+};
+
+export const setRpgSettingValue = (
+  state: EditorState,
+  settingId: string,
+  value: RPGSettingValue,
+): EditorState =>
+  appendLog(
+    {
+      ...state,
+      settingValues: {
+        ...state.settingValues,
+        [settingId]: value,
+      },
+      modified: true,
+    },
+    `Setting updated: ${settingId}=${String(value)}`,
   );
 
 export const openToolLink = (state: EditorState, linkId: string): EditorState => {

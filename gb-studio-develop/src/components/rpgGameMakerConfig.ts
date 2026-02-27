@@ -11,6 +11,15 @@ import {
 } from "app/rpg/systemMenus";
 import { RPG_TOOL_LABELS } from "app/rpg/input";
 import {
+  RPG_COLOR_PROFILE_LABELS,
+  RPG_COLOR_PROFILE_VARIABLES,
+  RPG_SETTING_FUNCTIONS,
+  RPG_SETTING_GROUP_LABELS,
+  RPG_SETTING_LOGIC_NOTES,
+  RPG_SETTING_OPTION_LABELS,
+  RPG_SETTINGS_PRESET_LABELS,
+} from "app/rpg/input";
+import {
   DND5E_ABILITIES,
   DND5E_ACTION_ECONOMY,
   DND5E_CONDITIONS,
@@ -379,3 +388,17 @@ export const linkedDnd5eSystemFields = DND5E_RPG_FIELD_TEMPLATES.flatMap(
   (template) =>
     template.fields.map((field) => `${template.category}: ${field}`),
 );
+
+export const linkedRpgColorProfiles = RPG_COLOR_PROFILE_LABELS;
+
+export const linkedRpgColorVariables = RPG_COLOR_PROFILE_VARIABLES;
+
+export const linkedRpgSettingsGroups = RPG_SETTING_GROUP_LABELS;
+
+export const linkedRpgSettingsOptions = RPG_SETTING_OPTION_LABELS;
+
+export const linkedRpgSettingsFunctions = RPG_SETTING_FUNCTIONS;
+
+export const linkedRpgSettingsLogic = RPG_SETTING_LOGIC_NOTES;
+
+export const linkedRpgSettingsPresets = RPG_SETTINGS_PRESET_LABELS;

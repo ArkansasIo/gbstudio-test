@@ -46,3 +46,39 @@ export interface RPGEngineSystemInputDefinition {
   tools: RPGToolInputDefinition[];
   functions: string[];
 }
+
+export interface RPGColorProfileDefinition {
+  id: string;
+  label: string;
+  description: string;
+  colors: Record<string, string>;
+}
+
+export type RPGSettingValue = string | number | boolean;
+
+export type RPGSettingValueType = "boolean" | "number" | "select";
+
+export interface RPGSettingOptionDefinition {
+  id: string;
+  label: string;
+  valueType: RPGSettingValueType;
+  defaultValue: RPGSettingValue;
+  description: string;
+  functionName: string;
+  logic: string;
+  choices?: Array<string | number>;
+}
+
+export interface RPGSettingGroupDefinition {
+  id: string;
+  label: string;
+  description: string;
+  options: RPGSettingOptionDefinition[];
+}
+
+export interface RPGSettingsPresetDefinition {
+  id: string;
+  label: string;
+  description: string;
+  values: Record<string, RPGSettingValue>;
+}
