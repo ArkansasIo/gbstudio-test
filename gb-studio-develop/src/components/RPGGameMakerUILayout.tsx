@@ -364,6 +364,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
   const [sourceReplace, setSourceReplace] = useState("");
   const blueprintCanvasRef = useRef<HTMLDivElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
+  const topMenuBarRef = useRef<HTMLDivElement | null>(null);
   const selectedColorProfile = useMemo(
     () =>
       RPG_COLOR_PROFILES.find((profile) => profile.id === state.activeColorProfileId),
@@ -1341,6 +1342,17 @@ export const RPGGameMakerUILayout: React.FC = () => {
     });
   }, [edgeKey, state.blueprintEdges]);
 
+  React.useEffect(() => {
+    const onDocumentMouseDown = (event: MouseEvent) => {
+      const target = event.target as Node | null;
+      if (!target) return;
+      if (topMenuBarRef.current?.contains(target)) return;
+      setOpenMenu(null);
+    };
+    document.addEventListener("mousedown", onDocumentMouseDown);
+    return () => document.removeEventListener("mousedown", onDocumentMouseDown);
+  }, []);
+
   return (
     <div
       style={{
@@ -1353,6 +1365,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
       }}
     >
       <div
+        ref={topMenuBarRef}
         style={{
           display: "flex",
           alignItems: "center",
@@ -1365,12 +1378,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
         }}
       >
         {unrealTopMenus.map((menu) => (
-          <div
-            key={menu.label}
-            style={{ position: "relative" }}
-            onMouseEnter={() => setOpenMenu(menu.label)}
-            onMouseLeave={() => setOpenMenu(null)}
-          >
+          <div key={menu.label} style={{ position: "relative" }}>
             <div
               style={{
                 padding: "4px 6px",
@@ -1381,12 +1389,13 @@ export const RPGGameMakerUILayout: React.FC = () => {
                     : "none",
                 cursor: "pointer",
               }}
-              onClick={() =>
+              onClick={() => {
                 setState((prev) => ({
                   ...prev,
                   selectedMenu: menu.label,
-                }))
-              }
+                }));
+                setOpenMenu((prev) => (prev === menu.label ? null : menu.label));
+              }}
             >
               {menu.label}
             </div>
@@ -1409,7 +1418,10 @@ export const RPGGameMakerUILayout: React.FC = () => {
                       ...listRowStyle,
                       borderBottom: "1px solid #334155",
                     }}
-                    onClick={() => handleMenuCommand(menu.label, item)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleMenuCommand(menu.label, item);
+                    }}
                   >
                     {item}
                   </div>
@@ -1630,7 +1642,9 @@ export const RPGGameMakerUILayout: React.FC = () => {
                     if (group.name === "Blueprint" && action === "Debug") {
                       appendLog("[RPG] Blueprint debugger activated");
                     }
-                    setState((prev) => runToolbarAction(prev, group.name, action));
+                    applySafeStateUpdate(`Toolbar ${group.name}: ${action}`, (prev) =>
+                      runToolbarAction(prev, group.name, action),
+                    );
                   }}
                 >
                   {action}
@@ -1645,7 +1659,9 @@ export const RPGGameMakerUILayout: React.FC = () => {
           <button
             style={buttonStyle}
             onClick={() =>
-              setState((prev) => runToolbarAction(prev, "Play", "Play"))
+              applySafeStateUpdate("Toolbar Play: Play", (prev) =>
+                runToolbarAction(prev, "Play", "Play"),
+              )
             }
           >
             Play In Editor
