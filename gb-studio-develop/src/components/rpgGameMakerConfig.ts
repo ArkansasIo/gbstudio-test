@@ -1,4 +1,14 @@
 import { RPG_FEATURE_DEFINITIONS } from "app/rpg/features";
+import {
+  RPG_ENGINE_FUNCTIONS,
+  RPG_ENGINE_LOGIC,
+  RPG_ENGINE_LOGIC_TOOLS,
+} from "app/rpg/engineLogic";
+import {
+  RPG_SYSTEM_MENU_FUNCTIONS,
+  RPG_SYSTEM_MENUS,
+  RPG_SYSTEM_SUB_MENUS,
+} from "app/rpg/systemMenus";
 
 export type MenuDefinition = {
   label: string;
@@ -314,3 +324,17 @@ export const linkedRPGFeatureCapabilities = RPG_FEATURE_DEFINITIONS.flatMap(
   (feature) =>
     feature.capabilities.map((capability) => `${feature.name}: ${capability}`),
 );
+
+export const linkedRPGSystemMenus = RPG_SYSTEM_MENUS;
+
+export const linkedRPGSubMenus = RPG_SYSTEM_SUB_MENUS;
+
+export const linkedRPGMenuFunctions = RPG_SYSTEM_MENU_FUNCTIONS;
+
+export const linkedRPGEngineLogic = RPG_ENGINE_LOGIC;
+
+export const linkedRPGEngineLogicTools = RPG_ENGINE_LOGIC_TOOLS.map(
+  (tool) => `${tool.name} [${tool.domain}]`,
+);
+
+export const linkedRPGEngineFunctions = RPG_ENGINE_FUNCTIONS;

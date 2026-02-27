@@ -23,8 +23,14 @@ import {
 } from "./rpgMakerEditorSystems";
 import {
   blueprintNodeCatalog,
+  linkedRPGEngineFunctions,
+  linkedRPGEngineLogic,
+  linkedRPGEngineLogicTools,
   linkedRPGFeatureCapabilities,
   linkedRPGFeatureNames,
+  linkedRPGMenuFunctions,
+  linkedRPGSubMenus,
+  linkedRPGSystemMenus,
   unrealToolbar,
   unrealTopMenus,
 } from "./rpgGameMakerConfig";
@@ -688,6 +694,44 @@ export const RPGGameMakerUILayout: React.FC = () => {
               {linkedRPGFeatureCapabilities.slice(0, 20).map((capability) => (
                 <div key={capability} style={listRowStyle}>
                   {capability}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>Main Menus</div>
+              {linkedRPGSystemMenus.map((menu) => (
+                <div key={menu} style={listRowStyle}>
+                  {menu}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>Sub Menus</div>
+              {linkedRPGSubMenus.slice(0, 24).map((subMenu) => (
+                <div key={subMenu} style={listRowStyle}>
+                  {subMenu}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>Menu Functions</div>
+              {linkedRPGMenuFunctions.slice(0, 24).map((fn) => (
+                <div key={fn} style={listRowStyle}>
+                  {fn}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>Engine Logic</div>
+              {linkedRPGEngineLogic.map((logic) => (
+                <div key={logic} style={listRowStyle}>
+                  {logic}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                Engine Logic Tools
+              </div>
+              {linkedRPGEngineLogicTools.map((tool) => (
+                <div key={tool} style={listRowStyle}>
+                  {tool}
+                </div>
+              ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>Engine Functions</div>
+              {linkedRPGEngineFunctions.slice(0, 30).map((fn) => (
+                <div key={fn} style={listRowStyle}>
+                  {fn}
                 </div>
               ))}
               <div style={{ marginTop: 10, fontWeight: 700 }}>Tool Links</div>
