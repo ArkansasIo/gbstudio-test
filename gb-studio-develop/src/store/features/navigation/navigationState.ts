@@ -10,7 +10,8 @@ export type NavigationSection =
   | "palettes"
   | "dialogue"
   | "settings"
-  | "rpg5e";
+  | "rpg5e"
+  | "rpgmaker";
 
 export interface NavigationState {
   section: NavigationSection;

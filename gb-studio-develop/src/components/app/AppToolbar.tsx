@@ -51,6 +51,7 @@ const sectionAccelerators = {
   dialogue: "CommandOrControl+7",
   settings: "CommandOrControl+8",
   rpg5e: "CommandOrControl+9",
+  rpgmaker: "CommandOrControl+0",
 };
 
 const zoomSections = ["world", "sprites", "backgrounds", "ui"];
@@ -94,6 +95,7 @@ const AppToolbar: FC = () => {
       dialogue: l10n("NAV_DIALOGUE_REVIEW"),
       settings: l10n("NAV_SETTINGS"),
       rpg5e: "RPG DND5E",
+      rpgmaker: "RPG WORKBENCH",
     }),
     [],
   );
