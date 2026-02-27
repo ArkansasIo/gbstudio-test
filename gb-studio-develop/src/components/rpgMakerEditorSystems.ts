@@ -19,6 +19,12 @@ import {
   topBarQuickTools,
   workspacePresets,
 } from "./rpgGameMakerAdvancedConfig";
+import {
+  defaultWolfmanAlphaConfig,
+  wolfmanAlphaDamage,
+  wolfmanAlphaDebugLine,
+  wolfmanAlphaExpForLevel,
+} from "shared/lib/rpg/wolfmanAlpha";
 
 export type ProjectAssetType =
   | "Maps"
@@ -128,6 +134,9 @@ export const createInitialEditorState = (): EditorState => ({
   modified: false,
   outputLog: [
     "Editor initialized",
+    wolfmanAlphaDebugLine(
+      `battle profile loaded (maxLevel=${defaultWolfmanAlphaConfig.maxLevel})`,
+    ),
     `Loaded ${audioLibraryPacks.music.length} music packs and ${audioLibraryPacks.sfx.length} sfx packs`,
   ],
   assets: makeInitialAssets(),
@@ -160,6 +169,18 @@ const getSettingsPresetLabel = (presetId: string): string =>
   presetId;
 
 const getToolLink = (linkId: string) => toolLinks.find((link) => link.id === linkId);
+
+const appendBattlePreview = (state: EditorState): EditorState => {
+  const sampleDamage = wolfmanAlphaDamage(
+    { atk: 24, def: 10, level: 6 },
+    { atk: 16, def: 14, level: 4 },
+  );
+  const sampleExp = wolfmanAlphaExpForLevel(12);
+  return appendLog(
+    appendLog(state, wolfmanAlphaDebugLine(`sampleDamage=Hero->Slime:${sampleDamage}`)),
+    wolfmanAlphaDebugLine(`sampleExp=Level12:${sampleExp}`),
+  );
+};
 
 const nextNodeId = (nodes: BlueprintNodeModel[]): string => {
   const maxId = nodes.reduce((max, node) => {
@@ -222,6 +243,11 @@ export const runMenuCommand = (
     command === "Battle Designer" ||
     command === "Economy Tables"
   ) {
+    if (command === "Battle Designer") {
+      return appendBattlePreview(
+        appendLog(base, wolfmanAlphaDebugLine("opened battle designer")),
+      );
+    }
     return appendLog(base, `Opened tool workspace: ${command}`);
   }
   if (command === "Load Layout") {
@@ -267,6 +293,11 @@ export const runToolbarAction = (
   }
   if (groupName === "Blueprint" && action === "Compile") {
     return appendLog(base, "Blueprint compile completed");
+  }
+  if (groupName === "Blueprint" && action === "Debug") {
+    return appendBattlePreview(
+      appendLog(base, wolfmanAlphaDebugLine("debug snapshot generated")),
+    );
   }
   if (groupName === "Blueprint" && action === "Find References") {
     return appendLog(base, "Reference scan completed for blueprint and C nodes");

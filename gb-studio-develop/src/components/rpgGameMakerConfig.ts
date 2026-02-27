@@ -29,6 +29,7 @@ import {
   DND5E_RPG_FIELD_TEMPLATES,
   DND5E_SKILLS,
 } from "shared/lib/rpg5e/systemFields";
+import { defaultWolfmanAlphaConfig } from "shared/lib/rpg/wolfmanAlpha";
 
 export type MenuDefinition = {
   label: string;
@@ -402,3 +403,11 @@ export const linkedRpgSettingsFunctions = RPG_SETTING_FUNCTIONS;
 export const linkedRpgSettingsLogic = RPG_SETTING_LOGIC_NOTES;
 
 export const linkedRpgSettingsPresets = RPG_SETTINGS_PRESET_LABELS;
+
+export const linkedWolfmanAlphaProfiles = [
+  `target=${defaultWolfmanAlphaConfig.target}`,
+  `maxLevel=${defaultWolfmanAlphaConfig.maxLevel}`,
+  `baseExp=${defaultWolfmanAlphaConfig.baseExp}`,
+  `expExponent=${defaultWolfmanAlphaConfig.expExponent}`,
+  `damageRange=${defaultWolfmanAlphaConfig.damageFloor}-${defaultWolfmanAlphaConfig.damageCeil}`,
+];

@@ -90,7 +90,7 @@ export function randInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export function calcDamage(attacker: { atk: number }, defender: { def: number }, base: number = 10): number {
+export function calcDamage(attacker: { atk: number }, defender: { def: number }, base = 10): number {
   // Simple RPG damage formula
   const damage = base + attacker.atk - defender.def;
   return clamp(damage, 1, 255);
@@ -111,7 +111,7 @@ export function tileIndex(x: number, y: number, width: number): number {
   return y * width + x;
 }
 
-export function isColliding(a: Vec2, b: Vec2, size: number = 8): boolean {
+export function isColliding(a: Vec2, b: Vec2, size = 8): boolean {
   return Math.abs(a.x - b.x) < size && Math.abs(a.y - b.y) < size;
 }
 

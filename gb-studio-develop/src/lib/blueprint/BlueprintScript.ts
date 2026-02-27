@@ -16,7 +16,7 @@ export interface BlueprintNode {
   name: string;
   inputs: string[];
   outputs: string[];
-  properties?: Record<string, any>;
+  properties?: Record<string, unknown>;
   description?: string;
 }
 
@@ -37,11 +37,11 @@ export class BlueprintScript {
     return this.nodes.find(n => n.id === id);
   }
 
-  connectNodes(fromId: string, toId: string) {
+  connectNodes(_fromId: string, _toId: string) {
     // Add connection logic
   }
 
-  execute(inputs: Record<string, any>) {
+  execute(_inputs: Record<string, unknown>) {
     // Execute blueprint logic
   }
 

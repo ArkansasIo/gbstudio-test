@@ -37,7 +37,10 @@ export function aStar(start: Vec2, goal: Vec2, grid: number[][]): Vec2[] {
   function key(x: number, y: number) { return `${x},${y}`; }
   while (open.length) {
     open.sort((a, b) => a.cost + manhattan(a, goal) - (b.cost + manhattan(b, goal)));
-    const current = open.shift()!;
+    const current = open.shift();
+    if (!current) {
+      break;
+    }
     if (current.x === goal.x && current.y === goal.y) {
       // Reconstruct path
       const path: Vec2[] = [];

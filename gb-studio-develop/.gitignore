@@ -37,3 +37,8 @@ flamegraph.html
 !.yarn/versions
 
 buildexe/output/
+
+# Local environment secrets
+.env
+.env.local
+.env.*.local

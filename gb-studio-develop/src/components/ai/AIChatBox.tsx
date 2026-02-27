@@ -59,24 +59,92 @@ const ChatButton = styled.button`
   cursor: pointer;
 `;
 
+interface ChatMessage {
+  sender: "ai" | "user";
+  text: string;
+}
+
+const AI_PROVIDER = (process.env.AI_PROVIDER || "openrouter").toLowerCase();
+const AI_MODEL = process.env.AI_MODEL || "openai/gpt-4o-mini";
+const AI_BASE_URL =
+  process.env.AI_BASE_URL || "https://openrouter.ai/api/v1/chat/completions";
+const AI_API_KEY = process.env.AI_API_KEY || "";
+
 const AIChatBox = () => {
-  const [messages, setMessages] = useState([
-    { sender: "ai", text: "Hello! I'm Anna Ai, your AI assistant. How can I help you create in Enchantment Game Engine?" }
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      sender: "ai",
+      text: "Hello! I'm Anna Ai. Ask anything about your project.",
+    },
   ]);
   const [input, setInput] = useState("");
-  const [apiKey1, setApiKey1] = useState("");
-  const [apiKey2, setApiKey2] = useState("");
-  const [apiKey3, setApiKey3] = useState("");
   const [open, setOpen] = useState(true);
+  const [sending, setSending] = useState(false);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    setMessages([...messages, { sender: "user", text: input }]);
-    // Simulate AI reply
-    setTimeout(() => {
-      setMessages((msgs) => [...msgs, { sender: "ai", text: "(AI response placeholder)" }]);
-    }, 800);
+  const handleSend = async () => {
+    const userText = input.trim();
+    if (!userText || sending) return;
+
+    setMessages((prev) => [...prev, { sender: "user", text: userText }]);
     setInput("");
+
+    if (!AI_API_KEY) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "ai",
+          text: "Missing AI_API_KEY. Add it in .env.local and restart the app.",
+        },
+      ]);
+      return;
+    }
+
+    if (AI_PROVIDER !== "openrouter") {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "ai",
+          text: `Unsupported AI_PROVIDER '${AI_PROVIDER}'. Set AI_PROVIDER=openrouter.`,
+        },
+      ]);
+      return;
+    }
+
+    setSending(true);
+    try {
+      const response = await fetch(AI_BASE_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${AI_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://www.gbstudio.dev",
+          "X-Title": "Enchantment Game Engine",
+        },
+        body: JSON.stringify({
+          model: AI_MODEL,
+          messages: [{ role: "user", content: userText }],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      const aiText =
+        data?.choices?.[0]?.message?.content ||
+        "No response content returned by provider.";
+      setMessages((prev) => [...prev, { sender: "ai", text: aiText }]);
+    } catch (err) {
+      const errorText =
+        err instanceof Error ? err.message : "Unknown request error";
+      setMessages((prev) => [
+        ...prev,
+        { sender: "ai", text: `Request failed: ${errorText}` },
+      ]);
+    } finally {
+      setSending(false);
+    }
   };
 
   return open ? (
@@ -91,30 +159,15 @@ const AIChatBox = () => {
         </button>
       </ChatHeader>
       <div style={{ padding: 8, background: '#222', borderBottom: '1px solid #333' }}>
-        <div style={{ marginBottom: 4, color: '#fff', fontSize: 12 }}>API Key 1:</div>
-        <input
-          type="password"
-          value={apiKey1}
-          onChange={e => setApiKey1(e.target.value)}
-          placeholder="Enter API Key 1"
-          style={{ width: '100%', marginBottom: 8, borderRadius: 6, border: 'none', padding: 6, background: '#444', color: '#fff' }}
-        />
-        <div style={{ marginBottom: 4, color: '#fff', fontSize: 12 }}>API Key 2:</div>
-        <input
-          type="password"
-          value={apiKey2}
-          onChange={e => setApiKey2(e.target.value)}
-          placeholder="Enter API Key 2"
-          style={{ width: '100%', marginBottom: 8, borderRadius: 6, border: 'none', padding: 6, background: '#444', color: '#fff' }}
-        />
-        <div style={{ marginBottom: 4, color: '#fff', fontSize: 12 }}>API Key 3:</div>
-        <input
-          type="password"
-          value={apiKey3}
-          onChange={e => setApiKey3(e.target.value)}
-          placeholder="Enter API Key 3"
-          style={{ width: '100%', marginBottom: 8, borderRadius: 6, border: 'none', padding: 6, background: '#444', color: '#fff' }}
-        />
+        <div style={{ marginBottom: 4, color: "#fff", fontSize: 12 }}>
+          Provider: {AI_PROVIDER}
+        </div>
+        <div style={{ marginBottom: 4, color: "#fff", fontSize: 12 }}>
+          Model: {AI_MODEL}
+        </div>
+        <div style={{ color: "#fff", fontSize: 12 }}>
+          API key: {AI_API_KEY ? "configured" : "missing (.env.local)"}
+        </div>
       </div>
       <ChatMessages>
         {messages.map((msg, idx) => (
@@ -133,7 +186,9 @@ const AIChatBox = () => {
           placeholder="Ask Anna Ai..."
           onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
         />
-        <ChatButton onClick={handleSend}>Send</ChatButton>
+        <ChatButton onClick={handleSend} disabled={sending}>
+          {sending ? "..." : "Send"}
+        </ChatButton>
       </ChatInputWrapper>
     </ChatBoxWrapper>
   ) : (

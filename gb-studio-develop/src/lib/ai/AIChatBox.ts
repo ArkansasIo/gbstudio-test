@@ -11,7 +11,7 @@ export interface AIProvider {
 
 export class AIChatBox {
   providers: AIProvider[] = [];
-  maxProviders: number = 5;
+  maxProviders = 5;
 
   constructor(providers?: AIProvider[]) {
     if (providers) {
@@ -33,7 +33,7 @@ export class AIChatBox {
     return this.providers.find(p => p.id === id);
   }
 
-  sendMessage(providerId: string, message: string): Promise<string> {
+  sendMessage(providerId: string, _message: string): Promise<string> {
     // Example: send message to AI provider
     const provider = this.getProvider(providerId);
     if (!provider) return Promise.reject("Provider not found");

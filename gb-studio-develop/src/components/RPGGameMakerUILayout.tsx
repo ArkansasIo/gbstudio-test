@@ -58,6 +58,7 @@ import {
   linkedRpgSettingsLogic,
   linkedRpgSettingsOptions,
   linkedRpgSettingsPresets,
+  linkedWolfmanAlphaProfiles,
   unrealToolbar,
   unrealTopMenus,
 } from "./rpgGameMakerConfig";
@@ -71,6 +72,7 @@ import {
   workspacePresets,
 } from "./rpgGameMakerAdvancedConfig";
 import { RPG_COLOR_PROFILES, RPG_SETTINGS_PRESETS } from "app/rpg/input";
+import API from "renderer/lib/api";
 
 const panelStyle: React.CSSProperties = {
   display: "grid",
@@ -173,6 +175,13 @@ type EdgeReroute = {
   y: number;
 };
 
+type TerminalChannel = "ai" | "rpg" | "warn" | "error" | "system";
+
+type TerminalEntry = {
+  channel: TerminalChannel;
+  text: string;
+};
+
 const initialFloatingWindows: FloatingWindow[] = [
   {
     id: "wnd-details",
@@ -214,6 +223,54 @@ const widgetTemplates = [
   },
 ];
 
+const sourceExtByKind = {
+  c: [".c", ".h"],
+  asm: [".s", ".asm"],
+};
+
+const getFilename = (fullPath: string): string => {
+  const parts = fullPath.split(/[\\/]/);
+  return parts[parts.length - 1] || fullPath;
+};
+
+const getExt = (filename: string): string => {
+  const idx = filename.lastIndexOf(".");
+  return idx >= 0 ? filename.slice(idx).toLowerCase() : "";
+};
+
+const parseCFunctions = (source: string): string[] => {
+  const regex = /^\s*(?:[A-Za-z_]\w*[\w\s*]*?)\s+([A-Za-z_]\w*)\s*\([^;]*\)\s*\{/gm;
+  const matches: string[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(source))) {
+    matches.push(match[1]);
+    if (matches.length >= 24) break;
+  }
+  return matches;
+};
+
+const parseAsmLabels = (source: string): string[] => {
+  const regex = /^\s*([A-Za-z_.$][\w.$@]*):/gm;
+  const matches: string[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(source))) {
+    matches.push(match[1]);
+    if (matches.length >= 24) break;
+  }
+  return matches;
+};
+
+const classifyTerminalLine = (line: string): TerminalChannel => {
+  const normalized = line.toLowerCase();
+  if (normalized.includes("[ai]")) return "ai";
+  if (normalized.includes("[warn]")) return "warn";
+  if (normalized.includes("[error]")) return "error";
+  if (normalized.includes("[wolfmanalpha/") || normalized.includes("[rpg]")) {
+    return "rpg";
+  }
+  return "system";
+};
+
 export const RPGGameMakerUILayout: React.FC = () => {
   const [state, setState] = useState(createInitialEditorState);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -230,6 +287,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
     null,
   );
   const [edgeReroutes, setEdgeReroutes] = useState<Record<string, EdgeReroute>>({});
+  const [terminalFilter, setTerminalFilter] = useState<TerminalChannel | "all">("all");
   const [pendingNodeTitle, setPendingNodeTitle] = useState("");
   const [dragOffset, setDragOffset] = useState<DragOffset>({ x: 0, y: 0 });
   const blueprintCanvasRef = useRef<HTMLDivElement | null>(null);
@@ -316,6 +374,17 @@ export const RPGGameMakerUILayout: React.FC = () => {
   );
 
   const edgeKey = useCallback((fromId: string, toId: string) => `${fromId}->${toId}`, []);
+
+  const terminalEntries = useMemo(() => {
+    const entries: TerminalEntry[] = state.outputLog.map((line) => ({
+      channel: classifyTerminalLine(line),
+      text: line,
+    }));
+    if (terminalFilter === "all") {
+      return entries;
+    }
+    return entries.filter((entry) => entry.channel === terminalFilter);
+  }, [state.outputLog, terminalFilter]);
 
   const toNodeRect = useCallback((node: BlueprintNodeModel) => {
     return {
@@ -432,6 +501,99 @@ export const RPGGameMakerUILayout: React.FC = () => {
       setOpenMenu(null);
     },
     [loadLayout, resetLayout, saveLayout],
+  );
+
+  const importSourceProgram = useCallback(
+    async (kind: "c" | "asm") => {
+      const path = await API.dialog.chooseFile();
+      if (!path) {
+        return;
+      }
+      const filename = getFilename(path);
+      const ext = getExt(filename);
+      const validExt = sourceExtByKind[kind];
+      if (!validExt.includes(ext)) {
+        appendLog(
+          `Skipped import: expected ${validExt.join(", ")} but got ${ext || "unknown"}`,
+        );
+        return;
+      }
+
+      let source = "";
+      try {
+        source = await API.app.readTextFile(path);
+      } catch (_e) {
+        appendLog(`Failed to read source file: ${filename}`);
+        return;
+      }
+
+      const symbols =
+        kind === "c" ? parseCFunctions(source) : parseAsmLabels(source);
+
+      setState((prev) => {
+        let next = prev;
+        const baseX = 120 + ((prev.blueprintNodes.length * 35) % 300);
+        const baseY = 140 + ((prev.blueprintNodes.length * 25) % 220);
+        next = addBlueprintNodeAt(
+          next,
+          kind === "c" ? `C Source: ${filename}` : `ASM Source: ${filename}`,
+          "Native C",
+          baseX,
+          baseY,
+          { autoConnectFromSelected: true },
+        );
+
+        symbols.forEach((symbol, index) => {
+          next = addBlueprintNodeAt(
+            next,
+            `${kind === "c" ? "fn" : "label"}: ${symbol}`,
+            "Native C",
+            baseX + 220 + Math.floor(index / 6) * 220,
+            baseY + (index % 6) * 92,
+            { autoConnectFromSelected: index === 0 },
+          );
+        });
+
+        const assetId = `src_${Date.now().toString(36)}_${Math.random()
+          .toString(36)
+          .slice(2, 8)}`;
+        return {
+          ...next,
+          assets: [
+            ...next.assets,
+            {
+              id: assetId,
+              name: filename,
+              type: "Blueprints",
+            },
+          ],
+          modified: true,
+          outputLog: [
+            ...next.outputLog.slice(-59),
+            `Imported ${kind.toUpperCase()} source: ${filename} (${symbols.length} symbols)`,
+          ],
+        };
+      });
+
+      const preview = source.slice(0, 2800);
+      setFloatingWindows((prev) => {
+        const z = prev.reduce((maxZ, w) => Math.max(maxZ, w.z), 0) + 1;
+        return [
+          ...prev.filter((entry) => entry.id !== `source:${filename}`),
+          {
+            id: `source:${filename}`,
+            title: `${kind.toUpperCase()} Source Preview`,
+            x: 80,
+            y: 80,
+            width: 520,
+            height: 280,
+            z,
+            body: `${filename}\n\n${preview}${source.length > preview.length ? "\n\n...truncated..." : ""}`,
+          },
+        ];
+      });
+    },
+    [appendLog],
   );
 
   const getNextWindowZ = useCallback(
@@ -1046,6 +1208,12 @@ export const RPGGameMakerUILayout: React.FC = () => {
           >
             GitHub
           </button>
+          <button style={buttonStyle} onClick={() => void importSourceProgram("c")}>
+            Import C
+          </button>
+          <button style={buttonStyle} onClick={() => void importSourceProgram("asm")}>
+            Import ASM
+          </button>
           <button style={buttonStyle} onClick={saveLayout}>
             Save Layout
           </button>
@@ -1167,7 +1335,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
           overflow: "hidden",
         }}
       >
-        <div style={{ display: "grid", gridTemplateRows: "1fr 1fr 1fr", gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateRows: "1fr 1fr 1fr 1fr", gap: 8 }}>
           <div style={panelStyle}>
             <div style={panelHeaderStyle}>Content Browser</div>
             <div style={panelBodyStyle}>
@@ -1820,6 +1988,14 @@ export const RPGGameMakerUILayout: React.FC = () => {
                   {logic}
                 </div>
               ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>
+                Wolfman Alpha Battle Profile
+              </div>
+              {linkedWolfmanAlphaProfiles.map((entry) => (
+                <div key={entry} style={listRowStyle}>
+                  {entry}
+                </div>
+              ))}
               <div style={{ marginTop: 10, fontWeight: 700 }}>DnD5E Abilities</div>
               {linkedDnd5eAbilities.map((ability) => (
                 <div key={ability} style={listRowStyle}>
@@ -1892,6 +2068,89 @@ export const RPGGameMakerUILayout: React.FC = () => {
                   [{link.category}] {link.label}
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div style={panelStyle}>
+            <div style={panelHeaderStyle}>
+              <span>Terminal Console</span>
+              <div style={{ display: "flex", gap: 4 }}>
+                {(["all", "ai", "rpg", "warn", "error", "system"] as const).map(
+                  (filter) => (
+                    <button
+                      key={filter}
+                      style={{
+                        ...buttonStyle,
+                        padding: "2px 6px",
+                        background: terminalFilter === filter ? "#1d4ed8" : "#374151",
+                      }}
+                      onClick={() => setTerminalFilter(filter)}
+                    >
+                      {filter.toUpperCase()}
+                    </button>
+                  ),
+                )}
+              </div>
+            </div>
+            <div style={{ ...panelBodyStyle, fontFamily: "Consolas, monospace" }}>
+              <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+                <button
+                  style={buttonStyle}
+                  onClick={() => appendLog("[AI] inference request queued")}
+                >
+                  Test AI Log
+                </button>
+                <button
+                  style={buttonStyle}
+                  onClick={() => appendLog("[RPG] battle sim step complete")}
+                >
+                  Test RPG Log
+                </button>
+                <button
+                  style={buttonStyle}
+                  onClick={() => appendLog("[WARN] palette budget near cap")}
+                >
+                  Test Warn
+                </button>
+                <button
+                  style={buttonStyle}
+                  onClick={() => appendLog("[ERROR] map script compile failed")}
+                >
+                  Test Error
+                </button>
+                <button
+                  style={buttonStyle}
+                  onClick={() =>
+                    setState((prev) => ({ ...prev, outputLog: ["Terminal cleared"] }))
+                  }
+                >
+                  Clear
+                </button>
+              </div>
+              {terminalEntries.slice(-80).map((entry, idx) => (
+                <div
+                  key={`term-${idx}`}
+                  style={{
+                    ...listRowStyle,
+                    borderBottom: "1px solid #1f2937",
+                    color:
+                      entry.channel === "error"
+                        ? "#fca5a5"
+                        : entry.channel === "warn"
+                          ? "#fde68a"
+                          : entry.channel === "ai"
+                            ? "#93c5fd"
+                            : entry.channel === "rpg"
+                              ? "#86efac"
+                              : "#cbd5e1",
+                  }}
+                >
+                  [{entry.channel.toUpperCase()}] {entry.text}
+                </div>
+              ))}
+              {terminalEntries.length === 0 && (
+                <div style={listRowStyle}>No terminal entries for this filter.</div>
+              )}
             </div>
           </div>
 

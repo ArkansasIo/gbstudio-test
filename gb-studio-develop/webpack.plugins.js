@@ -18,6 +18,10 @@ const plugins = [
     COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
     VERSION: JSON.stringify(pkg.version),
     DOCS_URL: JSON.stringify(docsUrl),
+    "process.env.AI_PROVIDER": JSON.stringify(process.env.AI_PROVIDER || ""),
+    "process.env.AI_MODEL": JSON.stringify(process.env.AI_MODEL || ""),
+    "process.env.AI_BASE_URL": JSON.stringify(process.env.AI_BASE_URL || ""),
+    "process.env.AI_API_KEY": JSON.stringify(process.env.AI_API_KEY || ""),
   }),
 ];
 
