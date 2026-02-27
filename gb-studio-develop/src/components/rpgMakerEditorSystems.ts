@@ -521,3 +521,220 @@ export const connectSelectedToLatestNode = (state: EditorState): EditorState => 
     `Connected ${from} -> ${latest.id}`,
   );
 };
+
+export const addBlueprintNodeAt = (
+  state: EditorState,
+  title: string,
+  category: string,
+  x: number,
+  y: number,
+  options?: { autoConnectFromSelected?: boolean },
+): EditorState => {
+  const node: BlueprintNodeModel = {
+    id: nextNodeId(state.blueprintNodes),
+    title,
+    x: Math.max(0, x),
+    y: Math.max(0, y),
+    color: getCategoryNodeColor(category),
+  };
+
+  const edgeFromSelection =
+    options?.autoConnectFromSelected && state.selectedBlueprintNodeId
+      ? {
+          from: state.selectedBlueprintNodeId,
+          to: node.id,
+        }
+      : null;
+
+  const edgeAlreadyExists =
+    edgeFromSelection &&
+    state.blueprintEdges.some(
+      (edge) =>
+        edge.from === edgeFromSelection.from && edge.to === edgeFromSelection.to,
+    );
+
+  return appendLog(
+    {
+      ...state,
+      blueprintNodes: [...state.blueprintNodes, node],
+      blueprintEdges:
+        edgeFromSelection && !edgeAlreadyExists
+          ? [...state.blueprintEdges, edgeFromSelection]
+          : state.blueprintEdges,
+      selectedBlueprintNodeId: node.id,
+      modified: true,
+    },
+    `Added blueprint node: ${node.title}`,
+  );
+};
+
+export const moveBlueprintNode = (
+  state: EditorState,
+  nodeId: string,
+  x: number,
+  y: number,
+): EditorState => {
+  if (!state.blueprintNodes.some((node) => node.id === nodeId)) {
+    return state;
+  }
+  return {
+    ...state,
+    blueprintNodes: state.blueprintNodes.map((node) =>
+      node.id === nodeId ? { ...node, x: Math.max(0, x), y: Math.max(0, y) } : node,
+    ),
+    modified: true,
+  };
+};
+
+export const connectBlueprintNodes = (
+  state: EditorState,
+  fromId: string,
+  toId: string,
+): EditorState => {
+  if (!fromId || !toId || fromId === toId) {
+    return state;
+  }
+  const hasFrom = state.blueprintNodes.some((node) => node.id === fromId);
+  const hasTo = state.blueprintNodes.some((node) => node.id === toId);
+  if (!hasFrom || !hasTo) {
+    return state;
+  }
+  const exists = state.blueprintEdges.some(
+    (edge) => edge.from === fromId && edge.to === toId,
+  );
+  if (exists) {
+    return appendLog(state, `Connection already exists: ${fromId} -> ${toId}`);
+  }
+  return appendLog(
+    {
+      ...state,
+      blueprintEdges: [...state.blueprintEdges, { from: fromId, to: toId }],
+      modified: true,
+    },
+    `Connected ${fromId} -> ${toId}`,
+  );
+};
+
+export const disconnectSelectedBlueprintNode = (state: EditorState): EditorState => {
+  if (!state.selectedBlueprintNodeId) {
+    return state;
+  }
+  const id = state.selectedBlueprintNodeId;
+  const edgeCount = state.blueprintEdges.length;
+  const filteredEdges = state.blueprintEdges.filter(
+    (edge) => edge.from !== id && edge.to !== id,
+  );
+  if (filteredEdges.length === edgeCount) {
+    return appendLog(state, `No links to disconnect for ${id}`);
+  }
+  return appendLog(
+    {
+      ...state,
+      blueprintEdges: filteredEdges,
+      modified: true,
+    },
+    `Disconnected links for ${id}`,
+  );
+};
+
+export const duplicateSelectedBlueprintNode = (state: EditorState): EditorState => {
+  if (!state.selectedBlueprintNodeId) {
+    return state;
+  }
+  const source = state.blueprintNodes.find(
+    (node) => node.id === state.selectedBlueprintNodeId,
+  );
+  if (!source) {
+    return state;
+  }
+  const duplicate: BlueprintNodeModel = {
+    ...source,
+    id: nextNodeId(state.blueprintNodes),
+    x: source.x + 36,
+    y: source.y + 36,
+  };
+  return appendLog(
+    {
+      ...state,
+      blueprintNodes: [...state.blueprintNodes, duplicate],
+      selectedBlueprintNodeId: duplicate.id,
+      modified: true,
+    },
+    `Duplicated node: ${source.title}`,
+  );
+};
+
+export const snapBlueprintNodesToGrid = (
+  state: EditorState,
+  gridSize = 16,
+): EditorState => {
+  const snap = (v: number) => Math.round(v / gridSize) * gridSize;
+  return appendLog(
+    {
+      ...state,
+      blueprintNodes: state.blueprintNodes.map((node) => ({
+        ...node,
+        x: snap(node.x),
+        y: snap(node.y),
+      })),
+      modified: true,
+    },
+    `Snapped blueprint nodes to ${gridSize}px grid`,
+  );
+};
+
+export const autoLayoutBlueprintNodes = (state: EditorState): EditorState => {
+  if (state.blueprintNodes.length === 0) {
+    return state;
+  }
+  const lanes = 4;
+  const spacingX = 220;
+  const spacingY = 120;
+  return appendLog(
+    {
+      ...state,
+      blueprintNodes: state.blueprintNodes.map((node, idx) => ({
+        ...node,
+        x: 50 + Math.floor(idx / lanes) * spacingX,
+        y: 40 + (idx % lanes) * spacingY,
+      })),
+      modified: true,
+    },
+    "Auto-arranged blueprint graph",
+  );
+};
+
+export const clearBlueprintGraph = (state: EditorState): EditorState =>
+  appendLog(
+    {
+      ...state,
+      blueprintNodes: [],
+      blueprintEdges: [],
+      selectedBlueprintNodeId: null,
+      modified: true,
+    },
+    "Cleared blueprint graph",
+  );
+
+export const renameSelectedBlueprintNode = (
+  state: EditorState,
+  title: string,
+): EditorState => {
+  if (!state.selectedBlueprintNodeId) {
+    return state;
+  }
+  const trimmed = title.trim();
+  if (!trimmed) {
+    return state;
+  }
+  return appendLog(
+    {
+      ...state,
+      blueprintNodes: state.blueprintNodes.map((node) =>
+        node.id === state.selectedBlueprintNodeId ? { ...node, title: trimmed } : node,
+      ),
+      modified: true,
+    },
+    `Renamed node to: ${trimmed}`,
+  );
+};

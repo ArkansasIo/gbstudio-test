@@ -1,5 +1,5 @@
-import React, { useCallback, useContext, useEffect, useRef } from "react";
-import styled, { ThemeContext } from "styled-components";
+import React, { useCallback, useEffect, useRef } from "react";
+import styled from "styled-components";
 import WorldView from "components/world/WorldView";
 import ToolPicker from "components/world/ToolPicker";
 import BrushToolbar from "components/world/BrushToolbar";
@@ -25,12 +25,86 @@ import { NAVIGATOR_MIN_WIDTH } from "consts";
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
+  height: 100%;
+`;
+
+const NavigatorPane = styled.div<{ $width: number; $faded: boolean }>`
+  width: ${(props) => props.$width}px;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  opacity: ${(props) => (props.$faded ? 0.24 : 1)};
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018) 0%, rgba(0, 0, 0, 0.08) 100%),
+    ${(props) => props.theme.colors.sidebar.background};
+  border-right: 1px solid rgba(176, 198, 217, 0.16);
+  transition: opacity 0.24s ease;
+`;
+
+const NavigatorPaneInner = styled.div`
+  min-width: ${NAVIGATOR_MIN_WIDTH}px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.02);
+`;
+
+const EditorMainPane = styled.div<{ $height: number }>`
+  flex-grow: 1;
+  min-width: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  color: ${(props) => props.theme.colors.text};
+  height: ${(props) => props.$height}px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(62, 168, 158, 0.09) 0%, transparent 34%),
+    radial-gradient(circle at 100% 100%, rgba(222, 151, 76, 0.08) 0%, transparent 36%),
+    ${(props) => props.theme.colors.background};
+`;
+
+const EditorViewport = styled.div`
+  overflow: hidden;
+  flex-grow: 1;
+  position: relative;
+  border-bottom: 1px solid rgba(168, 190, 208, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    inset 0 -20px 40px rgba(0, 0, 0, 0.1);
+`;
+
+const DebuggerPane = styled.div<{ $height: number; $maxWidth: number }>`
+  position: relative;
+  height: ${(props) => props.$height}px;
+  max-width: ${(props) => props.$maxWidth}px;
+  background:
+    linear-gradient(180deg, rgba(10, 16, 23, 0.74) 0%, rgba(11, 17, 24, 0.9) 100%),
+    ${(props) => props.theme.colors.sidebar.background};
+`;
+
+const DebuggerBody = styled.div<{ $height: number }>`
+  height: ${(props) => props.$height - 30}px;
+`;
+
+const InspectorPane = styled.div<{ $width: number }>`
+  width: ${(props) => props.$width}px;
+  min-width: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018) 0%, rgba(0, 0, 0, 0.1) 100%),
+    ${(props) => props.theme.colors.sidebar.background};
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  border-left: 1px solid rgba(176, 198, 217, 0.16);
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.02);
 `;
 
 const WorldPage = () => {
   const documentContainerRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
-  const themeContext = useContext(ThemeContext);
   const worldSidebarWidth = useAppSelector(
     (state) => state.editor.worldSidebarWidth,
   );
@@ -215,54 +289,16 @@ const WorldPage = () => {
 
   return (
     <Wrapper>
-      <div
-        style={{
-          transition: "opacity 0.3s ease-in-out",
-          width: showNavigator ? leftPaneWidth : 0,
-          background: themeContext?.colors.sidebar.background,
-          opacity: leftPaneWidth < 100 ? 0.1 : 1,
-          overflow: "hidden",
-          position: "relative",
-        }}
-      >
-        <div
-          style={{
-            minWidth: NAVIGATOR_MIN_WIDTH,
-            position: "relative",
-            width: "100%",
-            height: "100%",
-          }}
-        >
+      <NavigatorPane $width={showNavigator ? leftPaneWidth : 0} $faded={leftPaneWidth < 100}>
+        <NavigatorPaneInner>
           <Navigator />
-        </div>
-      </div>
+        </NavigatorPaneInner>
+      </NavigatorPane>
       {showNavigator && (
         <SplitPaneHorizontalDivider onMouseDown={startLeftPaneResize} />
       )}
-      <div
-        style={{
-          flexGrow: 1,
-          minWidth: 0,
-          flexShrink: 0,
-          overflow: "hidden",
-          background: themeContext?.colors.background,
-          color: themeContext?.colors.text,
-          height: windowHeight - 38,
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <div
-          ref={documentContainerRef}
-          style={{
-            overflow: "hidden",
-            background: themeContext?.colors.background,
-            color: themeContext?.colors.text,
-            flexGrow: 1,
-            position: "relative",
-          }}
-        >
+      <EditorMainPane $height={windowHeight - 38}>
+        <EditorViewport ref={documentContainerRef}>
           <WorldView />
           <ToolPicker
             hasFocusForKeyboardShortcuts={hasFocusForKeyboardShortcuts}
@@ -271,15 +307,9 @@ const WorldPage = () => {
             hasFocusForKeyboardShortcuts={hasFocusForKeyboardShortcuts}
           />
           <WorldStatusBar />
-        </div>
+        </EditorViewport>
         <SplitPaneVerticalDivider onMouseDown={onResizeDebugger} />
-        <div
-          style={{
-            position: "relative",
-            height: debuggerPaneHeight,
-            maxWidth: centerWidth,
-          }}
-        >
+        <DebuggerPane $height={debuggerPaneHeight} $maxWidth={centerWidth}>
           <SplitPaneHeader
             onToggle={toggleDebuggerPane}
             collapsed={debuggerPaneHeight <= 30}
@@ -288,24 +318,16 @@ const WorldPage = () => {
             {l10n("FIELD_DEBUGGER")}
           </SplitPaneHeader>
           {debuggerPaneHeight > 30 && (
-            <div style={{ height: debuggerPaneHeight - 30 }}>
+            <DebuggerBody $height={debuggerPaneHeight}>
               <DebuggerPanes />
-            </div>
+            </DebuggerBody>
           )}
-        </div>
-      </div>
+        </DebuggerPane>
+      </EditorMainPane>
       <SplitPaneHorizontalDivider onMouseDown={onResizeRight} />
-      <div
-        style={{
-          width: rightPaneWidth,
-          background: themeContext?.colors.sidebar.background,
-          height: "100%",
-          overflow: "hidden",
-          position: "relative",
-        }}
-      >
+      <InspectorPane $width={rightPaneWidth}>
         <EditorSidebar />
-      </div>
+      </InspectorPane>
     </Wrapper>
   );
 };

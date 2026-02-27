@@ -8,7 +8,7 @@ import WorldPage from "components/pages/WorldPage";
 import MusicPage from "components/pages/MusicPage";
 import PalettePage from "components/pages/PalettePage";
 import SettingsPage from "components/pages/SettingsPage";
-import RPG5EPage from "components/pages/RPG5EPage";
+import RPGGameMakerUI from "components/RPGGameMakerUI";
 import { DropZone } from "ui/upload/DropZone";
 import projectActions from "store/features/project/projectActions";
 import SoundsPage from "components/pages/SoundsPage";
@@ -24,19 +24,43 @@ const AppWrapper = styled.div`
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(
-    180deg,
-    rgba(49, 56, 67, 0.2) 0%,
-    rgba(19, 24, 30, 0.2) 100%
-  );
+  background:
+    radial-gradient(
+      circle at 12% 10%,
+      rgba(45, 160, 152, 0.16) 0%,
+      rgba(45, 160, 152, 0) 32%
+    ),
+    radial-gradient(
+      circle at 88% 0%,
+      rgba(210, 137, 58, 0.14) 0%,
+      rgba(210, 137, 58, 0) 28%
+    ),
+    linear-gradient(180deg, rgba(18, 25, 34, 0.95) 0%, rgba(10, 14, 20, 0.98) 100%);
 
   &:before {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
-    border: 1px solid ${(props) => props.theme.colors.sidebar.border};
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(171, 192, 210, 0.17);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.32);
+    z-index: 1;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    inset: 38px 0 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      -30deg,
+      rgba(255, 255, 255, 0.012) 0,
+      rgba(255, 255, 255, 0.012) 1px,
+      transparent 1px,
+      transparent 28px
+    );
     z-index: 1;
   }
 `;
@@ -49,6 +73,7 @@ const AppContent = styled.div`
   position: relative;
   z-index: 2;
   background: ${(props) => props.theme.colors.document.background};
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 `;
 
 const App = () => {
@@ -134,7 +159,7 @@ const App = () => {
           {section === "palettes" && <PalettePage />}
           {section === "dialogue" && <DialoguePage />}
           {section === "settings" && <SettingsPage />}
-          {section === "rpg5e" && <RPG5EPage />}
+          {section === "rpg5e" && <RPGGameMakerUI />}
           {draggingOver && <DropZone />}
           <AIChatBox />
         </AppContent>

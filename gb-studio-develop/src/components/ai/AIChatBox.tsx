@@ -67,6 +67,7 @@ const AIChatBox = () => {
   const [apiKey1, setApiKey1] = useState("");
   const [apiKey2, setApiKey2] = useState("");
   const [apiKey3, setApiKey3] = useState("");
+  const [open, setOpen] = useState(true);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -78,9 +79,17 @@ const AIChatBox = () => {
     setInput("");
   };
 
-  return (
+  return open ? (
     <ChatBoxWrapper>
-      <ChatHeader>Anna Ai Chat</ChatHeader>
+      <ChatHeader>
+        Anna Ai Chat
+        <button
+          style={{ float: "right", background: "#444", color: "#fff", border: "none", borderRadius: 6, padding: "4px 10px", cursor: "pointer", marginLeft: 8 }}
+          onClick={() => setOpen(false)}
+        >
+          Close
+        </button>
+      </ChatHeader>
       <div style={{ padding: 8, background: '#222', borderBottom: '1px solid #333' }}>
         <div style={{ marginBottom: 4, color: '#fff', fontSize: 12 }}>API Key 1:</div>
         <input
@@ -127,6 +136,13 @@ const AIChatBox = () => {
         <ChatButton onClick={handleSend}>Send</ChatButton>
       </ChatInputWrapper>
     </ChatBoxWrapper>
+  ) : (
+    <button
+      style={{ position: "fixed", bottom: 24, right: 24, zIndex: 1000, background: "#4a90e2", color: "#fff", border: "none", borderRadius: 12, padding: "12px 24px", fontWeight: "bold", fontSize: 16, boxShadow: "0 4px 16px rgba(0,0,0,0.2)" }}
+      onClick={() => setOpen(true)}
+    >
+      Open Anna Ai Chat
+    </button>
   );
 };
 
