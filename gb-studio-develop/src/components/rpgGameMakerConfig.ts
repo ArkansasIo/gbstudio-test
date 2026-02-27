@@ -83,6 +83,20 @@ export const unrealTopMenus: MenuDefinition[] = [
       "Audio Mixer",
       "Data Tables",
       "C Script Editor",
+      "Quest Designer",
+      "Skill Database",
+      "AI Behavior Graph",
+    ],
+  },
+  {
+    label: "RPG",
+    items: [
+      "Party Manager",
+      "Inventory Builder",
+      "Dialogue Graph",
+      "Quest Tracker",
+      "Battle Designer",
+      "Economy Tables",
     ],
   },
   {

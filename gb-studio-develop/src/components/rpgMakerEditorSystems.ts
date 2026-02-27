@@ -6,8 +6,10 @@ import {
   unrealTopMenus,
 } from "./rpgGameMakerConfig";
 import {
+  editorThemes,
   leftSidebarLists,
   rightInspectorSections,
+  toolLinks,
   topBarQuickTools,
   workspacePresets,
 } from "./rpgGameMakerAdvancedConfig";
@@ -54,6 +56,8 @@ export interface EditorState {
   selectedAssetId: string | null;
   selectedOutlinerId: string | null;
   selectedBlueprintNodeId: string | null;
+  activeThemeId: string;
+  lastOpenedLinkId: string | null;
   projectName: string;
   mapName: string;
   layerName: string;
@@ -94,6 +98,8 @@ export const createInitialEditorState = (): EditorState => ({
   selectedAssetId: null,
   selectedOutlinerId: null,
   selectedBlueprintNodeId: null,
+  activeThemeId: editorThemes[0]?.id ?? "midnight-steel",
+  lastOpenedLinkId: null,
   projectName: "Adventure_08bit",
   mapName: "Forest_Entrance",
   layerName: "FG",
@@ -119,6 +125,11 @@ const getWorkspaceLabel = (workspaceId: string): string =>
 
 const getQuickToolLabel = (toolId: string): string =>
   topBarQuickTools.find((tool) => tool.id === toolId)?.label ?? toolId;
+
+const getThemeLabel = (themeId: string): string =>
+  editorThemes.find((theme) => theme.id === themeId)?.label ?? themeId;
+
+const getToolLink = (linkId: string) => toolLinks.find((link) => link.id === linkId);
 
 const nextNodeId = (nodes: BlueprintNodeModel[]): string => {
   const maxId = nodes.reduce((max, node) => {
@@ -170,11 +181,34 @@ export const runMenuCommand = (
   if (command === "Compile C Scripts") {
     return appendLog(base, "Queued native C script compile (GBDK target)");
   }
+  if (
+    command === "Quest Designer" ||
+    command === "Skill Database" ||
+    command === "AI Behavior Graph" ||
+    command === "Party Manager" ||
+    command === "Inventory Builder" ||
+    command === "Dialogue Graph" ||
+    command === "Quest Tracker" ||
+    command === "Battle Designer" ||
+    command === "Economy Tables"
+  ) {
+    return appendLog(base, `Opened tool workspace: ${command}`);
+  }
   if (command === "Load Layout") {
     return appendLog(base, "Loaded layout preset: Unreal-2D");
   }
   if (command === "Reset Layout") {
     return appendLog(base, "Reset to default docking layout");
+  }
+  if (
+    command === "Documentation" ||
+    command === "API Reference" ||
+    command === "Tutorials"
+  ) {
+    return openToolLink(base, "docs-engine");
+  }
+  if (command === "Check for Updates (GitHub)") {
+    return openToolLink(base, "github-repo");
   }
   return base;
 };
@@ -242,6 +276,33 @@ export const triggerQuickTool = (
     },
     `Quick tool executed: ${getQuickToolLabel(toolId)}`,
   );
+
+export const setEditorTheme = (
+  state: EditorState,
+  themeId: string,
+): EditorState =>
+  appendLog(
+    {
+      ...state,
+      activeThemeId: themeId,
+      modified: true,
+    },
+    `Theme changed: ${getThemeLabel(themeId)}`,
+  );
+
+export const openToolLink = (state: EditorState, linkId: string): EditorState => {
+  const link = getToolLink(linkId);
+  if (!link) {
+    return appendLog(state, `Tool link not found: ${linkId}`);
+  }
+  return appendLog(
+    {
+      ...state,
+      lastOpenedLinkId: linkId,
+    },
+    `[Link] ${link.label} -> ${link.url}`,
+  );
+};
 
 export const setLeftSidebarList = (
   state: EditorState,

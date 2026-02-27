@@ -27,6 +27,18 @@ export type StatusActionDefinition = {
   label: string;
 };
 
+export type ToolLinkDefinition = {
+  id: string;
+  label: string;
+  category: "Docs" | "Build" | "Community" | "Project";
+  url: string;
+};
+
+export type EditorThemeDefinition = {
+  id: string;
+  label: string;
+};
+
 export const workspacePresets: WorkspacePreset[] = [
   {
     id: "world-build",
@@ -143,4 +155,61 @@ export const statusActions: StatusActionDefinition[] = [
   { id: "open-profiler", label: "Profiler" },
   { id: "open-task-manager", label: "Task Manager" },
   { id: "open-pipeline", label: "Asset Pipeline" },
+];
+
+export const editorThemes: EditorThemeDefinition[] = [
+  { id: "midnight-steel", label: "Midnight Steel" },
+  { id: "ocean-grid", label: "Ocean Grid" },
+  { id: "ember-forge", label: "Ember Forge" },
+  { id: "forest-terminal", label: "Forest Terminal" },
+  { id: "sandstone", label: "Sandstone" },
+  { id: "pixel-ice", label: "Pixel Ice" },
+  { id: "mono-retro", label: "Mono Retro" },
+  { id: "studio-slate", label: "Studio Slate" },
+  { id: "cobalt-night", label: "Cobalt Night" },
+];
+
+export const toolLinks: ToolLinkDefinition[] = [
+  {
+    id: "docs-engine",
+    label: "Engine Docs",
+    category: "Docs",
+    url: "https://www.gbstudio.dev/docs",
+  },
+  {
+    id: "docs-api",
+    label: "API Reference",
+    category: "Docs",
+    url: "https://www.gbstudio.dev/docs",
+  },
+  {
+    id: "build-rom-guide",
+    label: "Build ROM Guide",
+    category: "Build",
+    url: "https://www.gbstudio.dev/docs/getting-started/",
+  },
+  {
+    id: "build-web-guide",
+    label: "Build Web Guide",
+    category: "Build",
+    url: "https://www.gbstudio.dev/docs/getting-started/",
+  },
+  {
+    id: "github-repo",
+    label: "GitHub Repository",
+    category: "Project",
+    url: "https://github.com/ArkansasIo/gbstudio-test",
+  },
+  {
+    id: "project-roadmap",
+    label: "Project Roadmap",
+    category: "Project",
+    url: "https://github.com/ArkansasIo/gbstudio-test/issues",
+  },
+  {
+    id: "community-discord",
+    label: "Community Discord",
+    category: "Community",
+    url: "https://discord.com/",
+  },
 ];

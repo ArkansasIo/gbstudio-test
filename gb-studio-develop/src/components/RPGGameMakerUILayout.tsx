@@ -5,6 +5,7 @@ import {
   type BlueprintNodeModel,
   connectSelectedToLatestNode,
   createInitialEditorState,
+  openToolLink,
   removeSelectedBlueprintNode,
   runMenuCommand,
   runToolbarAction,
@@ -12,6 +13,7 @@ import {
   selectBlueprintNode,
   selectLeftSidebarEntry,
   selectOutlinerEntry,
+  setEditorTheme,
   setInspectorSection,
   setLeftSidebarList,
   setTopSearchQuery,
@@ -27,9 +29,11 @@ import {
   unrealTopMenus,
 } from "./rpgGameMakerConfig";
 import {
+  editorThemes,
   leftSidebarLists,
   rightInspectorSections,
   statusActions,
+  toolLinks,
   topBarQuickTools,
   workspacePresets,
 } from "./rpgGameMakerAdvancedConfig";
@@ -78,9 +82,22 @@ const listRowStyle: React.CSSProperties = {
   cursor: "pointer",
 };
 
+const themeBackgrounds: Record<string, string> = {
+  "midnight-steel": "#111827",
+  "ocean-grid": "#0f2742",
+  "ember-forge": "#2a1b16",
+  "forest-terminal": "#15241a",
+  sandstone: "#2b2520",
+  "pixel-ice": "#1a2633",
+  "mono-retro": "#1f1f1f",
+  "studio-slate": "#222a36",
+  "cobalt-night": "#101b38",
+};
+
 export const RPGGameMakerUILayout: React.FC = () => {
   const [state, setState] = useState(createInitialEditorState);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const activeThemeBg = themeBackgrounds[state.activeThemeId] ?? "#111827";
 
   const nodeById = useMemo(() => {
     const map = new Map<string, BlueprintNodeModel>();
@@ -149,7 +166,7 @@ export const RPGGameMakerUILayout: React.FC = () => {
         display: "grid",
         gridTemplateRows: "30px 42px 40px 1fr 120px 24px",
         height: "100vh",
-        background: "#111827",
+        background: activeThemeBg,
         color: "#e5e7eb",
         fontFamily: "Segoe UI, Tahoma, sans-serif",
       }}
@@ -253,6 +270,41 @@ export const RPGGameMakerUILayout: React.FC = () => {
           ))}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 10, color: "#94a3b8" }}>Theme</span>
+            <select
+              value={state.activeThemeId}
+              onChange={(e) =>
+                setState((prev) => setEditorTheme(prev, e.currentTarget.value))
+              }
+              style={{
+                background: "#0f172a",
+                color: "#e5e7eb",
+                border: "1px solid #334155",
+                borderRadius: 4,
+                padding: "4px 6px",
+                fontSize: 12,
+              }}
+            >
+              {editorThemes.map((theme) => (
+                <option key={theme.id} value={theme.id}>
+                  {theme.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            style={buttonStyle}
+            onClick={() => setState((prev) => openToolLink(prev, "docs-engine"))}
+          >
+            Docs
+          </button>
+          <button
+            style={buttonStyle}
+            onClick={() => setState((prev) => openToolLink(prev, "github-repo"))}
+          >
+            GitHub
+          </button>
           {Object.entries(quickToolsByGroup).map(([group, tools]) => (
             <div
               key={group}
@@ -638,6 +690,22 @@ export const RPGGameMakerUILayout: React.FC = () => {
                   {capability}
                 </div>
               ))}
+              <div style={{ marginTop: 10, fontWeight: 700 }}>Tool Links</div>
+              {toolLinks.map((link) => (
+                <div
+                  key={link.id}
+                  style={{
+                    ...listRowStyle,
+                    background:
+                      state.lastOpenedLinkId === link.id
+                        ? "rgba(37,99,235,0.2)"
+                        : "transparent",
+                  }}
+                  onClick={() => setState((prev) => openToolLink(prev, link.id))}
+                >
+                  [{link.category}] {link.label}
+                </div>
+              ))}
             </div>
           </div>
 
@@ -715,6 +783,9 @@ export const RPGGameMakerUILayout: React.FC = () => {
             </button>
           ))}
           <span>RAM Budget: 68% | ROM Bank: 21/32 | FPS: 60</span>
+          <span>
+            Theme: {editorThemes.find((theme) => theme.id === state.activeThemeId)?.label}
+          </span>
         </span>
       </div>
     </div>
