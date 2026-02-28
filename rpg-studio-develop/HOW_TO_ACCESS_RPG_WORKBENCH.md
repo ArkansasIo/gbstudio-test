@@ -39,7 +39,7 @@ You should see:
 ## If You're NOT in RPG Workbench
 
 You might be in one of these sections instead:
-- **Project Editor** (default GB Studio view)
+- **Project Editor** (default  Studio view)
 - **Sprites** section
 - **Backgrounds** section
 - **Music** section
