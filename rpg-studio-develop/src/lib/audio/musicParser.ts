@@ -380,6 +380,7 @@ export class MusicPlayer {
 
         const config: GBSoundChannel = {
           channel: channel.channelType,
+          enabled: true,
           frequency,
           volume: note.velocity,
           length: Math.floor(duration / 1000 * 256),

@@ -297,7 +297,7 @@ class NoiseChannel extends GBChannelEmulator {
     this.bufferSource.start(this.audioContext.currentTime);
   }
   
-  stop(): void {
+  override stop(): void {
     super.stop();
     if (this.bufferSource) {
       this.bufferSource.stop();
