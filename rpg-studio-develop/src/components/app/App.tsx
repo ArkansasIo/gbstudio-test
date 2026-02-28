@@ -163,8 +163,8 @@ const App = () => {
           {section === "palettes" && <PalettePage />}
           {section === "dialogue" && <DialoguePage />}
           {section === "settings" && <SettingsPage />}
-          {section === "rpg5e" && <RPG5EPage />}
-          {section === "rpgmaker" && <RPGGameMakerUI />}
+          {/* RPG Workbench */}
+          {section === "rpgworkbench" && <SystemsPage system="rpgworkbench" />}
           {section === "dungeon" && <DungeonGeneratorPage />}
           {section === "tileset" && <SystemsPage system="tileset" />}
           {section === "worldgen" && <SystemsPage system="worldgen" />}
@@ -172,6 +172,14 @@ const App = () => {
           {section === "audio" && <SystemsPage system="audio" />}
           {section === "gameboy" && <SystemsPage system="gameboy" />}
           {section === "musicnotation" && <MusicNotationPage />}
+          {section === "terminal" && <SystemsPage system="terminal" />}
+          {/* D&D 5e Tools */}
+          {section === "dnd5e" && <SystemsPage system="dnd5e" />}
+          {section === "charactersheet" && <SystemsPage system="charactersheet" />}
+          {section === "spellbook" && <SystemsPage system="spellbook" />}
+          {section === "monsters" && <SystemsPage system="monsters" />}
+          {section === "items" && <SystemsPage system="items" />}
+          {section === "encounters" && <SystemsPage system="encounters" />}
           {draggingOver && <DropZone />}
           <AIChatBox />
         </AppContent>

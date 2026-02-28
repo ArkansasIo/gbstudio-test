@@ -78,11 +78,244 @@ const CodeBlock = styled.pre`
 `;
 
 interface SystemsPageProps {
-  system: "tileset" | "worldgen" | "maze" | "audio" | "gameboy";
+  system: 
+    | "rpgworkbench"
+    | "tileset" 
+    | "worldgen" 
+    | "maze" 
+    | "audio" 
+    | "gameboy"
+    | "terminal"
+    | "dnd5e"
+    | "charactersheet"
+    | "spellbook"
+    | "monsters"
+    | "items"
+    | "encounters";
 }
 
 const SystemsPage: FC<SystemsPageProps> = ({ system }) => {
   const systems = {
+    rpgworkbench: {
+      icon: "🎮",
+      title: "RPG Workbench",
+      description: "Complete RPG development toolkit with 8 integrated systems for creating D&D-style games",
+      features: [
+        "🏰 Dungeon Generator - 10 D&D 5e biomes with BSP algorithm",
+        "🎨 Tileset Processor - 144 tiles with 8 color variants",
+        "🌍 World Generator - 290 biomes with weather and seasons",
+        "🗝️ Maze System - Multi-floor dungeons and towers (1-100)",
+        "🔊 Audio System - Game Boy sound hardware emulation",
+        "🎮 Game Boy Emulator - Complete DMG/CGB emulation",
+        "🎵 Music Notation - 4 formats with keyboard editor",
+        "💻 Terminal System - Redux logging and debugging",
+      ],
+      usage: `// Access any system from the RPG Workbench menu
+// Use keyboard shortcuts for quick navigation:
+// Ctrl+Shift+D - Dungeon Generator
+// Ctrl+Shift+T - Tileset Processor
+// Ctrl+Shift+W - World Generator
+// Ctrl+Shift+M - Maze System
+// Ctrl+Shift+A - Audio System
+// Ctrl+Shift+G - Game Boy Emulator
+// Ctrl+Shift+N - Music Notation
+// Ctrl+Shift+L - Terminal System`,
+      cli: "Various CLI tools available per system",
+      docs: "MASTER_INDEX.md, COMPLETE_SYSTEM_OVERVIEW.md",
+    },
+    terminal: {
+      icon: "💻",
+      title: "Terminal System",
+      description: "Redux-based terminal system for logging, debugging, and error tracking",
+      features: [
+        "Redux state management",
+        "Message filtering (info, warning, error, success)",
+        "Search functionality",
+        "Export to file",
+        "Clear history",
+        "Auto-scroll",
+        "Timestamp tracking",
+        "Color-coded messages",
+        "Integration with all systems",
+      ],
+      usage: `import { TerminalLogger } from '@/lib/terminal/terminalLogger';
+
+TerminalLogger.info('System initialized');
+TerminalLogger.warning('Low memory');
+TerminalLogger.error('Failed to load', { details: 'File not found' });
+TerminalLogger.success('Build completed');`,
+      cli: "Integrated into application (no CLI)",
+      docs: "TERMINAL_SYSTEM_README.md, TERMINAL_QUICK_START.md",
+    },
+    dnd5e: {
+      icon: "🐉",
+      title: "D&D 5e Tools",
+      description: "Complete toolkit for D&D 5th Edition game management and character creation",
+      features: [
+        "📜 Character Sheet - Full character creation and management",
+        "📖 Spellbook - Complete spell database with filtering",
+        "👹 Monster Manual - 1000+ monsters with stat blocks",
+        "⚔️ Items & Equipment - Weapons, armor, and magic items",
+        "⚔️ Encounter Builder - CR-based encounter generation",
+        "Integration with dungeon and world generators",
+        "D&D 5e SRD compliance",
+        "Export to PDF",
+      ],
+      usage: `// Access D&D 5e tools from the menu
+// Use keyboard shortcuts:
+// Ctrl+Shift+5 - D&D 5e Overview
+// Ctrl+Shift+C - Character Sheet
+// Ctrl+Shift+S - Spellbook
+// Ctrl+Shift+O - Monster Manual
+// Ctrl+Shift+I - Items & Equipment
+// Ctrl+Shift+E - Encounter Builder`,
+      cli: "Use in application (no CLI)",
+      docs: "DND5E_TOOLS.md (coming soon)",
+    },
+    charactersheet: {
+      icon: "📜",
+      title: "Character Sheet",
+      description: "Complete D&D 5e character creation and management system",
+      features: [
+        "All 13 official classes",
+        "All official races and subraces",
+        "Ability score generation (Standard Array, Point Buy, Roll)",
+        "Skill proficiencies and expertise",
+        "Equipment and inventory management",
+        "Spell slot tracking",
+        "Hit point management",
+        "Level progression (1-20)",
+        "Background and personality traits",
+        "Export to PDF",
+      ],
+      usage: `// Create a new character
+const character = {
+  name: "Gandalf",
+  race: "Human",
+  class: "Wizard",
+  level: 5,
+  abilities: {
+    str: 10, dex: 14, con: 12,
+    int: 18, wis: 15, cha: 13
+  }
+};`,
+      cli: "Use in application (no CLI)",
+      docs: "CHARACTER_SHEET.md (coming soon)",
+    },
+    spellbook: {
+      icon: "📖",
+      title: "Spellbook",
+      description: "Complete D&D 5e spell database with advanced filtering and management",
+      features: [
+        "500+ official spells",
+        "Filter by class, level, school",
+        "Search by name or description",
+        "Spell slot tracking",
+        "Prepared spell management",
+        "Ritual spell indicators",
+        "Concentration tracking",
+        "Spell card generation",
+        "Export spell lists",
+      ],
+      usage: `// Search for spells
+const fireSpells = searchSpells({
+  name: "fire",
+  class: "Wizard",
+  level: [1, 3]
+});
+
+// Prepare spells
+prepareSpell("Fireball");
+prepareSpell("Shield");`,
+      cli: "Use in application (no CLI)",
+      docs: "SPELLBOOK.md (coming soon)",
+    },
+    monsters: {
+      icon: "👹",
+      title: "Monster Manual",
+      description: "Complete D&D 5e monster database with stat blocks and encounter tools",
+      features: [
+        "1000+ official monsters",
+        "Filter by CR, type, size",
+        "Search by name or abilities",
+        "Full stat blocks",
+        "Legendary actions",
+        "Lair actions",
+        "Monster tokens",
+        "Initiative tracking",
+        "Export stat blocks",
+      ],
+      usage: `// Search for monsters
+const dragons = searchMonsters({
+  type: "Dragon",
+  cr: [10, 15]
+});
+
+// Get monster stat block
+const goblin = getMonster("Goblin");
+console.log(goblin.ac, goblin.hp, goblin.attacks);`,
+      cli: "Use in application (no CLI)",
+      docs: "MONSTER_MANUAL.md (coming soon)",
+    },
+    items: {
+      icon: "⚔️",
+      title: "Items & Equipment",
+      description: "Complete D&D 5e item database with weapons, armor, and magic items",
+      features: [
+        "Weapons (Simple, Martial, Ranged)",
+        "Armor (Light, Medium, Heavy, Shields)",
+        "Magic items (Common to Legendary)",
+        "Adventuring gear",
+        "Tools and kits",
+        "Potions and scrolls",
+        "Cursed items",
+        "Item properties",
+        "Encumbrance tracking",
+      ],
+      usage: `// Search for items
+const swords = searchItems({
+  type: "Weapon",
+  category: "Martial",
+  damage: "1d8"
+});
+
+// Get magic item
+const item = getMagicItem("Flame Tongue");
+console.log(item.rarity, item.attunement, item.properties);`,
+      cli: "Use in application (no CLI)",
+      docs: "ITEMS_EQUIPMENT.md (coming soon)",
+    },
+    encounters: {
+      icon: "⚔️",
+      title: "Encounter Builder",
+      description: "CR-based encounter generation and balancing for D&D 5e",
+      features: [
+        "CR-based difficulty calculation",
+        "Party size and level adjustment",
+        "Monster selection by CR",
+        "Treasure generation",
+        "XP calculation",
+        "Initiative tracking",
+        "Combat log",
+        "Random encounter tables",
+        "Export encounters",
+      ],
+      usage: `// Build an encounter
+const encounter = buildEncounter({
+  partyLevel: 5,
+  partySize: 4,
+  difficulty: "hard"
+});
+
+// Add monsters
+encounter.addMonster("Goblin", 8);
+encounter.addMonster("Hobgoblin", 2);
+encounter.addMonster("Bugbear", 1);
+
+console.log(encounter.difficulty, encounter.xp);`,
+      cli: "Use in application (no CLI)",
+      docs: "ENCOUNTER_BUILDER.md (coming soon)",
+    },
     tileset: {
       icon: "🎨",
       title: "Tileset Processor",

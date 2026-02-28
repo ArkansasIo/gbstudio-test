@@ -50,8 +50,8 @@ const sectionAccelerators = {
   palettes: "CommandOrControl+6",
   dialogue: "CommandOrControl+7",
   settings: "CommandOrControl+8",
-  rpg5e: "CommandOrControl+Shift+9",
-  rpgmaker: "CommandOrControl+Shift+0",
+  // RPG Workbench
+  rpgworkbench: "CommandOrControl+Shift+R",
   dungeon: "CommandOrControl+Shift+D",
   tileset: "CommandOrControl+Shift+T",
   worldgen: "CommandOrControl+Shift+W",
@@ -59,6 +59,14 @@ const sectionAccelerators = {
   audio: "CommandOrControl+Shift+A",
   gameboy: "CommandOrControl+Shift+G",
   musicnotation: "CommandOrControl+Shift+N",
+  terminal: "CommandOrControl+Shift+L",
+  // D&D 5e
+  dnd5e: "CommandOrControl+Shift+5",
+  charactersheet: "CommandOrControl+Shift+C",
+  spellbook: "CommandOrControl+Shift+S",
+  monsters: "CommandOrControl+Shift+O",
+  items: "CommandOrControl+Shift+I",
+  encounters: "CommandOrControl+Shift+E",
 };
 
 const zoomSections = ["world", "sprites", "backgrounds", "ui"];
@@ -93,6 +101,7 @@ const AppToolbar: FC = () => {
 
   const sectionNames = useMemo(
     () => ({
+      // Core Game Builder
       world: l10n("NAV_GAME_WORLD"),
       sprites: l10n("NAV_SPRITES"),
       backgrounds: l10n("NAV_IMAGES"),
@@ -101,15 +110,23 @@ const AppToolbar: FC = () => {
       palettes: l10n("NAV_PALETTES"),
       dialogue: l10n("NAV_DIALOGUE_REVIEW"),
       settings: l10n("NAV_SETTINGS"),
-      rpg5e: "RPG DND5E",
-      rpgmaker: "RPG WORKBENCH",
-      dungeon: "🏰 Dungeon Generator",
-      tileset: "🎨 Tileset Processor",
-      worldgen: "🌍 World Generator",
-      maze: "🗝️ Maze System",
-      audio: "🔊 Audio System",
-      gameboy: "🎮 Game Boy Emulator",
-      musicnotation: "🎵 Music Notation",
+      // RPG Workbench
+      rpgworkbench: "🎮 RPG Workbench",
+      dungeon: "  🏰 Dungeon Generator",
+      tileset: "  🎨 Tileset Processor",
+      worldgen: "  🌍 World Generator",
+      maze: "  🗝️ Maze System",
+      audio: "  🔊 Audio System",
+      gameboy: "  🎮 Game Boy Emulator",
+      musicnotation: "  🎵 Music Notation",
+      terminal: "  💻 Terminal System",
+      // D&D 5e Tools
+      dnd5e: "🐉 D&D 5e Tools",
+      charactersheet: "  📜 Character Sheet",
+      spellbook: "  📖 Spellbook",
+      monsters: "  👹 Monster Manual",
+      items: "  ⚔️ Items & Equipment",
+      encounters: "  ⚔️ Encounter Builder",
     }),
     [],
   );

@@ -10,15 +10,23 @@ export type NavigationSection =
   | "palettes"
   | "dialogue"
   | "settings"
-  | "rpg5e"
-  | "rpgmaker"
+  // RPG Workbench - D&D 5e Systems
+  | "rpgworkbench"
   | "dungeon"
   | "tileset"
   | "worldgen"
   | "maze"
   | "audio"
   | "gameboy"
-  | "musicnotation";
+  | "musicnotation"
+  | "terminal"
+  // D&D 5e Tools
+  | "dnd5e"
+  | "charactersheet"
+  | "spellbook"
+  | "monsters"
+  | "items"
+  | "encounters";
 
 export interface NavigationState {
   section: NavigationSection;
