@@ -1,0 +1,96 @@
+X:1
+T:Twinkle Twinkle Little Star
+M:4/4
+L:1/4
+Q:1/4=120
+K:C
+CCGG AAG2|FFEE DDC2|
+GGFF EED2|GGFF EED2|
+CCGG AAG2|FFEE DDC2||
+
+X:2
+T:Happy Birthday
+M:3/4
+L:1/8
+Q:1/4=120
+K:C
+G2 G2 A2 G2 c2 B4|
+G2 G2 A2 G2 d2 c4|
+G2 G2 g2 e2 c2 B2 A2|
+f2 f2 e2 c2 d2 c4||
+
+X:3
+T:Ode to Joy
+M:4/4
+L:1/4
+Q:1/4=120
+K:C
+E E F G|G F E D|C C D E|E3/2 D/2 D2|
+E E F G|G F E D|C C D E|D3/2 C/2 C2||
+
+X:4
+T:Jingle Bells (Chorus)
+M:4/4
+L:1/8
+Q:1/4=140
+K:C
+E2 E2 E4|E2 E2 E4|
+E2 G2 C2 D2|E8|
+F2 F2 F2 F2|F2 E2 E2 E2|
+E2 D2 D2 E2|D4 G4||
+
+X:5
+T:Amazing Grace
+M:3/4
+L:1/4
+Q:1/4=90
+K:G
+G/2|G2 B|B2 G|B2 d|d2 B|
+d2 B|B2 G|E2 G|G3|
+G2 B|B2 G|B2 d|d2 B|
+d2 e|d2 B|G2 E|G3||
+
+X:6
+T:Greensleeves
+M:6/8
+L:1/8
+Q:3/8=120
+K:Em
+E|G2 A B2 c|d3 e2 d|B2 G G2 F#|E3 E2 E|
+G2 A B2 c|d3 e2 d|B2 G F#2 D#|E6||
+
+X:7
+T:Canon in D (Pachelbel)
+M:4/4
+L:1/4
+Q:1/4=60
+K:D
+F# G A B|A G F# E|D E F# G|F# E D C#|
+B, C# D E|D C# B, A,|G, A, B, C#|B, A, G, F#,||
+
+X:8
+T:Für Elise (Opening)
+M:3/8
+L:1/16
+Q:3/8=120
+K:Am
+e^d|e^d eB dc|A3 CEA|B3 EG#B|c3 e^d e|
+^d e B d c|A3 C E A|B3 E G# B|c3||
+
+X:9
+T:Mary Had a Little Lamb
+M:4/4
+L:1/4
+Q:1/4=120
+K:C
+E D C D|E E E2|D D D2|E G G2|
+E D C D|E E E E|D D E D|C4||
+
+X:10
+T:When the Saints Go Marching In
+M:4/4
+L:1/4
+Q:1/4=120
+K:C
+C E F G|G2 E2 F2|C E F G|G2 E4|
+C E F G|E2 C2 E2 D2|C C E D|C4||

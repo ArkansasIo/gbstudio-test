@@ -38,6 +38,7 @@
     "generate:rpg": "ts-node scripts/generateRpgWorkbenchImplementation.ts",
     "process:tileset": "ts-node scripts/processTileset.ts",
     "generate:maze": "ts-node scripts/generateMaze.ts",
+    "play:music": "ts-node scripts/playMusic.ts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "knip": "knip"

@@ -1,0 +1,149 @@
+{
+  "songs": [
+    {
+      "name": "Battle Theme",
+      "tempo": 140,
+      "timeSignature": { "numerator": 4, "denominator": 4 },
+      "channels": [
+        {
+          "channelType": "pulse1",
+          "notes": [
+            { "pitch": 64, "duration": 0.214, "velocity": 12, "startTime": 0 },
+            { "pitch": 64, "duration": 0.214, "velocity": 12, "startTime": 0.214 },
+            { "pitch": 64, "duration": 0.214, "velocity": 12, "startTime": 0.428 },
+            { "pitch": 67, "duration": 0.428, "velocity": 15, "startTime": 0.642 },
+            { "pitch": 69, "duration": 0.428, "velocity": 15, "startTime": 1.07 }
+          ],
+          "volume": 0.8,
+          "pan": 0.5,
+          "effects": []
+        },
+        {
+          "channelType": "pulse2",
+          "notes": [
+            { "pitch": 52, "duration": 0.857, "velocity": 10, "startTime": 0 },
+            { "pitch": 55, "duration": 0.857, "velocity": 10, "startTime": 0.857 }
+          ],
+          "volume": 0.6,
+          "pan": 0.5,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "name": "Town Theme",
+      "tempo": 100,
+      "timeSignature": { "numerator": 4, "denominator": 4 },
+      "channels": [
+        {
+          "channelType": "pulse1",
+          "notes": [
+            { "pitch": 60, "duration": 0.6, "velocity": 10, "startTime": 0 },
+            { "pitch": 62, "duration": 0.6, "velocity": 10, "startTime": 0.6 },
+            { "pitch": 64, "duration": 0.6, "velocity": 10, "startTime": 1.2 },
+            { "pitch": 65, "duration": 0.6, "velocity": 10, "startTime": 1.8 },
+            { "pitch": 67, "duration": 1.2, "velocity": 12, "startTime": 2.4 }
+          ],
+          "volume": 0.7,
+          "pan": 0.5,
+          "effects": []
+        },
+        {
+          "channelType": "wave",
+          "notes": [
+            { "pitch": 48, "duration": 2.4, "velocity": 8, "startTime": 0 },
+            { "pitch": 52, "duration": 2.4, "velocity": 8, "startTime": 2.4 }
+          ],
+          "volume": 0.5,
+          "pan": 0.5,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "name": "Boss Battle",
+      "tempo": 160,
+      "timeSignature": { "numerator": 4, "denominator": 4 },
+      "channels": [
+        {
+          "channelType": "pulse1",
+          "notes": [
+            { "pitch": 62, "duration": 0.1875, "velocity": 15, "startTime": 0 },
+            { "pitch": 62, "duration": 0.1875, "velocity": 15, "startTime": 0.1875 },
+            { "pitch": 62, "duration": 0.1875, "velocity": 15, "startTime": 0.375 },
+            { "pitch": 65, "duration": 0.375, "velocity": 15, "startTime": 0.5625 },
+            { "pitch": 67, "duration": 0.375, "velocity": 15, "startTime": 0.9375 },
+            { "pitch": 69, "duration": 0.75, "velocity": 15, "startTime": 1.3125 }
+          ],
+          "volume": 0.9,
+          "pan": 0.5,
+          "effects": []
+        },
+        {
+          "channelType": "pulse2",
+          "notes": [
+            { "pitch": 50, "duration": 0.75, "velocity": 12, "startTime": 0 },
+            { "pitch": 53, "duration": 0.75, "velocity": 12, "startTime": 0.75 },
+            { "pitch": 55, "duration": 0.75, "velocity": 12, "startTime": 1.5 }
+          ],
+          "volume": 0.7,
+          "pan": 0.5,
+          "effects": []
+        },
+        {
+          "channelType": "noise",
+          "notes": [
+            { "pitch": 0, "duration": 0.1875, "velocity": 10, "startTime": 0 },
+            { "pitch": 0, "duration": 0.1875, "velocity": 10, "startTime": 0.375 },
+            { "pitch": 0, "duration": 0.1875, "velocity": 10, "startTime": 0.75 },
+            { "pitch": 0, "duration": 0.1875, "velocity": 10, "startTime": 1.125 }
+          ],
+          "volume": 0.4,
+          "pan": 0.5,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "name": "Victory Fanfare",
+      "tempo": 120,
+      "timeSignature": { "numerator": 4, "denominator": 4 },
+      "channels": [
+        {
+          "channelType": "pulse1",
+          "notes": [
+            { "pitch": 60, "duration": 0.5, "velocity": 15, "startTime": 0 },
+            { "pitch": 60, "duration": 0.5, "velocity": 15, "startTime": 0.5 },
+            { "pitch": 60, "duration": 0.5, "velocity": 15, "startTime": 1.0 },
+            { "pitch": 60, "duration": 1.0, "velocity": 15, "startTime": 1.5 },
+            { "pitch": 63, "duration": 1.0, "velocity": 15, "startTime": 2.5 },
+            { "pitch": 72, "duration": 2.0, "velocity": 15, "startTime": 3.5 }
+          ],
+          "volume": 0.9,
+          "pan": 0.5,
+          "effects": []
+        }
+      ]
+    },
+    {
+      "name": "Game Over",
+      "tempo": 80,
+      "timeSignature": { "numerator": 4, "denominator": 4 },
+      "channels": [
+        {
+          "channelType": "pulse1",
+          "notes": [
+            { "pitch": 67, "duration": 0.75, "velocity": 12, "startTime": 0 },
+            { "pitch": 65, "duration": 0.75, "velocity": 12, "startTime": 0.75 },
+            { "pitch": 64, "duration": 0.75, "velocity": 12, "startTime": 1.5 },
+            { "pitch": 62, "duration": 0.75, "velocity": 10, "startTime": 2.25 },
+            { "pitch": 60, "duration": 3.0, "velocity": 8, "startTime": 3.0 }
+          ],
+          "volume": 0.7,
+          "pan": 0.5,
+          "effects": []
+        }
+      ]
+    }
+  ]
+}

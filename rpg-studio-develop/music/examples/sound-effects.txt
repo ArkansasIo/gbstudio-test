@@ -1,0 +1,81 @@
+# Sound Effects Library
+# Format: NAME | CHANNEL | FREQUENCY | DURATION | ENVELOPE | SWEEP
+
+# UI Sounds
+MENU_SELECT | pulse1 | 440 | 50 | 12,decrease,2 | 0,0,0
+MENU_MOVE | pulse1 | 330 | 30 | 10,decrease,1 | 0,0,0
+MENU_BACK | pulse1 | 220 | 80 | 8,decrease,3 | 0,0,0
+MENU_CONFIRM | pulse1 | 880 | 100 | 15,decrease,4 | 0,increase,2
+MENU_ERROR | pulse1 | 110 | 150 | 12,decrease,2 | 0,0,0
+
+# Player Actions
+JUMP | pulse1 | 440 | 100 | 12,decrease,3 | 4,increase,3
+LAND | noise | 0 | 80 | 10,decrease,2 | 0,0,0
+WALK_STEP | noise | 0 | 40 | 6,decrease,1 | 0,0,0
+DASH | pulse2 | 660 | 120 | 10,decrease,2 | 3,increase,2
+SLIDE | noise | 0 | 200 | 8,decrease,4 | 0,0,0
+
+# Combat Sounds
+SWORD_SWING | pulse1 | 880 | 80 | 15,decrease,2 | 5,decrease,4
+SWORD_HIT | noise | 0 | 60 | 12,decrease,1 | 0,0,0
+ARROW_SHOOT | pulse2 | 1320 | 100 | 10,decrease,3 | 6,decrease,3
+ARROW_HIT | pulse1 | 220 | 50 | 8,decrease,1 | 0,0,0
+MAGIC_CAST | wave | 660 | 200 | 12,decrease,5 | 0,0,0
+MAGIC_HIT | wave | 1760 | 150 | 15,decrease,4 | 0,0,0
+SHIELD_BLOCK | noise | 0 | 100 | 15,decrease,2 | 0,0,0
+CRITICAL_HIT | pulse1 | 1760 | 120 | 15,decrease,3 | 7,increase,5
+
+# Enemy Sounds
+ENEMY_HIT | noise | 0 | 80 | 10,decrease,2 | 0,0,0
+ENEMY_DEATH | pulse1 | 440 | 300 | 12,decrease,7 | 6,decrease,6
+ENEMY_ROAR | noise | 0 | 250 | 15,decrease,5 | 0,0,0
+BOSS_ROAR | noise | 0 | 400 | 15,decrease,7 | 0,0,0
+
+# Item Sounds
+ITEM_PICKUP | pulse1 | 880 | 100 | 12,increase,3 | 0,0,0
+COIN_PICKUP | pulse1 | 1320 | 60 | 10,decrease,2 | 0,0,0
+POTION_DRINK | wave | 440 | 150 | 10,decrease,4 | 0,0,0
+CHEST_OPEN | pulse2 | 660 | 200 | 12,increase,5 | 0,0,0
+KEY_PICKUP | pulse1 | 1760 | 120 | 15,decrease,3 | 0,0,0
+POWERUP | pulse1 | 880 | 300 | 15,increase,6 | 5,increase,4
+
+# Environment Sounds
+DOOR_OPEN | noise | 0 | 150 | 8,decrease,3 | 0,0,0
+DOOR_CLOSE | noise | 0 | 120 | 8,decrease,2 | 0,0,0
+SWITCH_ON | pulse1 | 660 | 80 | 10,increase,2 | 0,0,0
+SWITCH_OFF | pulse1 | 440 | 80 | 10,decrease,2 | 0,0,0
+EXPLOSION | noise | 0 | 300 | 15,decrease,6 | 0,0,0
+WATER_SPLASH | noise | 0 | 150 | 8,decrease,3 | 0,0,0
+FIRE_BURN | noise | 0 | 200 | 6,decrease,4 | 0,0,0
+
+# Status Effects
+LEVEL_UP | pulse1 | 880 | 400 | 15,increase,7 | 6,increase,5
+HEAL | wave | 660 | 250 | 12,increase,5 | 0,0,0
+POISON | wave | 220 | 200 | 8,decrease,4 | 0,0,0
+BUFF | pulse1 | 1320 | 180 | 12,increase,4 | 4,increase,3
+DEBUFF | pulse1 | 330 | 180 | 10,decrease,4 | 4,decrease,3
+
+# Game Events
+PAUSE | pulse1 | 440 | 100 | 12,decrease,2 | 0,0,0
+UNPAUSE | pulse1 | 660 | 100 | 12,increase,2 | 0,0,0
+GAME_OVER | pulse1 | 220 | 500 | 15,decrease,8 | 7,decrease,7
+VICTORY | pulse1 | 1320 | 400 | 15,increase,7 | 6,increase,5
+SAVE | pulse2 | 880 | 150 | 12,increase,3 | 0,0,0
+LOAD | pulse2 | 880 | 150 | 12,decrease,3 | 0,0,0
+
+# Notifications
+MESSAGE_APPEAR | pulse1 | 660 | 80 | 10,increase,2 | 0,0,0
+QUEST_COMPLETE | pulse1 | 1320 | 300 | 15,increase,6 | 5,increase,4
+ACHIEVEMENT | pulse1 | 1760 | 350 | 15,increase,7 | 6,increase,5
+WARNING | pulse1 | 330 | 200 | 12,decrease,4 | 0,0,0
+ALERT | pulse1 | 1100 | 150 | 15,decrease,3 | 0,0,0
+
+# Retro Game Sounds
+PACMAN_DEATH | pulse1 | 440 | 500 | 15,decrease,8 | 7,decrease,7
+SPACE_INVADER_SHOOT | pulse1 | 880 | 50 | 12,decrease,1 | 0,0,0
+MARIO_JUMP | pulse1 | 660 | 100 | 12,decrease,3 | 4,increase,3
+MARIO_COIN | pulse1 | 1320 | 80 | 12,decrease,2 | 0,0,0
+ZELDA_SECRET | pulse1 | 880 | 400 | 15,increase,7 | 0,0,0
+SONIC_RING | pulse1 | 1760 | 100 | 15,decrease,2 | 0,0,0
+MEGAMAN_SHOOT | pulse1 | 1100 | 60 | 12,decrease,1 | 0,0,0
+METROID_ITEM | pulse1 | 1320 | 250 | 15,increase,5 | 5,increase,4

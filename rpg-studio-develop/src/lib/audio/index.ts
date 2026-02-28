@@ -43,6 +43,9 @@ export { GBSoundSystem, GBSoundUtils } from './gbSound';
 // Sound Effects
 export { SFXGenerator, SFXLibrary } from './sfxGenerator';
 
+// Music Parser and Player
+export { MusicParser, MusicPlayer } from './musicParser';
+
 // Quick start example
 export function quickStartAudio() {
   const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();

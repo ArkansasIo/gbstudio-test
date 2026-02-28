@@ -1,0 +1,13 @@
+# Simple Melody Format
+# Format: NOTE:DURATION (duration in quarter notes)
+# Example: C4:4 means C in octave 4, quarter note duration
+
+# Tempo: 120 BPM
+TEMPO: 120
+
+# Simple scale
+C4:4 D4:4 E4:4 F4:4 G4:4 A4:4 B4:4 C5:2
+
+# Twinkle Twinkle Little Star
+C4:4 C4:4 G4:4 G4:4 A4:4 A4:4 G4:2
+F4:4 F4:4 E4:4 E4:4 D4:4 D4:4 C4:2

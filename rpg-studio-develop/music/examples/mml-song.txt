@@ -1,0 +1,62 @@
+# MML (Music Macro Language) Format
+# Commands:
+# T = Tempo (T120 = 120 BPM)
+# O = Octave (O4 = octave 4)
+# L = Default note length (L4 = quarter note)
+# V = Volume (V15 = max volume)
+# < = Octave down
+# > = Octave up
+# R = Rest
+# C D E F G A B = Notes
+# # or + = Sharp
+# - = Flat
+# Numbers after notes = length (4=quarter, 8=eighth, 16=sixteenth, 2=half, 1=whole)
+
+# Example 1: Simple Scale
+T120 O4 L4 C D E F G A B O5 C
+
+# Example 2: Twinkle Twinkle Little Star
+T120 O4 L4 
+C C G G A A G2
+F F E E D D C2
+G G F F E E D2
+G G F F E E D2
+C C G G A A G2
+F F E E D D C2
+
+# Example 3: Mario Theme (simplified)
+T180 O5 L16
+E E R E R C E R G R R R O4 G R R R
+
+# Example 4: Zelda's Lullaby
+T90 O5 L4
+B A G B A G B A G B A G
+B8 A8 G2
+
+# Example 5: Megalovania (Undertale) - Opening
+T120 O4 L16
+D D O5 D O4 R A R G# R G R F R D F G
+D D O5 D O4 R A R G# R G R F R D F G
+
+# Example 6: Pokémon Battle Theme
+T140 O4 L8
+E E E E E E E4 E E E E E E E4
+D D D D D D D4 D D D D D D D4
+
+# Example 7: Final Fantasy Victory Fanfare
+T160 O4 L8
+C C C C4 D#4 R C4 R
+O5 C C C C4 D#4 R C4 R
+
+# Example 8: Tetris Theme A
+T150 O4 L8
+E B C D C B A A C E D C B R B C D E C A A R
+
+# Example 9: Castlevania - Vampire Killer
+T140 O4 L16
+D# D# D# D# D# D# D#8 D#8 F F F F F F F8 F8
+G G G G G G G8 G8 G# G# G# G# G# G# G#8 G#8
+
+# Example 10: Chrono Trigger - Main Theme
+T130 O4 L8
+G A B O5 C O4 B A G E G A B O5 C O4 B A

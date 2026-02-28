@@ -375,3 +375,41 @@ export interface SpectrumData {
   magnitudes: Float32Array;
   binCount: number;
 }
+
+// ============================================================================
+// Music Track Types (for Music Parser)
+// ============================================================================
+
+/**
+ * Music note for parsed tracks
+ */
+export interface MusicNote {
+  pitch: number; // MIDI note number
+  duration: number; // Duration in seconds
+  velocity: number; // Volume 0-15
+  startTime: number; // Start time in seconds
+}
+
+/**
+ * Music channel
+ */
+export interface MusicChannel {
+  channelType: GBChannel;
+  notes: MusicNote[];
+  volume: number; // 0-1
+  pan: number; // 0-1 (0=left, 0.5=center, 1=right)
+  effects: any[];
+}
+
+/**
+ * Complete music track
+ */
+export interface MusicTrack {
+  name: string;
+  tempo: number; // BPM
+  timeSignature: {
+    numerator: number;
+    denominator: number;
+  };
+  channels: MusicChannel[];
+}
