@@ -98,10 +98,10 @@ export {
  * Quick start example
  */
 export function quickStartMaze(seed: number = Date.now()): {
-  dungeon: Maze;
-  tower: Maze;
-  trial: Maze;
-  raid: Maze;
+  dungeon: ReturnType<MazeGenerator['generate']>;
+  tower: ReturnType<MazeGenerator['generate']>;
+  trial: ReturnType<MazeGenerator['generate']>;
+  raid: ReturnType<MazeGenerator['generate']>;
 } {
   const { MazeGenerator } = require('./generator');
   const { generateTrial, TRIALS } = require('./trials');

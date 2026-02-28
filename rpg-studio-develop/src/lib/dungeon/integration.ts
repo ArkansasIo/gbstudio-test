@@ -4,7 +4,9 @@
  */
 
 import { DungeonGenerator, DungeonConfig, Dungeon, Room } from './index';
-import { terminalLogger } from '../terminal/terminalLogger';
+import { TerminalLogger } from '../terminal/terminalLogger';
+
+const terminalLogger = new TerminalLogger();
 
 /**
  * Generate dungeon and log to terminal
