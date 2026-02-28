@@ -23,7 +23,8 @@ export interface TilemapLayer {
  * Convert dungeon to tilemap
  */
 export function dungeonToTilemap(dungeon: Dungeon): TilemapData {
-  const { width, height, grid, rooms } = dungeon.config;
+  const { width, height } = dungeon.config;
+  const { grid, rooms } = dungeon;
   
   const layers: TilemapLayer[] = [
     {
@@ -59,7 +60,8 @@ export function dungeonToTilemap(dungeon: Dungeon): TilemapData {
  * Generate floor layer
  */
 function generateFloorLayer(dungeon: Dungeon): number[][] {
-  const { width, height, grid } = dungeon.config;
+  const { width, height } = dungeon.config;
+  const { grid, rooms } = dungeon;
   const layer: number[][] = Array(height).fill(0).map(() => Array(width).fill(0));
 
   for (let y = 0; y < height; y++) {
@@ -68,7 +70,7 @@ function generateFloorLayer(dungeon: Dungeon): number[][] {
       
       if (cell > 0) {
         // Room floor
-        const room = dungeon.rooms.find(r => 
+        const room = rooms.find(r => 
           x >= r.x && x < r.x + r.width &&
           y >= r.y && y < r.y + r.height
         );
@@ -90,7 +92,8 @@ function generateFloorLayer(dungeon: Dungeon): number[][] {
  * Generate wall layer
  */
 function generateWallLayer(dungeon: Dungeon): number[][] {
-  const { width, height, grid } = dungeon.config;
+  const { width, height } = dungeon.config;
+  const { grid } = dungeon;
   const layer: number[][] = Array(height).fill(0).map(() => Array(width).fill(0));
 
   for (let y = 0; y < height; y++) {
