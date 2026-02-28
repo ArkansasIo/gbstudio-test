@@ -52,6 +52,13 @@ const sectionAccelerators = {
   settings: "CommandOrControl+8",
   rpg5e: "CommandOrControl+Shift+9",
   rpgmaker: "CommandOrControl+Shift+0",
+  dungeon: "CommandOrControl+Shift+D",
+  tileset: "CommandOrControl+Shift+T",
+  worldgen: "CommandOrControl+Shift+W",
+  maze: "CommandOrControl+Shift+M",
+  audio: "CommandOrControl+Shift+A",
+  gameboy: "CommandOrControl+Shift+G",
+  musicnotation: "CommandOrControl+Shift+N",
 };
 
 const zoomSections = ["world", "sprites", "backgrounds", "ui"];
@@ -96,6 +103,13 @@ const AppToolbar: FC = () => {
       settings: l10n("NAV_SETTINGS"),
       rpg5e: "RPG DND5E",
       rpgmaker: "RPG WORKBENCH",
+      dungeon: "🏰 Dungeon Generator",
+      tileset: "🎨 Tileset Processor",
+      worldgen: "🌍 World Generator",
+      maze: "🗝️ Maze System",
+      audio: "🔊 Audio System",
+      gameboy: "🎮 Game Boy Emulator",
+      musicnotation: "🎵 Music Notation",
     }),
     [],
   );

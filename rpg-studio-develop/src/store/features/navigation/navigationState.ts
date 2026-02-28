@@ -11,7 +11,14 @@ export type NavigationSection =
   | "dialogue"
   | "settings"
   | "rpg5e"
-  | "rpgmaker";
+  | "rpgmaker"
+  | "dungeon"
+  | "tileset"
+  | "worldgen"
+  | "maze"
+  | "audio"
+  | "gameboy"
+  | "musicnotation";
 
 export interface NavigationState {
   section: NavigationSection;

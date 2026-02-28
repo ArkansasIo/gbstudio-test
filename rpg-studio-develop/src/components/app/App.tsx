@@ -10,6 +10,9 @@ import PalettePage from "components/pages/PalettePage";
 import SettingsPage from "components/pages/SettingsPage";
 import RPG5EPage from "components/pages/RPG5EPage";
 import RPGGameMakerUI from "components/RPGGameMakerUI";
+import DungeonGeneratorPage from "components/pages/DungeonGeneratorPage";
+import MusicNotationPage from "components/pages/MusicNotationPage";
+import SystemsPage from "components/pages/SystemsPage";
 import { DropZone } from "ui/upload/DropZone";
 import projectActions from "store/features/project/projectActions";
 import SoundsPage from "components/pages/SoundsPage";
@@ -162,6 +165,13 @@ const App = () => {
           {section === "settings" && <SettingsPage />}
           {section === "rpg5e" && <RPG5EPage />}
           {section === "rpgmaker" && <RPGGameMakerUI />}
+          {section === "dungeon" && <DungeonGeneratorPage />}
+          {section === "tileset" && <SystemsPage system="tileset" />}
+          {section === "worldgen" && <SystemsPage system="worldgen" />}
+          {section === "maze" && <SystemsPage system="maze" />}
+          {section === "audio" && <SystemsPage system="audio" />}
+          {section === "gameboy" && <SystemsPage system="gameboy" />}
+          {section === "musicnotation" && <MusicNotationPage />}
           {draggingOver && <DropZone />}
           <AIChatBox />
         </AppContent>
