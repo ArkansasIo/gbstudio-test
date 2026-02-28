@@ -241,6 +241,9 @@ import { generateWorld } from '@/lib/world';
 ### This Document
 - COMPLETE_SYSTEM_OVERVIEW.md
 
+### System Integration
+- **[SYSTEM_INTERLINKS.md](./SYSTEM_INTERLINKS.md)** - Complete system integration guide with API reference, data flow diagrams, and cross-system dependencies
+
 ## 🎨 Use Cases
 
 ### 1. Roguelike Game
