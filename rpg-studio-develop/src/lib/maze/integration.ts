@@ -62,16 +62,34 @@ export function mazeFloorToDungeon(floor: Floor, seed: number): Dungeon {
     }
   });
 
+  // Map theme to biome type
+  const biomeMap: Record<string, 'underdark' | 'crypt' | 'cave' | 'ruins' | 'fortress' | 'temple' | 'sewers' | 'mine' | 'laboratory' | 'prison'> = {
+    'upper_crypt': 'crypt',
+    'deep_caverns': 'cave',
+    'underdark': 'underdark',
+    'abyssal_depths': 'underdark',
+    'void_realm': 'underdark',
+    'stone_tower': 'fortress',
+    'crystal_spire': 'ruins',
+    'cloud_citadel': 'fortress',
+    'celestial_heights': 'temple',
+    'divine_pinnacle': 'temple'
+  };
+  
+  const biome = biomeMap[floor.theme] || 'crypt';
+  const difficulty = Math.min(4, Math.max(1, Math.ceil(floor.difficulty / 2.5))) as 1 | 2 | 3 | 4;
+
   return {
     id: `dungeon_floor_${floor.level}`,
     config: {
       seed,
-      biome: floor.theme,
-      difficulty: Math.ceil(floor.difficulty / 2.5),
+      biome,
+      difficulty,
       minRooms: rooms.length,
       maxRooms: rooms.length,
       width: floor.width * 2,
       height: floor.height * 2,
+      branchingFactor: 0.5,
       treasureDensity: 0.2,
       trapDensity: 0.1
     },
@@ -105,14 +123,32 @@ function mapRoomType(mazeRoomType: string): Room['type'] {
  * Generate dungeon for maze floor
  */
 export function generateDungeonForFloor(floor: Floor, seed: number): Dungeon {
+  // Map theme to biome type
+  const biomeMap: Record<string, 'underdark' | 'crypt' | 'cave' | 'ruins' | 'fortress' | 'temple' | 'sewers' | 'mine' | 'laboratory' | 'prison'> = {
+    'upper_crypt': 'crypt',
+    'deep_caverns': 'cave',
+    'underdark': 'underdark',
+    'abyssal_depths': 'underdark',
+    'void_realm': 'underdark',
+    'stone_tower': 'fortress',
+    'crystal_spire': 'ruins',
+    'cloud_citadel': 'fortress',
+    'celestial_heights': 'temple',
+    'divine_pinnacle': 'temple'
+  };
+  
+  const biome = biomeMap[floor.theme] || 'crypt';
+  const difficulty = Math.min(4, Math.max(1, Math.ceil(floor.difficulty / 2.5))) as 1 | 2 | 3 | 4;
+
   const generator = new DungeonGenerator({
     seed: seed + floor.level * 1000,
-    biome: floor.theme,
-    difficulty: Math.ceil(floor.difficulty / 2.5),
+    biome,
+    difficulty,
     minRooms: 8,
     maxRooms: 15,
     width: floor.width * 4,
     height: floor.height * 4,
+    branchingFactor: 0.5,
     treasureDensity: 0.2,
     trapDensity: 0.1
   });
