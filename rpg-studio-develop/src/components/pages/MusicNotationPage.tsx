@@ -1,6 +1,9 @@
 import React, { FC, useState } from "react";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
+import MusicKeyboardEditor from "components/music/MusicKeyboardEditor";
+import { MusicParser } from "lib/audio/musicParser";
+import type { MusicTrack } from "lib/audio/types";
 
 const Wrapper = styled.div`
   display: flex;
@@ -30,6 +33,19 @@ const Description = styled.p`
 
 const Content = styled.div`
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
+const EditorSection = styled.div`
+  flex: 1;
+  min-height: 400px;
+  border-bottom: 2px solid ${(props) => props.theme.colors.sidebar.border};
+`;
+
+const ParserSection = styled.div`
+  flex: 1;
   padding: 20px;
   overflow-y: auto;
 `;
@@ -46,7 +62,7 @@ const SectionTitle = styled.h2`
 
 const TextArea = styled.textarea`
   width: 100%;
-  min-height: 200px;
+  min-height: 150px;
   background: ${(props) => props.theme.colors.input.background};
   border: 1px solid ${(props) => props.theme.colors.input.border};
   border-radius: 4px;
@@ -67,7 +83,7 @@ const Output = styled.pre`
   font-size: 12px;
   overflow-x: auto;
   white-space: pre-wrap;
-  max-height: 400px;
+  max-height: 300px;
   overflow-y: auto;
 `;
 
@@ -88,6 +104,7 @@ const MusicNotationPage: FC = () => {
   const [format, setFormat] = useState("mml");
   const [input, setInput] = useState("T120 O4 L4 C D E F G A B O5 C");
   const [output, setOutput] = useState("");
+  const [currentTrack, setCurrentTrack] = useState<MusicTrack | undefined>(undefined);
 
   const examples = {
     simple: "C4:4 D4:4 E4:4 F4:4 G4:4 A4:4 B4:4 C5:2",
@@ -101,7 +118,31 @@ CDEF GABc`,
   };
 
   const handleParse = () => {
-    const info = `
+    try {
+      let track: MusicTrack;
+      
+      switch (format) {
+        case "mml":
+          track = MusicParser.parseMML(input);
+          break;
+        case "simple":
+          track = MusicParser.parseSimple(input);
+          break;
+        case "abc":
+          track = MusicParser.parseABC(input);
+          break;
+        default:
+          return;
+      }
+
+      setCurrentTrack(track);
+
+      const totalDuration = track.channels[0]?.notes.length > 0
+        ? track.channels[0].notes[track.channels[0].notes.length - 1].startTime +
+          track.channels[0].notes[track.channels[0].notes.length - 1].duration
+        : 0;
+
+      const info = `
 🎵 Music Notation Parser
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -109,10 +150,12 @@ Format: ${format.toUpperCase()}
 Input: ${input.substring(0, 50)}${input.length > 50 ? "..." : ""}
 
 Parsed Track:
-  Tempo: 120 BPM
-  Notes: 8
-  Duration: ~4 seconds
-  Channels: 1 (pulse1)
+  Name: ${track.name}
+  Tempo: ${track.tempo} BPM
+  Time Signature: ${track.timeSignature.numerator}/${track.timeSignature.denominator}
+  Notes: ${track.channels[0]?.notes.length || 0}
+  Duration: ${totalDuration.toFixed(2)} seconds
+  Channels: ${track.channels.length}
 
 Supported Formats:
   ✓ Simple - C4:4 D4:4 E4:4
@@ -127,21 +170,43 @@ Usage:
   const player = new MusicPlayer(audioContext);
   player.play(track);
 
+Export:
+  MML: ${MusicParser.exportMML(track)}
+  Simple: ${MusicParser.exportSimple(track)}
+
 CLI: npm run play:music music/examples/simple-melody.txt
 Docs: MUSIC_NOTATION_GUIDE.md, MUSIC_QUICK_START.md
-    `;
-    setOutput(info);
+      `;
+      setOutput(info);
+    } catch (error) {
+      setOutput(`❌ Parse Error: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
+
+  const handleTrackChange = (track: MusicTrack) => {
+    setCurrentTrack(track);
+    // Update input with exported notation
+    const exported = MusicParser.exportMML(track);
+    setInput(exported);
+    setFormat("mml");
   };
 
   return (
     <Wrapper>
       <Header>
-        <Title>🎵 Music Notation System</Title>
+        <Title>🎵 Music Notation & Keyboard Editor</Title>
         <Description>
-          Text-based music composition with 4 formats: Simple, MML, ABC, JSON
+          Visual keyboard editor with text-based music composition (Simple, MML, ABC, JSON)
         </Description>
       </Header>
       <Content>
+        <EditorSection>
+          <MusicKeyboardEditor 
+            initialTrack={currentTrack}
+            onTrackChange={handleTrackChange}
+          />
+        </EditorSection>
+        <ParserSection>
         <Section>
           <SectionTitle>Input</SectionTitle>
           <FormRow>
@@ -223,6 +288,7 @@ Docs: MUSIC_NOTATION_GUIDE.md, MUSIC_QUICK_START.md
             CLI: npm run play:music [file]
           </Description>
         </Section>
+        </ParserSection>
       </Content>
     </Wrapper>
   );

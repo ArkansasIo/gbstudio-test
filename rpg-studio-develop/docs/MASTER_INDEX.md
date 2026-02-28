@@ -250,33 +250,52 @@ TerminalLogger.error('Failed to load', { details: 'File not found' });
 
 ---
 
-### 7. Music Notation
+### 7. Music Notation & Keyboard Editor
 
 **UI Access**: `Ctrl+Shift+N` or Menu → 🎵 Music Notation  
-**Files**: `src/lib/audio/musicParser.ts`, `src/components/pages/MusicNotationPage.tsx`
+**Files**: `src/lib/audio/musicParser.ts`, `src/components/music/MusicKeyboardEditor.tsx`, `src/components/pages/MusicNotationPage.tsx`
 
 **Documentation**:
-- 📖 [MUSIC_NOTATION_GUIDE.md](./MUSIC_NOTATION_GUIDE.md) - Complete guide
+- 📖 [MUSIC_NOTATION_GUIDE.md](./MUSIC_NOTATION_GUIDE.md) - Complete notation guide
+- 🎹 [MUSIC_KEYBOARD_EDITOR.md](./MUSIC_KEYBOARD_EDITOR.md) - Keyboard editor guide
 - ⚡ [MUSIC_QUICK_START.md](./MUSIC_QUICK_START.md) - Quick start
 - 🎮 [AUDIO_AND_GAMEBOY_SYSTEM.md](./AUDIO_AND_GAMEBOY_SYSTEM.md) - Integration guide
 
 **UI Features**:
-- Format selector (Simple, MML, ABC)
-- Text input area
-- Load example button
-- Parse button
-- Output display
-- Code examples
+- 🎹 **Visual Keyboard Editor**:
+  - Piano roll with 48-note range (C2-C6)
+  - Interactive 2-octave keyboard (C4-B5)
+  - Real-time recording
+  - Playback with note visualization
+  - QWERTY keyboard mapping
+- 📝 **Text Notation Parser**:
+  - Format selector (Simple, MML, ABC)
+  - Text input area
+  - Load example button
+  - Parse button
+  - Output display with track info
+  - Export to MML/Simple formats
+
+**Keyboard Shortcuts**:
+- `Space` - Play/Stop
+- `R` - Record/Stop Recording
+- `ASDFGHJKL;'` - White piano keys
+- `WETYUOP` - Black piano keys
+- `ZXCVBNM,./` - Lower octave
 
 **CLI**: `npm run play:music [file] [--export]`
 
 **Features**:
 - 4 notation formats (Simple, MML, ABC, JSON)
+- Visual piano roll editor
+- Real-time recording
+- Interactive keyboard
 - 100+ example songs
 - 50+ sound effects
 - Format conversion
 - MIDI to frequency conversion
-- Music player
+- Music player with GB sound
+- Export to notation formats
 
 **Example Files**:
 - `music/examples/simple-melody.txt`
@@ -288,6 +307,7 @@ TerminalLogger.error('Failed to load', { details: 'File not found' });
 **Integration**:
 - ← [Audio System](#6-audio-system) - Play through GB sound
 - → Game engines - Export music data
+- ↔ Keyboard editor ↔ Text notation (bidirectional)
 
 ---
 

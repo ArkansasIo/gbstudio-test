@@ -6,11 +6,11 @@ Enchantment Game Engine is a quick and easy to use retro adventure game creator 
 
 ## 🚀 Quick Navigation
 
-- **[📋 Master Index](./MASTER_INDEX.md)** - Complete navigation hub for all systems
-- **[🎯 Getting Started](./HOW_TO_ACCESS_RPG_WORKBENCH.md)** - How to access RPG Workbench
-- **[📚 Complete Overview](./COMPLETE_SYSTEM_OVERVIEW.md)** - All systems overview
-- **[🔗 System Integration](./SYSTEM_INTERLINKS.md)** - How systems work together
-- **[🎨 UI Navigation](./NAVIGATION_MENU_UPDATE.md)** - Menu structure and shortcuts
+- **[📋 Master Index](./docs/MASTER_INDEX.md)** - Complete navigation hub for all systems
+- **[🎯 Getting Started](./docs/HOW_TO_ACCESS_RPG_WORKBENCH.md)** - How to access RPG Workbench
+- **[📚 Complete Overview](./docs/COMPLETE_SYSTEM_OVERVIEW.md)** - All systems overview
+- **[🔗 System Integration](./docs/SYSTEM_INTERLINKS.md)** - How systems work together
+- **[🎨 UI Navigation](./docs/NAVIGATION_MENU_UPDATE.md)** - Menu structure and shortcuts
 
 ## 🎮 RPG Workbench Systems
 
@@ -18,14 +18,14 @@ Enchantment Game Engine is a quick and easy to use retro adventure game creator 
 
 | System | Access | Quick Start | Full Docs |
 |--------|--------|-------------|-----------|
-| 🏰 **Dungeon Generator** | `Ctrl+Shift+D` | [Quick Start](./DUNGEON_QUICK_START.md) | [Full Docs](./DUNGEON_GENERATION.md) |
-| 🎨 **Tileset Processor** | `Ctrl+Shift+T` | [Quick Ref](./TILESET_QUICK_REFERENCE.md) | [Full Docs](./TILESET_SYSTEM.md) |
-| 🌍 **World Generator** | `Ctrl+Shift+W` | - | [Full Docs](./WORLD_GENERATION_SYSTEM.md) |
-| 🗝️ **Maze System** | `Ctrl+Shift+M` | [Quick Start](./MAZE_QUICK_START.md) | [Full Docs](./MAZE_SYSTEM.md) |
-| 🔊 **Audio System** | `Ctrl+Shift+A` | - | [Full Docs](./AUDIO_SYSTEM.md) |
-| 🎵 **Music Notation** | `Ctrl+Shift+N` | [Quick Start](./MUSIC_QUICK_START.md) | [Full Docs](./MUSIC_NOTATION_GUIDE.md) |
-| 🎮 **Game Boy Emulator** | `Ctrl+Shift+G` | - | [Full Docs](./GAMEBOY_EMULATOR.md) |
-| 💻 **Terminal System** | Integrated | [Quick Start](./TERMINAL_QUICK_START.md) | [Full Docs](./TERMINAL_SYSTEM_README.md) |
+| 🏰 **Dungeon Generator** | `Ctrl+Shift+D` | [Quick Start](./docs/DUNGEON_QUICK_START.md) | [Full Docs](./docs/DUNGEON_GENERATION.md) |
+| 🎨 **Tileset Processor** | `Ctrl+Shift+T` | [Quick Ref](./docs/TILESET_QUICK_REFERENCE.md) | [Full Docs](./docs/TILESET_SYSTEM.md) |
+| 🌍 **World Generator** | `Ctrl+Shift+W` | - | [Full Docs](./docs/WORLD_GENERATION_SYSTEM.md) |
+| 🗝️ **Maze System** | `Ctrl+Shift+M` | [Quick Start](./docs/MAZE_QUICK_START.md) | [Full Docs](./docs/MAZE_SYSTEM.md) |
+| 🔊 **Audio System** | `Ctrl+Shift+A` | - | [Full Docs](./docs/AUDIO_SYSTEM.md) |
+| 🎵 **Music Notation** | `Ctrl+Shift+N` | [Quick Start](./docs/MUSIC_QUICK_START.md) | [Notation](./docs/MUSIC_NOTATION_GUIDE.md) / [Keyboard](./docs/MUSIC_KEYBOARD_EDITOR.md) |
+| 🎮 **Game Boy Emulator** | `Ctrl+Shift+G` | - | [Full Docs](./docs/GAMEBOY_EMULATOR.md) |
+| 💻 **Terminal System** | Integrated | [Quick Start](./docs/TERMINAL_QUICK_START.md) | [Full Docs](./docs/TERMINAL_SYSTEM_README.md) |
 
 ### Features Overview
 
@@ -34,31 +34,33 @@ Enchantment Game Engine is a quick and easy to use retro adventure game creator 
 - **World Generator**: 290 biomes, weather, seasons, encounters
 - **Maze System**: Multi-floor (1-100), 4 algorithms, trials & raids
 - **Audio System**: Game Boy sound hardware, 4 channels, 18 SFX presets
-- **Music Notation**: 4 formats (Simple, MML, ABC, JSON), 100+ examples
+- **Music Notation**: 4 formats (Simple, MML, ABC, JSON), 100+ examples, visual keyboard editor
 - **Game Boy Emulator**: Complete DMG/CGB emulation, save states
 - **Terminal System**: Redux logging, filtering, search, export
 
 ## 📖 Documentation Index
 
+All documentation is located in the [`docs/`](./docs/) folder.
+
 ### Getting Started
-- [Master Index](./MASTER_INDEX.md) - Central navigation hub
-- [How to Access](./HOW_TO_ACCESS_RPG_WORKBENCH.md) - Access guide
-- [Developers Guide](./DEVELOPERS.md) - Developer documentation
-- [Complete Overview](./COMPLETE_SYSTEM_OVERVIEW.md) - System overview
+- [Master Index](./docs/MASTER_INDEX.md) - Central navigation hub
+- [How to Access](./docs/HOW_TO_ACCESS_RPG_WORKBENCH.md) - Access guide
+- [Developers Guide](./docs/DEVELOPERS.md) - Developer documentation
+- [Complete Overview](./docs/COMPLETE_SYSTEM_OVERVIEW.md) - System overview
 
 ### System Documentation
-- [Dungeon System](./DUNGEON_GENERATION.md) | [Quick Start](./DUNGEON_QUICK_START.md)
-- [Tileset System](./TILESET_SYSTEM.md) | [Quick Ref](./TILESET_QUICK_REFERENCE.md)
-- [World System](./WORLD_GENERATION_SYSTEM.md) | [290 Biomes](./BIOMES_290_COMPLETE.md)
-- [Maze System](./MAZE_SYSTEM.md) | [Quick Start](./MAZE_QUICK_START.md)
-- [Audio System](./AUDIO_SYSTEM.md) | [Music Guide](./MUSIC_NOTATION_GUIDE.md)
-- [Game Boy Emulator](./GAMEBOY_EMULATOR.md) | [Audio Integration](./AUDIO_AND_GAMEBOY_SYSTEM.md)
-- [Terminal System](./TERMINAL_SYSTEM_README.md) | [Quick Start](./TERMINAL_QUICK_START.md)
+- [Dungeon System](./docs/DUNGEON_GENERATION.md) | [Quick Start](./docs/DUNGEON_QUICK_START.md)
+- [Tileset System](./docs/TILESET_SYSTEM.md) | [Quick Ref](./docs/TILESET_QUICK_REFERENCE.md)
+- [World System](./docs/WORLD_GENERATION_SYSTEM.md) | [290 Biomes](./docs/BIOMES_290_COMPLETE.md)
+- [Maze System](./docs/MAZE_SYSTEM.md) | [Quick Start](./docs/MAZE_QUICK_START.md)
+- [Audio System](./docs/AUDIO_SYSTEM.md) | [Music Guide](./docs/MUSIC_NOTATION_GUIDE.md) | [Keyboard Editor](./docs/MUSIC_KEYBOARD_EDITOR.md)
+- [Game Boy Emulator](./docs/GAMEBOY_EMULATOR.md) | [Audio Integration](./docs/AUDIO_AND_GAMEBOY_SYSTEM.md)
+- [Terminal System](./docs/TERMINAL_SYSTEM_README.md) | [Quick Start](./docs/TERMINAL_QUICK_START.md)
 
 ### Integration Guides
-- [System Interlinks](./SYSTEM_INTERLINKS.md) - How systems integrate
-- [Audio & GameBoy](./AUDIO_AND_GAMEBOY_SYSTEM.md) - Audio integration
-- [Navigation Menu](./NAVIGATION_MENU_UPDATE.md) - UI navigation
+- [System Interlinks](./docs/SYSTEM_INTERLINKS.md) - How systems integrate
+- [Audio & GameBoy](./docs/AUDIO_AND_GAMEBOY_SYSTEM.md) - Audio integration
+- [Navigation Menu](./docs/NAVIGATION_MENU_UPDATE.md) - UI navigation
 
 ## 🎯 Quick Commands
 
