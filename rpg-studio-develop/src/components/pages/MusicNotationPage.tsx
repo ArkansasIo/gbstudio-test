@@ -1,7 +1,6 @@
 import React, { FC, useState } from "react";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
-import { Select } from "ui/form/Select";
 
 const Wrapper = styled.div`
   display: flex;
@@ -147,14 +146,26 @@ Docs: MUSIC_NOTATION_GUIDE.md, MUSIC_QUICK_START.md
           <SectionTitle>Input</SectionTitle>
           <FormRow>
             <Label>Format:</Label>
-            <Select value={format} onChange={(e) => {
-              setFormat(e.target.value);
-              setInput(examples[e.target.value as keyof typeof examples]);
-            }}>
+            <select
+              value={format}
+              onChange={(e) => {
+                setFormat(e.target.value);
+                setInput(examples[e.target.value as keyof typeof examples]);
+              }}
+              style={{
+                background: 'var(--input-background)',
+                border: '1px solid var(--input-border)',
+                borderRadius: '4px',
+                padding: '8px',
+                color: 'var(--text-color)',
+                fontSize: '14px',
+                marginRight: '10px'
+              }}
+            >
               <option value="simple">Simple Format</option>
               <option value="mml">MML (Music Macro Language)</option>
               <option value="abc">ABC Notation</option>
-            </Select>
+            </select>
             <Button onClick={() => setInput(examples[format as keyof typeof examples])}>
               Load Example
             </Button>

@@ -1,8 +1,6 @@
 import React, { FC, useState } from "react";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
-import { Input } from "ui/form/Input";
-import { Select } from "ui/form/Select";
 
 const Wrapper = styled.div`
   display: flex;
@@ -149,54 +147,99 @@ Documentation: See DUNGEON_GENERATION.md
           <SectionTitle>Configuration</SectionTitle>
           <FormRow>
             <Label>Seed:</Label>
-            <Input
+            <input
               type="text"
               value={seed}
               onChange={(e) => setSeed(e.target.value)}
               placeholder="12345"
+              style={{
+                background: 'var(--input-background)',
+                border: '1px solid var(--input-border)',
+                borderRadius: '4px',
+                padding: '8px',
+                color: 'var(--text-color)',
+                fontSize: '14px',
+                flex: 1
+              }}
             />
           </FormRow>
           <FormRow>
             <Label>Biome:</Label>
-            <Select
+            <select
               value={biome}
               onChange={(e) => setBiome(e.target.value)}
+              style={{
+                background: 'var(--input-background)',
+                border: '1px solid var(--input-border)',
+                borderRadius: '4px',
+                padding: '8px',
+                color: 'var(--text-color)',
+                fontSize: '14px',
+                flex: 1
+              }}
             >
               {biomes.map((b) => (
                 <option key={b.value} value={b.value}>
                   {b.label}
                 </option>
               ))}
-            </Select>
+            </select>
           </FormRow>
           <FormRow>
             <Label>Difficulty:</Label>
-            <Input
+            <input
               type="number"
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
               min="1"
               max="5"
+              style={{
+                background: 'var(--input-background)',
+                border: '1px solid var(--input-border)',
+                borderRadius: '4px',
+                padding: '8px',
+                color: 'var(--text-color)',
+                fontSize: '14px',
+                width: '100px'
+              }}
             />
           </FormRow>
           <FormRow>
             <Label>Min Rooms:</Label>
-            <Input
+            <input
               type="number"
               value={minRooms}
               onChange={(e) => setMinRooms(e.target.value)}
               min="5"
               max="50"
+              style={{
+                background: 'var(--input-background)',
+                border: '1px solid var(--input-border)',
+                borderRadius: '4px',
+                padding: '8px',
+                color: 'var(--text-color)',
+                fontSize: '14px',
+                width: '100px'
+              }}
             />
           </FormRow>
           <FormRow>
             <Label>Max Rooms:</Label>
-            <Input
+            <input
               type="number"
               value={maxRooms}
               onChange={(e) => setMaxRooms(e.target.value)}
               min="5"
               max="50"
+              style={{
+                background: 'var(--input-background)',
+                border: '1px solid var(--input-border)',
+                borderRadius: '4px',
+                padding: '8px',
+                color: 'var(--text-color)',
+                fontSize: '14px',
+                width: '100px'
+              }}
             />
           </FormRow>
           <Button onClick={handleGenerate}>Generate Dungeon</Button>
