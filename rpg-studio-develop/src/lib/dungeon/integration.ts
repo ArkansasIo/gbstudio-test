@@ -4,29 +4,21 @@
  */
 
 import { DungeonGenerator, DungeonConfig, Dungeon, Room } from './index';
-import { TerminalLogger } from '../terminal/terminalLogger';
-
-const terminalLogger = new TerminalLogger();
 
 /**
  * Generate dungeon and log to terminal
+ * Note: For terminal logging, use TerminalLogger with Redux dispatch in your application
  */
 export function generateDungeonWithLogging(config: DungeonConfig): Dungeon {
-  terminalLogger.info(`Generating ${config.biome} dungeon (Tier ${config.difficulty})...`);
+  console.log(`Generating ${config.biome} dungeon (Tier ${config.difficulty})...`);
   
   const startTime = performance.now();
   const generator = new DungeonGenerator(config);
   const dungeon = generator.generate();
   const endTime = performance.now();
   
-  terminalLogger.success(
-    `Dungeon generated in ${(endTime - startTime).toFixed(2)}ms`,
-    {
-      rooms: dungeon.rooms.length,
-      biome: config.biome,
-      seed: config.seed
-    }
-  );
+  console.log(`Dungeon generated in ${(endTime - startTime).toFixed(2)}ms`);
+  console.log(`Rooms: ${dungeon.rooms.length}, Biome: ${config.biome}, Seed: ${config.seed}`);
   
   // Log room breakdown
   const roomTypes = dungeon.rooms.reduce((acc, room) => {
@@ -34,17 +26,17 @@ export function generateDungeonWithLogging(config: DungeonConfig): Dungeon {
     return acc;
   }, {} as Record<string, number>);
   
-  terminalLogger.debug('Room breakdown:', roomTypes);
+  console.log('Room breakdown:', roomTypes);
   
   // Log encounters
   const encounters = dungeon.rooms.filter(r => r.encounter);
   const totalXP = encounters.reduce((sum, r) => sum + (r.encounter?.xpReward || 0), 0);
-  terminalLogger.info(`Generated ${encounters.length} encounters (${totalXP} XP total)`);
+  console.log(`Generated ${encounters.length} encounters (${totalXP} XP total)`);
   
   // Log treasure
   const treasureRooms = dungeon.rooms.filter(r => r.treasure);
   const totalGold = treasureRooms.reduce((sum, r) => sum + (r.treasure?.gold || 0), 0);
-  terminalLogger.info(`Generated ${treasureRooms.length} treasure rooms (${totalGold}gp total)`);
+  console.log(`Generated ${treasureRooms.length} treasure rooms (${totalGold}gp total)`);
   
   return dungeon;
 }
@@ -137,7 +129,7 @@ export function importDungeon(json: string): Dungeon | null {
     terminalLogger.success(`Imported dungeon: ${dungeon.id}`);
     return dungeon;
   } catch (error) {
-    terminalLogger.error('Failed to import dungeon', { error });
+    console.error('Failed to import dungeon', error);
     return null;
   }
 }
@@ -201,14 +193,14 @@ export function generateDungeonForStore(config: DungeonConfig) {
   const validation = validateDungeonConfig(config);
   
   if (!validation.valid) {
-    validation.errors.forEach(error => terminalLogger.error(error));
+    validation.errors.forEach(error => console.error(error));
     throw new Error('Invalid dungeon configuration');
   }
   
   const dungeon = generateDungeonWithLogging(config);
   const stats = getDungeonStats(dungeon);
   
-  terminalLogger.info('Dungeon statistics:', stats);
+  console.log('Dungeon statistics:', stats);
   
   return {
     dungeon,
