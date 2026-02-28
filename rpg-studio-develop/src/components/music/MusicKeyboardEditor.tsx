@@ -1,6 +1,9 @@
-import React, { FC, useState, useEffect, useRef } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { Button } from "ui/buttons/Button";
+import { useAppDispatch, useAppSelector } from "store/hooks";
+import musicActions from "store/features/music/musicActions";
+import * as musicSelectors from "store/features/music/musicSelectors";
 import { MusicParser, MusicPlayer } from "lib/audio/musicParser";
 import { GBSoundSystem } from "lib/audio/gbSound";
 import type { MusicTrack, MusicNote } from "lib/audio/types";
@@ -186,14 +189,17 @@ const MusicKeyboardEditor: FC<MusicKeyboardEditorProps> = ({
   initialTrack,
   onTrackChange,
 }) => {
-  const [track, setTrack] = useState<MusicTrack | null>(initialTrack || null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [pressedKeys, setPressedKeys] = useState<Set<number>>(new Set());
-  const [activeNotes, setActiveNotes] = useState<Set<number>>(new Set());
-  const [recordedNotes, setRecordedNotes] = useState<MusicNote[]>([]);
-  const [recordStartTime, setRecordStartTime] = useState(0);
+  const dispatch = useAppDispatch();
+  
+  // Redux state
+  const isRecording = useAppSelector(musicSelectors.getIsRecording);
+  const isPlaying = useAppSelector(musicSelectors.getIsKeyboardPlaying);
+  const track = useAppSelector(musicSelectors.getCurrentTrack);
+  const recordedNotes = useAppSelector(musicSelectors.getRecordedNotes);
+  const recordStartTime = useAppSelector(musicSelectors.getRecordStartTime);
+  const pressedKeys = useAppSelector(musicSelectors.getPressedKeys);
+  const activeNotes = useAppSelector(musicSelectors.getActiveNotes);
+  const tempo = useAppSelector(musicSelectors.getTempo);
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const gbSoundRef = useRef<GBSoundSystem | null>(null);
@@ -215,9 +221,9 @@ const MusicKeyboardEditor: FC<MusicKeyboardEditorProps> = ({
   // Update track when initialTrack changes
   useEffect(() => {
     if (initialTrack) {
-      setTrack(initialTrack);
+      dispatch(musicActions.setCurrentTrack(initialTrack));
     }
-  }, [initialTrack]);
+  }, [initialTrack, dispatch]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -230,7 +236,7 @@ const MusicKeyboardEditor: FC<MusicKeyboardEditorProps> = ({
       };
 
       const midiNote = keyMap[e.key.toLowerCase()];
-      if (midiNote && !pressedKeys.has(midiNote)) {
+      if (midiNote && !pressedKeys.includes(midiNote)) {
         e.preventDefault();
         handleKeyPress(midiNote);
       }
@@ -268,7 +274,7 @@ const MusicKeyboardEditor: FC<MusicKeyboardEditorProps> = ({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [pressedKeys, isPlaying, isRecording]);
+  }, [pressedKeys, isPlaying, isRecording, dispatch]);
 
   // Note names for keyboard
   const noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -297,42 +303,31 @@ const MusicKeyboardEditor: FC<MusicKeyboardEditorProps> = ({
       },
     });
 
-    setActiveNotes((prev) => new Set(prev).add(midiNote));
+    dispatch(musicActions.addActiveNote(midiNote));
     setTimeout(() => {
-      setActiveNotes((prev) => {
-        const next = new Set(prev);
-        next.delete(midiNote);
-        return next;
-      });
+      dispatch(musicActions.removeActiveNote(midiNote));
     }, 200);
   };
 
   // Handle keyboard press
   const handleKeyPress = (midiNote: number) => {
-    setPressedKeys((prev) => new Set(prev).add(midiNote));
+    dispatch(musicActions.addPressedKey(midiNote));
     playNote(midiNote);
 
     // Record note if recording
     if (isRecording && audioContextRef.current) {
       const currentRecordTime = audioContextRef.current.currentTime - recordStartTime;
-      setRecordedNotes((prev) => [
-        ...prev,
-        {
-          pitch: midiNote,
-          duration: 0.2, // Will be updated on release
-          velocity: 12,
-          startTime: currentRecordTime,
-        },
-      ]);
+      dispatch(musicActions.addRecordedNote({
+        pitch: midiNote,
+        duration: 0.2,
+        velocity: 12,
+        startTime: currentRecordTime,
+      }));
     }
   };
 
   const handleKeyRelease = (midiNote: number) => {
-    setPressedKeys((prev) => {
-      const next = new Set(prev);
-      next.delete(midiNote);
-      return next;
-    });
+    dispatch(musicActions.removePressedKey(midiNote));
   };
 
   // Play track
@@ -341,10 +336,10 @@ const MusicKeyboardEditor: FC<MusicKeyboardEditorProps> = ({
 
     if (isPlaying) {
       playerRef.current.stop();
-      setIsPlaying(false);
+      dispatch(musicActions.setKeyboardPlaying(false));
     } else {
       playerRef.current.play(track);
-      setIsPlaying(true);
+      dispatch(musicActions.setKeyboardPlaying(true));
     }
   };
 
@@ -367,7 +362,7 @@ const MusicKeyboardEditor: FC<MusicKeyboardEditorProps> = ({
           return;
       }
 
-      setTrack(parsedTrack);
+      dispatch(musicActions.setCurrentTrack(parsedTrack));
       if (onTrackChange) {
         onTrackChange(parsedTrack);
       }
@@ -382,12 +377,12 @@ const MusicKeyboardEditor: FC<MusicKeyboardEditorProps> = ({
 
     if (isRecording) {
       // Stop recording and create track
-      setIsRecording(false);
+      dispatch(musicActions.stopRecording());
       
       if (recordedNotes.length > 0) {
         const newTrack: MusicTrack = {
           name: "Recorded Track",
-          tempo: 120,
+          tempo: tempo,
           timeSignature: { numerator: 4, denominator: 4 },
           channels: [
             {
@@ -400,25 +395,25 @@ const MusicKeyboardEditor: FC<MusicKeyboardEditorProps> = ({
           ],
         };
 
-        setTrack(newTrack);
+        dispatch(musicActions.setCurrentTrack(newTrack));
         if (onTrackChange) {
           onTrackChange(newTrack);
         }
       }
       
-      setRecordedNotes([]);
+      dispatch(musicActions.clearRecordedNotes());
     } else {
       // Start recording
-      setIsRecording(true);
-      setRecordedNotes([]);
-      setRecordStartTime(audioContextRef.current.currentTime);
+      dispatch(musicActions.startRecording({ 
+        startTime: audioContextRef.current.currentTime 
+      }));
     }
   };
 
   // Clear track
   const handleClear = () => {
-    setTrack(null);
-    setRecordedNotes([]);
+    dispatch(musicActions.setCurrentTrack(null));
+    dispatch(musicActions.clearRecordedNotes());
     if (onTrackChange) {
       onTrackChange({
         name: "Empty Track",
@@ -491,7 +486,7 @@ const MusicKeyboardEditor: FC<MusicKeyboardEditorProps> = ({
                 <PianoKey
                   key={midiNote}
                   isBlack={isBlackKey(midiNote)}
-                  isActive={activeNotes.has(midiNote)}
+                  isActive={activeNotes.includes(midiNote)}
                   onClick={() => playNote(midiNote)}
                 >
                   {!isBlackKey(midiNote) && `${noteName}${octave}`}
@@ -512,7 +507,7 @@ const MusicKeyboardEditor: FC<MusicKeyboardEditorProps> = ({
               <Key
                 key={midiNote}
                 isBlack={black}
-                isPressed={pressedKeys.has(midiNote) || activeNotes.has(midiNote)}
+                isPressed={pressedKeys.includes(midiNote) || activeNotes.includes(midiNote)}
                 onMouseDown={() => handleKeyPress(midiNote)}
                 onMouseUp={() => handleKeyRelease(midiNote)}
                 onMouseLeave={() => handleKeyRelease(midiNote)}
