@@ -3,10 +3,11 @@
  * 12×12 grid (144 tiles) with categories and collision data
  */
 
-import { CryptTileDefinition, TileCategory, CollisionType } from './types';
+import { CryptTileDefinition, TileCategory, CollisionType, TilesetConfig } from './types';
 
-export const CRYPT_TILESET_CONFIG = {
+export const CRYPT_TILESET_CONFIG: TilesetConfig = {
   name: 'Isometric Crypt',
+  imagePath: 'assets/tilesets/crypt_tileset.png', // Default path, can be overridden
   tileWidth: 256,
   tileHeight: 256,
   columns: 12,
