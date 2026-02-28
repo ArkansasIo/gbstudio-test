@@ -122,11 +122,11 @@ export function importDungeon(json: string): Dungeon | null {
     
     // Validate structure
     if (!dungeon.id || !dungeon.config || !dungeon.rooms || !dungeon.grid) {
-      terminalLogger.error('Invalid dungeon format');
+      console.error('Invalid dungeon format');
       return null;
     }
     
-    terminalLogger.success(`Imported dungeon: ${dungeon.id}`);
+    console.log(`Imported dungeon: ${dungeon.id}`);
     return dungeon;
   } catch (error) {
     console.error('Failed to import dungeon', error);
