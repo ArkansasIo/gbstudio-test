@@ -164,7 +164,7 @@ const App = () => {
           {section === "dialogue" && <DialoguePage />}
           {section === "settings" && <SettingsPage />}
           {/* RPG Workbench */}
-          {section === "rpgworkbench" && <SystemsPage system="rpgworkbench" />}
+          {section === "rpgworkbench" && <RPGGameMakerUI />}
           {section === "dungeon" && <DungeonGeneratorPage />}
           {section === "tileset" && <SystemsPage system="tileset" />}
           {section === "worldgen" && <SystemsPage system="worldgen" />}
