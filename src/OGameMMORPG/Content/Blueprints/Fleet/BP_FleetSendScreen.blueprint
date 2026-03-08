@@ -1,0 +1,85 @@
+// ============================================================================
+// BP_FleetSendScreen.blueprint
+// Blueprint asset: Fleet Send / Mission Screen
+// Purpose: Text-UI Widget Blueprint for sending fleets
+// Parent class: UserWidget (UMG)
+// ============================================================================
+//
+// Widget Hierarchy (Canvas Panel):
+//   ┌─────────────────────────────────────────────────────────┐
+//   │  [TextBlock] Title: "Fleet Management"                  │
+//   │  [Divider Line]                                          │
+//   │                                                          │
+//   │  Origin: [TextBlock] PlanetName [Coords]                │
+//   │                                                          │
+//   │  ─── Ship Selection ───────────────────────────────────  │
+//   │  [ScrollBox]                                            │
+//   │    [Horizontal Box] per ship type:                      │
+//   │      [TextBlock] "Light Fighter  (Stationed: 150)"      │
+//   │      [EditableTextBox] Count (default: 0)               │
+//   │      [TextBlock] "Atk:50  Shield:10  Cargo:50"         │
+//   │                                                          │
+//   │  ─── Destination ──────────────────────────────────────  │
+//   │  Galaxy: [SpinBox 1-9]   System: [SpinBox 1-499]        │
+//   │  Position: [SpinBox 1-15]                               │
+//   │                                                          │
+//   │  ─── Mission Type ─────────────────────────────────────  │
+//   │  [ComboBox] Attack | Transport | Espionage | Colonize   │
+//   │             Recycle | Expedition | Deploy               │
+//   │                                                          │
+//   │  ─── Cargo Load ───────────────────────────────────────  │
+//   │  Metal: [EditableText]  Crystal: [EditableText]         │
+//   │  Deuterium: [EditableText]   [Fill All] [Fill Half]     │
+//   │                                                          │
+//   │  ─── Summary ──────────────────────────────────────────  │
+//   │  [TextBlock] Travel Time: --:--:--                      │
+//   │  [TextBlock] Fuel Cost:   0 deuterium                   │
+//   │  [TextBlock] Cargo Cap:   0 / 0                         │
+//   │                                                          │
+//   │  [Button] "SEND FLEET"    [Button] "CANCEL"             │
+//   └─────────────────────────────────────────────────────────┘
+//
+// Event Graph:
+// ─────────────
+//
+//  [Event Construct]
+//      │
+//      ▼
+//  [Get Game Instance] → [Cast to BP_OGameGameInstance]
+//      │
+//      ▼
+//  [Get Universe Manager] → [Get Planet at Current Coords]
+//      │
+//      ▼
+//  [Populate Ship List from StationedFleet]
+//
+//  [OnDestinationChanged] (Galaxy/System/Position SpinBox)
+//      │
+//      ▼
+//  [Make Coordinates] (Galaxy, System, Position)
+//      │
+//      ▼
+//  [Calculate Travel Time] → [Update Travel Time Label]
+//      │
+//      ▼
+//  [Calculate Fuel Cost]   → [Update Fuel Label]
+//
+//  [OnSendFleet Button Clicked]
+//      │
+//      ▼
+//  [Collect Ship Counts from UI] → FFleetComposition
+//      │
+//      ▼
+//  [Collect Cargo from UI]       → FResources
+//      │
+//      ▼
+//  [Get Mission from ComboBox]   → EFleetMission
+//      │
+//      ▼
+//  [Call Universe Manager: Launch Fleet]
+//      │
+//      ├── Success → [Show Notification] "Fleet launched!"
+//      │             [Close Screen]
+//      └── Fail    → [Show Error] "Insufficient ships or resources."
+//
+// ============================================================================

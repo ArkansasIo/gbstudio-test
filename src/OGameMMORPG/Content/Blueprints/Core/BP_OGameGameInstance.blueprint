@@ -1,0 +1,47 @@
+// ============================================================================
+// BP_OGameGameInstance.blueprint
+// Blueprint asset: OGame Game Instance
+// Parent class: UOGameGameInstance (C++)
+// ============================================================================
+//
+// This Blueprint extends UOGameGameInstance and configures default universe
+// settings for the Andromeda universe.
+//
+// Variable overrides (set in Class Defaults):
+//   UniverseName    = "Andromeda"
+//   MaxGalaxies     = 9
+//   MaxSystems      = 499
+//   UniverseSpeed   = 1.0
+//   EconomySpeed    = 1.0
+//   FleetSpeed      = 1.0
+//   ResearchSpeed   = 1.0
+//
+// Event Graph Nodes:
+// ─────────────────
+//
+//  [Event Init]
+//      │
+//      ▼
+//  [Call Super::Init]
+//      │
+//      ▼
+//  [Print String] "OGame Universe 'Andromeda' is online!"
+//      │
+//      ▼
+//  [Get Universe Manager]
+//      │
+//      ▼
+//  [Branch] Is Valid?
+//     Yes │
+//         ▼
+//     [Call InitializeUniverse (MaxGalaxies=9, MaxSystems=499)]
+//
+//  [Event Tick Production Cycle] (bound to Timer via C++)
+//      │
+//      ▼
+//  [Get Universe Manager] → [Tick All Planets Production]
+//      │
+//      ▼
+//  [Get Player Manager]  → [Tick All Research Queues]
+//
+// ============================================================================

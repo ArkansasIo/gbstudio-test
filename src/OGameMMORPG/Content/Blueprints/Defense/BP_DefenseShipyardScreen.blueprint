@@ -1,0 +1,72 @@
+// ============================================================================
+// BP_DefenseShipyardScreen.blueprint
+// Blueprint asset: Defense & Shipyard Production Screen
+// Parent class: UserWidget (UMG)
+// ============================================================================
+//
+// Tab Bar: [Shipyard] [Defense]
+//
+// SHIPYARD TAB:
+//   ┌────────────────────────────────────────────────────────────────┐
+//   │  Ship                   Stationed  Metal    Crystal  Deut  Qty │
+//   │  ─────────────────────────────────────────────────────────   │
+//   │  Light Fighter          150        3,000    1,000    0     [_] │
+//   │  Heavy Fighter          40         6,000    4,000    0     [_] │
+//   │  Cruiser                12         20,000   7,000    2000  [_] │
+//   │  Battleship             5          45,000   15,000   0     [_] │
+//   │  Death Star             0          5M       4M       1M    [_] │
+//   │  ...                                                           │
+//   │                                                                │
+//   │  [BUILD SHIPS]                                                 │
+//   └────────────────────────────────────────────────────────────────┘
+//
+// DEFENSE TAB:
+//   ┌────────────────────────────────────────────────────────────────┐
+//   │  Defense Unit           Count    Metal    Crystal  Deut  Qty  │
+//   │  ─────────────────────────────────────────────────────────   │
+//   │  Rocket Launcher        0        2,000    0        0     [_]  │
+//   │  Light Laser            0        1,500    500      0     [_]  │
+//   │  Plasma Turret          0        50,000   50,000   30K   [_]  │
+//   │  Small Shield Dome      0        10,000   10,000   0     [_]  │
+//   │  ...                                                          │
+//   │                                                               │
+//   │  [BUILD DEFENSE]                                              │
+//   └────────────────────────────────────────────────────────────────┘
+//
+// Event Graph:
+// ─────────────
+//
+//  [On Build Ships Button Clicked]
+//      │
+//      ▼
+//  [Collect ship quantities from input boxes] → TArray<FShipCount>
+//      │
+//      ▼
+//  [For Each ShipCount where Count > 0]
+//      │
+//      ▼
+//  [Get Ship Base Stats] (Type) → Stats
+//      │
+//      ▼
+//  [Calculate Total Cost] = Stats.Cost * Count
+//      │
+//      ▼
+//  [Resources Has Enough] (Planet, TotalCost)
+//      │
+//   Yes│                     No│
+//      ▼                       ▼
+//  [Spend Resources]       [Show Error]
+//  [Queue Ship Build]
+//
+//  [On Build Defense Button Clicked]
+//      │
+//      ▼
+//  [For Each DefenseCount where Count > 0]
+//      │
+//      ▼
+//  [Call Planet: Build Defense (Type, Count, Cost)]
+//      │
+//      ▼
+//  [Refresh Defense Table]
+//
+// ============================================================================

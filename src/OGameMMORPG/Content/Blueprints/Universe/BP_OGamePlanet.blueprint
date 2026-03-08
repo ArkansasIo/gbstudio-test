@@ -1,0 +1,65 @@
+// ============================================================================
+// BP_OGamePlanet.blueprint
+// Blueprint asset: OGame Planet
+// Parent class: UOGamePlanet (C++)
+// ============================================================================
+//
+// This Blueprint adds visual-layer logic on top of the C++ UOGamePlanet,
+// including event bindings and building/resource UI integration.
+//
+// Class Defaults (example home planet):
+//   PlanetName      = "Homeworld"
+//   MaxFields       = 163
+//   MinTemperature  = -40
+//   MaxTemperature  = 20
+//   StoredResources = { Metal:500, Crystal:500, Deuterium:0 }
+//
+// Construction Script:
+//   [Randomize Temperature based on Coordinates.Position]
+//       Position 1-5  → MaxTemp = 130-(Position*17) + rand(-10,+10)
+//       Position 6-10 → moderate
+//       Position 11-15→ cold
+//   [Set MaxFields based on diameter]
+//
+// Event Graph:
+// ─────────────
+//
+//  [Event BeginPlay]
+//      │
+//      ▼
+//  [Bind OnBuildingCompleted → Handle Building Complete]
+//  [Bind OnFleetDeparted     → Handle Fleet Departed]
+//  [Call RecalculateStorageCapacity]
+//
+//  [Custom Event: Handle Building Complete]
+//  (Building: EBuildingType, NewLevel: int32)
+//      │
+//      ▼
+//  [Get Building Name] → BuildingName
+//      │
+//      ▼
+//  [Format Text] "{BuildingName} upgraded to level {NewLevel}"
+//      │
+//      ▼
+//  [Append to Activity Log]
+//
+//  [Custom Event: Handle Fleet Departed]
+//  (Fleet: FFleetComposition)
+//      │
+//      ▼
+//  [Get Total Ships] (Fleet) → TotalShips
+//      │
+//      ▼
+//  [Format Text] "{TotalShips} ships departed"
+//      │
+//      ▼
+//  [Append to Activity Log]
+//
+// Functions exposed to Blueprint:
+//   [Get Building Level]         (Type: EBuildingType) → int32
+//   [Get Defense Count]          (Type: EDefenseType)  → int64
+//   [Get Planet Summary Text]    → FString
+//   [Calculate Hourly Production] → FResources
+//   [Get Free Fields]            → int32
+//
+// ============================================================================

@@ -1,0 +1,77 @@
+// ============================================================================
+// BP_MainHUD.blueprint
+// Blueprint asset: Main HUD / Text UI Controller
+// Parent class: HUD (AHUD)
+// ============================================================================
+//
+// This HUD manages the text-based game screen rendering using
+// UOGameTextUIManager and displays it via a UMG widget.
+//
+// Variables:
+//   CurrentScreen      : EGameScreen
+//   CurrentPlanetIndex : int32
+//   MainWidget         : WBP_MainScreenWidget (UUserWidget)
+//   TextUIManager      : UOGameTextUIManager
+//   bShowingOverlay    : bool
+//
+// Event Graph:
+// ─────────────
+//
+//  [Event BeginPlay]
+//      │
+//      ▼
+//  [Create Widget] WBP_MainScreenWidget → Set to MainWidget
+//      │
+//      ▼
+//  [Add to Viewport] MainWidget
+//      │
+//      ▼
+//  [Get Game Instance] → [Get Text UI Manager] → Set TextUIManager
+//      │
+//      ▼
+//  [Set CurrentScreen = Overview]
+//  [Call Refresh Screen]
+//
+//  [Custom Event: Refresh Screen]
+//      │
+//      ▼
+//  [Get Current Planet] (from PlayerState.OwnedPlanetIds[CurrentPlanetIndex])
+//      │
+//      ▼
+//  [Switch on CurrentScreen]
+//   ├── Overview  → [Render Overview]  → [Update Main Text Block]
+//   ├── Buildings → [Render Buildings] → [Update Main Text Block]
+//   ├── Research  → [Render Research]  → [Update Main Text Block]
+//   ├── Shipyard  → [Render Shipyard]  → [Update Main Text Block]
+//   ├── Defense   → [Render Defense]   → [Update Main Text Block]
+//   ├── Fleet     → [Render Fleet]     → [Update Main Text Block]
+//   ├── Galaxy    → [Render Galaxy]    → [Update Main Text Block]
+//   ├── Messages  → [Render Messages]  → [Update Main Text Block]
+//   └── HighScore → [Render HighScore] → [Update Main Text Block]
+//
+//  [Event Receive Key Input] (Key: FKey)
+//      │
+//      ▼
+//  [Switch on Key]
+//   ├── "1" → Set CurrentScreen = Overview,  Call Refresh
+//   ├── "2" → Set CurrentScreen = Resources, Call Refresh
+//   ├── "3" → Set CurrentScreen = Buildings, Call Refresh
+//   ├── "4" → Set CurrentScreen = Research,  Call Refresh
+//   ├── "5" → Set CurrentScreen = Shipyard,  Call Refresh
+//   ├── "6" → Set CurrentScreen = Defense,   Call Refresh
+//   ├── "7" → Set CurrentScreen = Fleet,     Call Refresh
+//   ├── "8" → Set CurrentScreen = Galaxy,    Call Refresh
+//   ├── "9" → Set CurrentScreen = Messages,  Call Refresh
+//   ├── "0" → Set CurrentScreen = Alliance,  Call Refresh
+//   ├── "["  → Prev Planet (decrement CurrentPlanetIndex, clamp), Refresh
+//   └── "]"  → Next Planet (increment CurrentPlanetIndex, clamp), Refresh
+//
+//  [Timer Event: Auto Refresh] (every 10 seconds)
+//      │
+//      ▼
+//  [Call Refresh Screen]
+//      │
+//      ▼
+//  [Update Resource Bar] (top of screen)
+//
+// ============================================================================

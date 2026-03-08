@@ -1,0 +1,72 @@
+// ============================================================================
+// BP_BuildingScreen.blueprint
+// Blueprint asset: Building Construction Screen
+// Parent class: UserWidget (UMG)
+// ============================================================================
+//
+// Widget layout (text-style table):
+//   ┌────────────────────────────────────────────────────────────────┐
+//   │          === BUILDINGS ===                                     │
+//   │                                                                │
+//   │  Building               Lv  Cost (M/C/D)        Time          │
+//   │  ─────────────────────────────────────────────────────────    │
+//   │  Metal Mine              5  60K / 45K / 0     00:42:15  [▲]  │
+//   │  Crystal Mine            4  77K / 62K / 0     00:51:00  [▲]  │
+//   │  Deuterium Synthesizer   3  76K / 25K / 0     00:35:45  [▲]  │
+//   │  Solar Power Plant       4  38K / 15K / 0     00:15:00  [▲]  │
+//   │  ...                                                          │
+//   │                                                                │
+//   │  [IN PROGRESS] Metal Mine → Level 6  ETA: 00:12:44           │
+//   │  [CANCEL BUILD]                                               │
+//   │                                                                │
+//   │  Fields: 42/163                                               │
+//   └────────────────────────────────────────────────────────────────┘
+//
+// Event Graph:
+// ─────────────
+//
+//  [Event Construct]
+//      │
+//      ▼
+//  [Get Current Planet]
+//      │
+//      ▼
+//  [For Each Building Type]
+//      │
+//      ▼
+//  [Get Building Level] (Planet, Type)   → Level
+//  [Get Building Upgrade Cost] (Type, Level) → Cost
+//  [Get Building Duration] (Type, Level, RoboticsLvl) → Duration
+//  [Get Building Name] (Type) → Name
+//      │
+//      ▼
+//  [Add Row to BuildingList ScrollBox]
+//
+//  [OnUpgradeButtonClicked] (BuildingType: EBuildingType)
+//      │
+//      ▼
+//  [Get Building Upgrade Cost] → RequiredCost
+//      │
+//      ▼
+//  [Resources Has Enough] (Planet.StoredResources, RequiredCost)
+//      │
+//   Yes│                          No│
+//      ▼                            ▼
+//  [Get Building Duration]      [Show "Not enough resources"]
+//      │
+//      ▼
+//  [Call Planet: Start Building (Type, Cost, Duration)]
+//      │
+//      ├── Success → [Show Toast] "Building started!"
+//      │             [Refresh Screen]
+//      └── Fail    → [Show Toast] "Build slot occupied."
+//
+//  [Timer: Tick ETA Label] (every 1 second)
+//      │
+//      ▼
+//  [Get Building Finish Time] → Remaining = FinishTime - Now
+//      │
+//      ▼
+//  [Format Timespan] → [Update ETA Label]
+//
+// ============================================================================
