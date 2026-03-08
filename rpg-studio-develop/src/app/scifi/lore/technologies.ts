@@ -53,10 +53,10 @@ export const SCIFI_TECHNOLOGIES: SciFiTechnologyDefinition[] = [
     name: "Graviton Thrusters",
     category: "propulsion",
     tier: 3,
-    description: "Gravitational vectoring thrusters providing superior manoeuvring and nullifying inertia penalties.",
+    description: "Gravitational vectoring thrusters providing superior maneuvering and nullifying inertia penalties.",
     prerequisites: ["ftl-hyperdrive"],
     researchCost: 3000,
-    unlocks: ["graviton-drive", "zero-inertia-manoeuvring"],
+    unlocks: ["graviton-drive", "zero-inertia-maneuvering"],
   },
   {
     id: "kinetic-cannons",

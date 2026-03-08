@@ -98,7 +98,7 @@ export const SCIFI_SHIPS: SciFiShipDefinition[] = [
     stats: { hull: 15000, shields: 5000, speed: 20, maneuverability: 10, cargoCapacity: 2000 },
     weapons: ["Plasma Siege Cannons x8", "Mass Driver Arrays x4", "Boarding Assault Bays x6", "Flak Batteries x12"],
     crewCapacity: 4000,
-    description: "A terrifying symbol of Krellax military might. Built for planetary assault and fleet annihilation, not manoeuvring.",
+    description: "A terrifying symbol of Krellax military might. Built for planetary assault and fleet annihilation, not maneuvering.",
   },
   {
     id: "shadow-lance",
