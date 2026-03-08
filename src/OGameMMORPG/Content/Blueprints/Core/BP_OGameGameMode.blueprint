@@ -1,0 +1,49 @@
+// ============================================================================
+// BP_OGameGameMode.blueprint
+// Blueprint asset: OGame Game Mode
+// Parent class: AOGameGameMode (C++)
+// ============================================================================
+//
+// Class Defaults:
+//   bAllowNewRegistrations    = true
+//   MaxPlayersPerUniverse     = 10000
+//   BeginnerProtectionDays    = 7
+//   bDestructibleMoons        = true
+//   PlayerStateClass          = BP_OGamePlayerState
+//   DefaultPawnClass          = None  (text-based; no 3D pawn needed)
+//   HUDClass                  = BP_OGameHUD
+//
+// Event Graph:
+// ─────────────
+//
+//  [Event Init Game]
+//      │
+//      ▼
+//  [Call Super Init Game]
+//      │
+//      ▼
+//  [Print String] "OGame Server Ready"
+//
+//  [Event Post Login] (NewPlayer: PlayerController)
+//      │
+//      ▼
+//  [Get Player State] → [Cast to BP_OGamePlayerState]
+//      │
+//      ▼
+//  [Branch] Is Home Planet Empty?
+//      Yes │
+//          ▼
+//      [Call Assign Home Planet]
+//          │
+//          ▼
+//      [Send Client Message] "Welcome to OGame Andromeda!"
+//
+//  [Event Logout] (Exiting: Controller)
+//      │
+//      ▼
+//  [Call Super Logout]
+//      │
+//      ▼
+//  [Print String] "Player disconnected"
+//
+// ============================================================================

@@ -1,0 +1,57 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.3",
+	"Category": "Game",
+	"Description": "OGame Clone MMORPG - A turn-based real-time text 4X space strategy game built with Unreal Engine 5.",
+	"Modules": [
+		{
+			"Name": "OGameMMORPG",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "OGameMMORPGEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "OnlineSubsystem",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemUtils",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemNull",
+			"Enabled": true
+		},
+		{
+			"Name": "WebSockets",
+			"Enabled": true
+		},
+		{
+			"Name": "HTTPServer",
+			"Enabled": true
+		},
+		{
+			"Name": "JsonBlueprintUtilities",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "Gauntlet",
+			"Enabled": false
+		}
+	],
+	"TargetPlatforms": [
+		"Win64",
+		"Linux",
+		"Mac"
+	]
+}

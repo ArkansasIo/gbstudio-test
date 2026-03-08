@@ -1,0 +1,83 @@
+// ============================================================================
+// BP_GalaxyMapScreen.blueprint
+// Blueprint asset: Galaxy Map Screen
+// Parent class: UserWidget (UMG)
+// ============================================================================
+//
+// Widget layout:
+//   ┌────────────────────────────────────────────────────────────────┐
+//   │         === GALAXY MAP ===                                    │
+//   │  Galaxy: [◄] 1 [►]   System: [◄] 001 [►]                    │
+//   │  ─────────────────────────────────────────────────────────   │
+//   │  Pos │ Planet              │ Owner         │ Moon │ Debris   │
+//   │  ────┼─────────────────────┼───────────────┼──────┼────────  │
+//   │   1  │ Asgard              │ Thor          │  ✓   │         │
+//   │   2  │ (empty)             │               │      │         │
+//   │   3  │ New Terra           │ EmpireBuilder │      │ ✓       │
+//   │   4  │ (empty)             │               │      │         │
+//   │  ...                                                         │
+//   │                                                              │
+//   │  [Right-click planet row → Context Menu]:                    │
+//   │    ▸ Send Fleet              ▸ Espionage                     │
+//   │    ▸ View Report             ▸ Send Message                  │
+//   │    ▸ ACS Attack / Defend                                     │
+//   └────────────────────────────────────────────────────────────────┘
+//
+// Event Graph:
+// ─────────────
+//
+//  [Event Construct]
+//      │
+//      ▼
+//  [Set GalaxyIndex = PlayerHomePlanet.Coordinates.Galaxy]
+//  [Set SystemIndex = PlayerHomePlanet.Coordinates.System]
+//      │
+//      ▼
+//  [Call Refresh Galaxy View]
+//
+//  [Custom Event: Refresh Galaxy View]
+//      │
+//      ▼
+//  [Get Universe Manager] → [Get Solar System (GalaxyIndex, SystemIndex)]
+//      │
+//      ▼
+//  [Branch] Is Valid?
+//   Yes │                     No │
+//       ▼                        ▼
+//  [Render Galaxy Text]     [Show "Empty System"]
+//      │
+//      ▼
+//  [Update Galaxy Text Block]
+//
+//  [On Galaxy Prev/Next Buttons]
+//      │
+//      ▼
+//  [Clamp GalaxyIndex 1..MaxGalaxies]
+//      │
+//      ▼
+//  [Call Refresh Galaxy View]
+//
+//  [On System Prev/Next Buttons]
+//      │
+//      ▼
+//  [Clamp SystemIndex 1..MaxSystems]
+//      │
+//      ▼
+//  [Call Refresh Galaxy View]
+//
+//  [On Planet Row Right Click] (Position: int32)
+//      │
+//      ▼
+//  [Get Planet at Position] (GalaxyIndex, SystemIndex, Position)
+//      │
+//      ▼
+//  [Branch] Has Owner?
+//   Yes │                     No │
+//       ▼                        ▼
+//  [Show Context Menu:       [Show Context Menu:
+//   Send Fleet               Colonize (if Colony Ship available)]
+//   Espionage
+//   Send Message
+//   View Reports]
+//
+// ============================================================================

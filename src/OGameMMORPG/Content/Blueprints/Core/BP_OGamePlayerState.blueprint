@@ -1,0 +1,53 @@
+// ============================================================================
+// BP_OGamePlayerState.blueprint
+// Blueprint asset: OGame Player State
+// Parent class: AOGamePlayerState (C++)
+// ============================================================================
+//
+// This Blueprint wires OnResearchCompleted and OnMessageReceived events
+// to in-game notification logic.
+//
+// Event Graph:
+// ─────────────
+//
+//  [Event BeginPlay]
+//      │
+//      ▼
+//  [Bind Event] OnResearchCompleted → [Custom Event: Handle Research Done]
+//      │
+//      ▼
+//  [Bind Event] OnMessageReceived   → [Custom Event: Handle New Message]
+//
+//  [Custom Event: Handle Research Done] (CompletedResearch: EResearchType)
+//      │
+//      ▼
+//  [Get Research Name] (CompletedResearch) → ResearchName
+//      │
+//      ▼
+//  [Format Text] "Research complete: {ResearchName}"
+//      │
+//      ▼
+//  [Send UI Notification]
+//
+//  [Custom Event: Handle New Message] (Message: FGameMessage)
+//      │
+//      ▼
+//  [Branch] Message.Subject Contains "Combat"
+//      Yes │                           No │
+//          ▼                              ▼
+//      [Play Alert SFX]           [Play Notification SFX]
+//          │
+//          ▼
+//      [Send UI Notification] "⚔ Combat Report: " + Message.Subject
+//
+// Functions:
+// ──────────
+//
+//  [Get Points Breakdown] → Returns FPlayerScore
+//      │
+//      ├─ Building Points: BuildingPoints
+//      ├─ Research Points: ResearchPoints
+//      ├─ Fleet Points:    FleetPoints
+//      └─ Defense Points:  DefensePoints
+//
+// ============================================================================
