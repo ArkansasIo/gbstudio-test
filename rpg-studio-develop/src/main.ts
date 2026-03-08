@@ -176,6 +176,11 @@ import { RPG_FEATURES } from "./app/rpg/features";
 import { RPG_ENGINE_LOGIC } from "./app/rpg/engineLogic";
 import { RPG_SYSTEM_MENUS } from "./app/rpg/systemMenus";
 
+// --- SciFi Game Engine Integration ---
+import { SCIFI_FEATURES } from "./app/scifi/features";
+import { SCIFI_ENGINE_LOGIC } from "./app/scifi/engineLogic";
+import { SCIFI_SYSTEM_MENUS } from "./app/scifi/systemMenus";
+
 // Register RPG Maker-Style Features (stub)
 export function registerRPGMakerFeatures() {
   // This function can be expanded to initialize or register all RPG systems
@@ -183,6 +188,13 @@ export function registerRPGMakerFeatures() {
   console.log("RPG Maker Features:", RPG_FEATURES);
   console.log("RPG Engine Logic:", RPG_ENGINE_LOGIC);
   console.log("RPG System Menus:", RPG_SYSTEM_MENUS);
+}
+
+// Register SciFi Game Engine Features
+export function registerSciFiFeatures() {
+  console.log("SciFi Features:", SCIFI_FEATURES);
+  console.log("SciFi Engine Logic:", SCIFI_ENGINE_LOGIC);
+  console.log("SciFi System Menus:", SCIFI_SYSTEM_MENUS);
 }
 
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
